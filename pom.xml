@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>VillagerOptimizer</name>
-    <description>Combat heavy lag caused by tons of loaded villagers by letting players optimize their trading halls.</description>
+    <description>Combat heavy villager lag by letting players optimize their trading halls.</description>
 
     <properties>
         <java.version>17</java.version>
@@ -31,7 +31,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
