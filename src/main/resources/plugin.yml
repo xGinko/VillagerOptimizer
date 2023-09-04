@@ -1,0 +1,4 @@
+name: VillagerOptimizer
+version: '${project.version}'
+main: me.xginko.villageroptimizer.VillagerOptimizer
+api-version: '1.20'
