@@ -16,6 +16,11 @@ public interface VillagerOptimizerModule {
 
         modules.add(new AntiVillagerDamage());
         modules.add(new AntiVillagerTargetting());
+
+        modules.add(new NametagOptimization());
+        modules.add(new BlockOptimization());
+        modules.add(new WorkstationOptimization());
+
         modules.add(new ChunkLimit());
 
         for (VillagerOptimizerModule module : modules) {

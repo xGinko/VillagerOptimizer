@@ -56,7 +56,7 @@ public class Config {
                         Values here need to be valid bukkit Material enums for your server version.
                         """
         );
-        this.workstation_max_distance = getDouble("optimization.methods.by-workstation.", 4.0,
+        this.workstation_max_distance = getDouble("optimization.methods.by-workstation.disable-range-in-blocks", 4.0,
                 "How close in blocks a villager needs to be to get optimized by its workstation");
         this.getList("optimization.methods.by-workstation.workstation-materials", List.of(
                 "COMPOSTER", "SMOKER", "BARREL", "LOOM", "BLAST_FURNACE", "BREWING_STAND", "CAULDRON",
@@ -90,9 +90,8 @@ public class Config {
 
     private ConfigFile loadConfig(File ymlFile) throws Exception {
         File parent = new File(ymlFile.getParent());
-        if (!parent.exists())
-            if (!parent.mkdir())
-                VillagerOptimizer.getLog().severe("Unable to create plugin config directory.");
+        if (!parent.exists() && !parent.mkdir())
+            VillagerOptimizer.getLog().severe("Unable to create plugin config directory.");
         if (!ymlFile.exists())
             ymlFile.createNewFile(); // Result can be ignored because this method only returns false if the file already exists
         return ConfigFile.loadConfig(ymlFile);
