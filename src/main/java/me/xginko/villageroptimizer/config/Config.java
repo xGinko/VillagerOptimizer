@@ -17,32 +17,41 @@ public class Config {
     private final ConfigFile config;
 
     public final Locale default_lang;
-    public final boolean auto_lang;
+    public final boolean auto_lang, enable_nametag_optimization, enable_workstation_optimization, enable_block_optimization;
+    public final double workstation_max_distance;
 
-    public final HashSet<String> names_that_disable = new HashSet<>(2);
+    public final HashSet<String> nametags = new HashSet<>(2);
     public final HashSet<Material> blocks_that_disable = new HashSet<>(2);
     public final HashSet<Material> workstations_that_disable = new HashSet<>(13);
 
     public Config() throws Exception {
         this.config = loadConfig(new File(VillagerOptimizer.getInstance().getDataFolder(), "config.yml"));
         structureConfig();
-
-        // Language Settings
-        this.default_lang = Locale.forLanguageTag(getString("language.default-language", "en_us", "The default language that will be used if auto-language is false or no matching language file was found.").replace("_", "-"));
+        /**
+         * Language
+         */
+        this.default_lang = Locale.forLanguageTag(
+                getString("language.default-language", "en_us",
+                        "The default language that will be used if auto-language is false or no matching language file was found.")
+                .replace("_", "-"));
         this.auto_lang = getBoolean("language.auto-language", true, "If set to true, will display messages based on client language");
-
-
-        // AI-Disabling
-        this.names_that_disable.addAll(getList("ai-disabling.names-that-disable", List.of("Optimize", "DisableAI")).stream().map(String::toLowerCase).toList());
-        getList("ai-disabling.blocks-that-disable", List.of("EMERALD_BLOCK", "COBBLESTONE")).forEach(configuredMaterial -> {
-            try {
-                Material disableBlock = Material.valueOf(configuredMaterial);
-                this.blocks_that_disable.add(disableBlock);
-            } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("blocks-that-disable", configuredMaterial);
-            }
-        });
-        getList("ai-disabling.workstations-that-disable", List.of(
+        /**
+         * Optimization
+         */
+        // Nametags
+        this.enable_nametag_optimization = getBoolean("optimization.by-nametag.enable", true);
+        this.nametags.addAll(getList("optimization.by-nametag.names", List.of("Optimize", "DisableAI"), "Names are case insensitive")
+                .stream().map(String::toLowerCase).toList());
+        // Workstations
+        this.enable_workstation_optimization = getBoolean("optimization.by-workstation.enable", true,
+                        """
+                        Optimize villagers that are standing near their acquired workstations /s
+                        Values here need to be valid bukkit Material enums for your server version.
+                        """
+        );
+        this.workstation_max_distance = getDouble("optimization.by-workstation.", 4.0,
+                "How close in blocks a villager needs to be to get optimized by its workstation");
+        this.getList("optimization.by-workstation.workstation-materials", List.of(
                 "COMPOSTER", "SMOKER", "BARREL", "LOOM", "BLAST_FURNACE", "BREWING_STAND", "CAULDRON",
                 "FLETCHING_TABLE", "CARTOGRAPHY_TABLE", "LECTERN", "SMITHING_TABLE", "STONECUTTER", "GRINDSTONE"
         )).forEach(configuredMaterial -> {
@@ -50,7 +59,24 @@ public class Config {
                 Material disableBlock = Material.valueOf(configuredMaterial);
                 this.blocks_that_disable.add(disableBlock);
             } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("workstations-that-disable", configuredMaterial);
+                LogUtils.materialNotRecognized("optimization.by-workstation", configuredMaterial);
+            }
+        });
+        // Blocks
+        this.enable_block_optimization = getBoolean("optimization.by-specific-block.enable", true,
+                """
+                        Optimize villagers that are standing on these specific block materials /s
+                        Values here need to be valid bukkit Material enums for your server version.
+                        """
+        );
+        this.getList("optimization.by-specific-block.materials", List.of(
+                "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
+        )).forEach(configuredMaterial -> {
+            try {
+                Material disableBlock = Material.valueOf(configuredMaterial);
+                this.blocks_that_disable.add(disableBlock);
+            } catch (IllegalArgumentException e) {
+                LogUtils.materialNotRecognized("optimization.by-specific-block", configuredMaterial);
             }
         });
     }
@@ -76,8 +102,7 @@ public class Config {
     private void structureConfig() {
         config.addDefault("config-version", 1.00);
         createTitledSection("Language", "language");
-        createTitledSection("AI Disabling", "ai-disabling");
-
+        createTitledSection("Optimization", "optimization");
     }
 
     public void createTitledSection(String title, String path) {

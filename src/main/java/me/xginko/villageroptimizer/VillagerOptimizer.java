@@ -2,10 +2,18 @@ package me.xginko.villageroptimizer;
 
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
+import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -24,7 +32,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     private static Logger logger;
     private static Config config;
     private static HashMap<String, LanguageCache> languageCacheMap;
-    private static VillagerManager villagerManager;
+    private static VillagerCache villagerCache;
 
     @Override
     public void onEnable() {
@@ -45,31 +53,60 @@ public final class VillagerOptimizer extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    public static LanguageCache getLang(String lang) {
-        lang = lang.replace("-", "_");
-        if (config.auto_lang) {
-            return languageCacheMap.getOrDefault(lang, languageCacheMap.get(config.default_lang.toString().toLowerCase()));
-        } else {
-            return languageCacheMap.get(config.default_lang.toString().toLowerCase());
+    public static OptimizationType computeOptimization(WrappedVillager wrapped) {
+        if (config.enable_nametag_optimization) {
+            Component name = wrapped.villager().customName();
+            if (name != null && config.nametags.contains(PlainTextComponentSerializer.plainText().serialize(name).toLowerCase())) {
+                return OptimizationType.NAMETAG;
+            }
         }
+        if (config.enable_block_optimization) {
+            if (config.blocks_that_disable.contains(wrapped.villager().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
+                return OptimizationType.BLOCK;
+            }
+        }
+        if (config.enable_workstation_optimization) {
+            final Location jobSite = wrapped.villager().getMemory(MemoryKey.JOB_SITE);
+            if (
+                    jobSite != null
+                    && config.workstations_that_disable.contains(jobSite.getBlock().getType())
+                    && wrapped.villager().getLocation().distance(jobSite) <= config.workstation_max_distance
+            ) {
+                return OptimizationType.WORKSTATION;
+            }
+        }
+        return wrapped.getOptimizationType();
     }
 
-    public static LanguageCache getLang(Locale locale) {
-        return getLang(locale.toString().toLowerCase());
-    }
-
-    public static LanguageCache getLang(CommandSender commandSender) {
-        if (commandSender instanceof Player player) {
-            return getLang(player.locale());
-        } else {
-            return getLang(config.default_lang);
+    public static OptimizationType computeOptimization(Villager villager) {
+        if (config.enable_nametag_optimization) {
+            Component name = villager.customName();
+            if (name != null && config.nametags.contains(PlainTextComponentSerializer.plainText().serialize(name).toLowerCase())) {
+                return OptimizationType.NAMETAG;
+            }
         }
+        if (config.enable_block_optimization) {
+            if (config.blocks_that_disable.contains(villager.getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
+                return OptimizationType.BLOCK;
+            }
+        }
+        if (config.enable_workstation_optimization) {
+            final Location jobSite = villager.getMemory(MemoryKey.JOB_SITE);
+            if (
+                    jobSite != null
+                    && config.workstations_that_disable.contains(jobSite.getBlock().getType())
+                    && villager.getLocation().distance(jobSite) <= config.workstation_max_distance
+            ) {
+                return OptimizationType.WORKSTATION;
+            }
+        }
+        return villagerCache.getOrAddIfAbsent(villager).getOptimizationType();
     }
 
     public void reloadPlugin() {
+        villagerCache = new VillagerCache();
         reloadLang();
         reloadConfiguration();
-        villagerManager = new VillagerManager(this);
     }
 
     private void reloadConfiguration() {
@@ -129,6 +166,27 @@ public final class VillagerOptimizer extends JavaPlugin {
         return languageFiles;
     }
 
+    public static LanguageCache getLang(String lang) {
+        lang = lang.replace("-", "_");
+        if (config.auto_lang) {
+            return languageCacheMap.getOrDefault(lang, languageCacheMap.get(config.default_lang.toString().toLowerCase()));
+        } else {
+            return languageCacheMap.get(config.default_lang.toString().toLowerCase());
+        }
+    }
+
+    public static LanguageCache getLang(Locale locale) {
+        return getLang(locale.toString().toLowerCase());
+    }
+
+    public static LanguageCache getLang(CommandSender commandSender) {
+        if (commandSender instanceof Player player) {
+            return getLang(player.locale());
+        } else {
+            return getLang(config.default_lang);
+        }
+    }
+
     public static VillagerOptimizer getInstance()  {
         return instance;
     }
@@ -144,7 +202,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static Logger getLog() {
         return logger;
     }
-    public static VillagerManager getVillagerManager() {
-        return villagerManager;
+    public static VillagerCache getVillagerCache() {
+        return villagerCache;
     }
 }

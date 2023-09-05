@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.models;
 
+import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.enums.NamespacedKeys;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Villager;
@@ -7,6 +8,10 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 public record WrappedVillager(Villager villager) {
+
+    public static WrappedVillager fromVillager(Villager villager) {
+        return VillagerOptimizer.getVillagerCache().getOrAddIfAbsent(villager);
+    }
 
     public boolean isOptimized() {
         return villager.getPersistentDataContainer().has(NamespacedKeys.OPTIMIZED.key());
