@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer.modules;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
+import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.LogUtils;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -114,6 +115,6 @@ public class ChunkLimit implements VillagerOptimizerModule, Listener {
 
     private int getProfessionPriority(Villager villager) {
         Villager.Profession profession = villager.getProfession();
-        return removalPriority.contains(profession) ? removalPriority.indexOf(profession) : Integer.MAX_VALUE;
+        return removalPriority.contains(profession) && !WrappedVillager.fromVillager(villager).isOptimized() ? removalPriority.indexOf(profession) : Integer.MAX_VALUE;
     }
 }

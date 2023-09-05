@@ -1,8 +1,7 @@
-package me.xginko.villageroptimizer;
+package me.xginko.villageroptimizer.models;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import me.xginko.villageroptimizer.models.WrappedVillager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +15,8 @@ public class VillagerCache {
 
     private final Cache<UUID, WrappedVillager> villagerCache;
 
-    protected VillagerCache() {
-        this.villagerCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(30)).build();
+    public VillagerCache(long expireAfterWriteSeconds) {
+        this.villagerCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(expireAfterWriteSeconds)).build();
     }
 
     public @NotNull Collection<WrappedVillager> getAll() {
@@ -41,6 +40,10 @@ public class VillagerCache {
 
     public @NotNull WrappedVillager add(@NotNull Villager villager) {
         return add(new WrappedVillager(villager));
+    }
+
+    public boolean contains(@NotNull UUID uuid) {
+        return villagerCache.getIfPresent(uuid) != null;
     }
 
     public boolean contains(@NotNull WrappedVillager villager) {

@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
 import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.models.VillagerCache;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import net.kyori.adventure.text.Component;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,23 +40,15 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void onEnable() {
         instance = this;
         logger = getLogger();
-        villagerCache = new VillagerCache();
-
+        villagerCache = new VillagerCache(30);
         logger.info("Loading Translations");
         reloadLang();
-
         logger.info("Loading Config");
         reloadConfiguration();
-
         logger.info("Done.");
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
-
-    public static OptimizationType computeOptimization(WrappedVillager wrapped) {
+    public static OptimizationType computeOptimization(@NotNull WrappedVillager wrapped) {
         if (config.enable_nametag_optimization) {
             Component name = wrapped.villager().customName();
             if (name != null && config.nametags.contains(PlainTextComponentSerializer.plainText().serialize(name).toLowerCase())) {
@@ -79,7 +73,7 @@ public final class VillagerOptimizer extends JavaPlugin {
         return wrapped.getOptimizationType();
     }
 
-    public static OptimizationType computeOptimization(Villager villager) {
+    public static OptimizationType computeOptimization(@NotNull Villager villager) {
         if (config.enable_nametag_optimization) {
             Component name = villager.customName();
             if (name != null && config.nametags.contains(PlainTextComponentSerializer.plainText().serialize(name).toLowerCase())) {
@@ -105,7 +99,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     }
 
     public void reloadPlugin() {
-        villagerCache = new VillagerCache();
+        villagerCache = new VillagerCache(30);
         reloadLang();
         reloadConfiguration();
     }
