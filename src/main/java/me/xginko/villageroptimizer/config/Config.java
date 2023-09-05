@@ -17,11 +17,13 @@ public class Config {
     private final ConfigFile config;
 
     public final Locale default_lang;
-    public final boolean auto_lang, enable_nametag_optimization, enable_workstation_optimization, enable_block_optimization;
+    public final boolean auto_lang, enable_nametag_optimization, enable_workstation_optimization, enable_block_optimization,
+        cache_enabled;
     public final double workstation_max_distance;
+    public final long cache_keep_time_seconds;
 
     public final HashSet<String> nametags = new HashSet<>(2);
-    public final HashSet<Material> blocks_that_disable = new HashSet<>(2);
+    public final HashSet<Material> blocks_that_disable = new HashSet<>(3);
     public final HashSet<Material> workstations_that_disable = new HashSet<>(13);
 
     public Config() throws Exception {
@@ -36,22 +38,27 @@ public class Config {
                 .replace("_", "-"));
         this.auto_lang = getBoolean("language.auto-language", true, "If set to true, will display messages based on client language");
         /**
+         * General
+         */
+        this.cache_enabled = getBoolean("general.plugin-cache.enable", true, "Leave enabled if you don't know what you're doing and or don't experience any issues.");
+        this.cache_keep_time_seconds = getInt("general.plugin-cache.expire-after-x-seconds", 30, "The amount of time in seconds a villager will be kept in cache.");
+        /**
          * Optimization
          */
         // Nametags
-        this.enable_nametag_optimization = getBoolean("optimization.by-nametag.enable", true);
-        this.nametags.addAll(getList("optimization.by-nametag.names", List.of("Optimize", "DisableAI"), "Names are case insensitive")
+        this.enable_nametag_optimization = getBoolean("optimization.methods.by-nametag.enable", true);
+        this.nametags.addAll(getList("optimization.methods.by-nametag.names", List.of("Optimize", "DisableAI"), "Names are case insensitive")
                 .stream().map(String::toLowerCase).toList());
         // Workstations
-        this.enable_workstation_optimization = getBoolean("optimization.by-workstation.enable", true,
+        this.enable_workstation_optimization = getBoolean("optimization.methods.by-workstation.enable", true,
                         """
                         Optimize villagers that are standing near their acquired workstations /s
                         Values here need to be valid bukkit Material enums for your server version.
                         """
         );
-        this.workstation_max_distance = getDouble("optimization.by-workstation.", 4.0,
+        this.workstation_max_distance = getDouble("optimization.methods.by-workstation.", 4.0,
                 "How close in blocks a villager needs to be to get optimized by its workstation");
-        this.getList("optimization.by-workstation.workstation-materials", List.of(
+        this.getList("optimization.methods.by-workstation.workstation-materials", List.of(
                 "COMPOSTER", "SMOKER", "BARREL", "LOOM", "BLAST_FURNACE", "BREWING_STAND", "CAULDRON",
                 "FLETCHING_TABLE", "CARTOGRAPHY_TABLE", "LECTERN", "SMITHING_TABLE", "STONECUTTER", "GRINDSTONE"
         )).forEach(configuredMaterial -> {
@@ -59,24 +66,24 @@ public class Config {
                 Material disableBlock = Material.valueOf(configuredMaterial);
                 this.blocks_that_disable.add(disableBlock);
             } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("optimization.by-workstation", configuredMaterial);
+                LogUtils.materialNotRecognized("optimization.methods.by-workstation", configuredMaterial);
             }
         });
         // Blocks
-        this.enable_block_optimization = getBoolean("optimization.by-specific-block.enable", true,
+        this.enable_block_optimization = getBoolean("optimization.methods.by-specific-block.enable", true,
                 """
                         Optimize villagers that are standing on these specific block materials /s
                         Values here need to be valid bukkit Material enums for your server version.
                         """
         );
-        this.getList("optimization.by-specific-block.materials", List.of(
+        this.getList("optimization.methods.by-specific-block.materials", List.of(
                 "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
         )).forEach(configuredMaterial -> {
             try {
                 Material disableBlock = Material.valueOf(configuredMaterial);
                 this.blocks_that_disable.add(disableBlock);
             } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("optimization.by-specific-block", configuredMaterial);
+                LogUtils.materialNotRecognized("optimization.methods.by-specific-block", configuredMaterial);
             }
         });
     }

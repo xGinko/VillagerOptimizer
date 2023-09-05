@@ -14,8 +14,9 @@ public interface VillagerOptimizerModule {
         modules.forEach(VillagerOptimizerModule::disable);
         modules.clear();
 
-        // Modules here
-
+        modules.add(new AntiVillagerDamage());
+        modules.add(new AntiVillagerTargetting());
+        modules.add(new ChunkLimit());
 
         for (VillagerOptimizerModule module : modules) {
             if (module.shouldEnable()) module.enable();

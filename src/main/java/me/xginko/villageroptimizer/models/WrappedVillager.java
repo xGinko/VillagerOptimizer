@@ -20,8 +20,11 @@ public record WrappedVillager(Villager villager) {
     public void setOptimization(OptimizationType type) {
         if (type.equals(OptimizationType.OFF) && isOptimized()) {
             villager.getPersistentDataContainer().remove(Keys.OPTIMIZED.key());
+            villager.setAware(true);
+            villager.setAI(true);
         } else {
             villager.getPersistentDataContainer().set(Keys.OPTIMIZED.key(), PersistentDataType.STRING, type.name());
+            villager.setAware(false);
         }
     }
 

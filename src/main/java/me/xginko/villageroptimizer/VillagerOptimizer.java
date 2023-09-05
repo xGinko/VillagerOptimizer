@@ -40,7 +40,6 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void onEnable() {
         instance = this;
         logger = getLogger();
-        villagerCache = new VillagerCache(30);
         logger.info("Loading Translations");
         reloadLang();
         logger.info("Loading Config");
@@ -99,7 +98,6 @@ public final class VillagerOptimizer extends JavaPlugin {
     }
 
     public void reloadPlugin() {
-        villagerCache = new VillagerCache(30);
         reloadLang();
         reloadConfiguration();
     }
@@ -107,10 +105,11 @@ public final class VillagerOptimizer extends JavaPlugin {
     private void reloadConfiguration() {
         try {
             config = new Config();
+            villagerCache = new VillagerCache(config.cache_keep_time_seconds);
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();
         } catch (Exception e) {
-            logger.severe("Failed to load config file! - " + e.getLocalizedMessage());
+            logger.severe("Failed to load config! - " + e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -147,12 +146,11 @@ public final class VillagerOptimizer extends JavaPlugin {
     private Set<String> getDefaultLanguageFiles() {
         Set<String> languageFiles = new HashSet<>();
         try (JarFile jarFile = new JarFile(this.getFile())) {
-            Enumeration<JarEntry> entries = jarFile.entries();
-            while (entries.hasMoreElements()) {
-                String path = entries.nextElement().getName();
-                if (path.startsWith("lang/") && path.endsWith(".yml")) {
+            Iterator<JarEntry> defFileIterator = jarFile.entries().asIterator();
+            while (defFileIterator.hasNext()) {
+                final String path = defFileIterator.next().getName();
+                if (path.startsWith("lang/") && path.endsWith(".yml"))
                     languageFiles.add(path);
-                }
             }
         } catch (IOException e) {
             logger.severe("Error while getting default language file names! - " + e.getLocalizedMessage());
@@ -197,6 +195,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static Logger getLog() {
         return logger;
     }
+
     public static VillagerCache getVillagerCache() {
         return villagerCache;
     }

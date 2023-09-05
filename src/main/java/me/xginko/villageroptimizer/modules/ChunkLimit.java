@@ -30,7 +30,7 @@ public class ChunkLimit implements VillagerOptimizerModule, Listener {
     private final boolean logIsEnabled;
     private final long checkPeriod;
 
-    public ChunkLimit() {
+    protected ChunkLimit() {
         shouldEnable();
         this.plugin = VillagerOptimizer.getInstance();
         Config config = VillagerOptimizer.getConfiguration();
