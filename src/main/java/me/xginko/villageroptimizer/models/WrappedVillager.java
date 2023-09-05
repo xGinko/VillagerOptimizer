@@ -19,28 +19,28 @@ public record WrappedVillager(Villager villager) {
     }
 
     public boolean isOptimized() {
-        return villager.getPersistentDataContainer().has(NamespacedKeys.OPTIMIZED.get());
+        return villager.getPersistentDataContainer().has(NamespacedKeys.OPTIMIZED.key());
     }
 
     public void setOptimization(OptimizationType type) {
         if (type.equals(OptimizationType.OFF) && isOptimized()) {
-            villager.getPersistentDataContainer().remove(NamespacedKeys.OPTIMIZED.get());
+            villager.getPersistentDataContainer().remove(NamespacedKeys.OPTIMIZED.key());
         } else {
-            villager.getPersistentDataContainer().set(NamespacedKeys.OPTIMIZED.get(), PersistentDataType.STRING, type.name());
+            villager.getPersistentDataContainer().set(NamespacedKeys.OPTIMIZED.key(), PersistentDataType.STRING, type.name());
         }
     }
 
     public OptimizationType getOptimizationType() {
-        return isOptimized() ? OptimizationType.valueOf(villager().getPersistentDataContainer().get(NamespacedKeys.OPTIMIZED.get(), PersistentDataType.STRING)) : OptimizationType.OFF;
+        return isOptimized() ? OptimizationType.valueOf(villager().getPersistentDataContainer().get(NamespacedKeys.OPTIMIZED.key(), PersistentDataType.STRING)) : OptimizationType.OFF;
     }
 
     public void setRestockCooldown(long milliseconds) {
-        villager.getPersistentDataContainer().set(NamespacedKeys.COOLDOWN_RESTOCK.get(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
+        villager.getPersistentDataContainer().set(NamespacedKeys.COOLDOWN_RESTOCK.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
     }
 
     public boolean shouldRestock() {
         PersistentDataContainer villagerData = villager.getPersistentDataContainer();
-        return villagerData.has(NamespacedKeys.COOLDOWN_RESTOCK.get(), PersistentDataType.LONG) && villagerData.get(NamespacedKeys.COOLDOWN_RESTOCK.get(), PersistentDataType.LONG) <= System.currentTimeMillis();
+        return villagerData.has(NamespacedKeys.COOLDOWN_RESTOCK.key(), PersistentDataType.LONG) && villagerData.get(NamespacedKeys.COOLDOWN_RESTOCK.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
     }
 
     public void restock() {
@@ -48,20 +48,20 @@ public record WrappedVillager(Villager villager) {
     }
 
     public void setExpCooldown(long milliseconds) {
-        villager.getPersistentDataContainer().set(NamespacedKeys.COOLDOWN_EXPERIENCE.get(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
+        villager.getPersistentDataContainer().set(NamespacedKeys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
     }
 
     public boolean isOnExpCooldown() {
         PersistentDataContainer villagerData = villager.getPersistentDataContainer();
-        return villagerData.has(NamespacedKeys.COOLDOWN_EXPERIENCE.get(), PersistentDataType.LONG) && villagerData.get(NamespacedKeys.COOLDOWN_EXPERIENCE.get(), PersistentDataType.LONG) <= System.currentTimeMillis();
+        return villagerData.has(NamespacedKeys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) && villagerData.get(NamespacedKeys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
     }
 
     public void saveWorldTime() {
-        villager.getPersistentDataContainer().set(NamespacedKeys.GAME_TIME.get(), PersistentDataType.LONG, villager.getWorld().getFullTime());
+        villager.getPersistentDataContainer().set(NamespacedKeys.GAME_TIME.key(), PersistentDataType.LONG, villager.getWorld().getFullTime());
     }
 
     public long getSavedWorldTime() {
         PersistentDataContainer villagerData = villager.getPersistentDataContainer();
-        return villagerData.has(NamespacedKeys.GAME_TIME.get(), PersistentDataType.LONG) ? villagerData.get(NamespacedKeys.GAME_TIME.get(), PersistentDataType.LONG) : villager.getWorld().getFullTime();
+        return villagerData.has(NamespacedKeys.GAME_TIME.key(), PersistentDataType.LONG) ? villagerData.get(NamespacedKeys.GAME_TIME.key(), PersistentDataType.LONG) : villager.getWorld().getFullTime();
     }
 }

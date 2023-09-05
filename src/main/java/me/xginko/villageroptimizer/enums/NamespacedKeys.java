@@ -16,7 +16,7 @@ public enum NamespacedKeys {
         this.key = key;
     }
 
-    public NamespacedKey get() {
+    public NamespacedKey key() {
         return key;
     }
 }
