@@ -38,6 +38,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void onEnable() {
         instance = this;
         logger = getLogger();
+        villagerCache = new VillagerCache();
 
         logger.info("Loading Translations");
         reloadLang();
