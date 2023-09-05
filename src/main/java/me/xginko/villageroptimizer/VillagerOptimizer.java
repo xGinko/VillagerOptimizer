@@ -101,7 +101,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                 return OptimizationType.WORKSTATION;
             }
         }
-        return villagerCache.getOrAddIfAbsent(villager).getOptimizationType();
+        return villagerCache.get(villager).getOptimizationType();
     }
 
     public void reloadPlugin() {

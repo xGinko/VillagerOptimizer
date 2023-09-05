@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import me.xginko.villageroptimizer.models.WrappedVillager;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,14 +23,13 @@ public class VillagerCache {
     }
 
     public @Nullable WrappedVillager get(@NotNull UUID uuid) {
-        return villagerCache.getIfPresent(uuid);
+        WrappedVillager wrappedVillager = villagerCache.getIfPresent(uuid);
+        return wrappedVillager == null && Bukkit.getEntity(uuid) instanceof Villager villager ? add(villager) : wrappedVillager;
     }
 
-    public @NotNull WrappedVillager getOrAddIfAbsent(@NotNull Villager villager) {
+    public @NotNull WrappedVillager get(@NotNull Villager villager) {
         WrappedVillager wrappedVillager = villagerCache.getIfPresent(villager.getUniqueId());
-        if (wrappedVillager == null) wrappedVillager = new WrappedVillager(villager);
-        this.villagerCache.put(villager.getUniqueId(), wrappedVillager); // refresh cache
-        return wrappedVillager;
+        return wrappedVillager == null ? add(new WrappedVillager(villager)) : add(wrappedVillager);
     }
 
     public @NotNull WrappedVillager add(@NotNull WrappedVillager villager) {
@@ -38,9 +38,7 @@ public class VillagerCache {
     }
 
     public @NotNull WrappedVillager add(@NotNull Villager villager) {
-        WrappedVillager wrapped = new WrappedVillager(villager);
-        villagerCache.put(villager.getUniqueId(), wrapped);
-        return wrapped;
+        return add(new WrappedVillager(villager));
     }
 
     public boolean contains(@NotNull WrappedVillager villager) {

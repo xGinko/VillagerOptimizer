@@ -10,7 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 public record WrappedVillager(Villager villager) {
 
     public static WrappedVillager fromVillager(Villager villager) {
-        return VillagerOptimizer.getVillagerCache().getOrAddIfAbsent(villager);
+        return VillagerOptimizer.getVillagerCache().get(villager);
     }
 
     public boolean isOptimized() {
