@@ -24,6 +24,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     private static Logger logger;
     private static Config config;
     private static HashMap<String, LanguageCache> languageCacheMap;
+    private static VillagerManager villagerManager;
 
     @Override
     public void onEnable() {
@@ -68,7 +69,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void reloadPlugin() {
         reloadLang();
         reloadConfiguration();
-
+        villagerManager = new VillagerManager(this);
     }
 
     private void reloadConfiguration() {
@@ -142,5 +143,8 @@ public final class VillagerOptimizer extends JavaPlugin {
 
     public static Logger getLog() {
         return logger;
+    }
+    public static VillagerManager getVillagerManager() {
+        return villagerManager;
     }
 }

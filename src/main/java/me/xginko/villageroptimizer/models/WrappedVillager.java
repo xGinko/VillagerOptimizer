@@ -8,16 +8,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 public record WrappedVillager(Villager villager) {
 
-    public int level() {
-        // Villager Level depending on their XP (source: https://minecraft.fandom.com/wiki/Trading#Mechanics)
-        final int experience = villager.getVillagerExperience();
-        if (experience >= 250) return 5;
-        if (experience >= 150) return 4;
-        if (experience >= 70) return 3;
-        if (experience >= 10) return 2;
-        return 1;
-    }
-
     public boolean isOptimized() {
         return villager.getPersistentDataContainer().has(NamespacedKeys.OPTIMIZED.key());
     }

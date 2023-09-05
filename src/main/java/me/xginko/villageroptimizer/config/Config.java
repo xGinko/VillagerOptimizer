@@ -33,7 +33,7 @@ public class Config {
 
 
         // AI-Disabling
-        this.names_that_disable.addAll(getList("ai-disabling.names-that-disable", List.of("Optimize", "DisableAI")));
+        this.names_that_disable.addAll(getList("ai-disabling.names-that-disable", List.of("Optimize", "DisableAI")).stream().map(String::toLowerCase).toList());
         getList("ai-disabling.blocks-that-disable", List.of("EMERALD_BLOCK", "COBBLESTONE")).forEach(configuredMaterial -> {
             try {
                 Material disableBlock = Material.valueOf(configuredMaterial);
