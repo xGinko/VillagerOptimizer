@@ -19,4 +19,5 @@ public enum NamespacedKeys {
     public NamespacedKey key() {
         return key;
     }
+
 }
