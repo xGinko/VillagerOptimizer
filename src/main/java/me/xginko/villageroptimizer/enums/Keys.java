@@ -6,8 +6,7 @@ import org.bukkit.NamespacedKey;
 public enum Keys {
 
     OPTIMIZED(VillagerOptimizer.getKey("optimized")),
-    COOLDOWN_OPTIMIZE(VillagerOptimizer.getKey("optimization-toggle-cooldown")),
-    COOLDOWN_RESTOCK(VillagerOptimizer.getKey("restock-cooldown")),
+    COOLDOWN_OPTIMIZE(VillagerOptimizer.getKey("optimize-state-change-cooldown")),
     COOLDOWN_EXPERIENCE(VillagerOptimizer.getKey("experience-cooldown")),
     WORLDTIME(VillagerOptimizer.getKey("world-time"));
 

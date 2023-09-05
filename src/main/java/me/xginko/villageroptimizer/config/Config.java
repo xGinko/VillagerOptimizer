@@ -19,6 +19,7 @@ public class Config {
     public final Locale default_lang;
     public final boolean auto_lang, enable_nametag_optimization, enable_workstation_optimization, enable_block_optimization,
         cache_enabled;
+    public final int state_change_cooldown;
     public final double workstation_max_distance;
     public final long cache_keep_time_seconds;
 
@@ -45,6 +46,7 @@ public class Config {
         /**
          * Optimization
          */
+        this.state_change_cooldown = getInt("optimization.state-change-cooldown-in-seconds", 600);
         // Nametags
         this.enable_nametag_optimization = getBoolean("optimization.methods.by-nametag.enable", true);
         this.nametags.addAll(getList("optimization.methods.by-nametag.names", List.of("Optimize", "DisableAI"), "Names are case insensitive")
