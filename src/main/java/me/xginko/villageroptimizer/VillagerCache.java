@@ -14,9 +14,11 @@ import java.util.UUID;
 
 public class VillagerCache {
 
-    private final Cache<UUID, WrappedVillager> villagerCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(30)).build();
+    private final Cache<UUID, WrappedVillager> villagerCache;
 
-    protected VillagerCache() {}
+    protected VillagerCache() {
+        this.villagerCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(30)).build();
+    }
 
     public @NotNull Collection<WrappedVillager> getAll() {
         return this.villagerCache.asMap().values();
