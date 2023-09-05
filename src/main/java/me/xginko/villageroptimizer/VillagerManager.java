@@ -45,28 +45,21 @@ public class VillagerManager {
         return wrappedVillager;
     }
 
-    public OptimizationType computeOptimization(Villager villager) {
-        Component nameTag = villager.customName();
-        if (
-                nameTag != null
-                && config.names_that_disable.contains(PlainTextComponentSerializer.plainText().serialize(nameTag).toLowerCase())
-        ) {
-            // Optimized by nametag
-
+    public OptimizationType computeOptimization(WrappedVillager wrapped) {
+        Component nameTag = wrapped.villager().customName();
+        if (nameTag != null && config.names_that_disable.contains(PlainTextComponentSerializer.plainText().serialize(nameTag).toLowerCase())) {
+            return OptimizationType.NAMETAG;
         }
 
-        if (config.blocks_that_disable.contains(villager.getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
-            // Optimized by Block
-
+        if (config.blocks_that_disable.contains(wrapped.villager().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
+            return OptimizationType.BLOCK;
         }
 
-        final Location jobSite = villager.getMemory(MemoryKey.JOB_SITE);
-        if (
-                jobSite != null
-                && config.workstations_that_disable.contains(jobSite.getBlock().getType())
-        ) {
-            // Optimized by Workstation
-
+        final Location jobSite = wrapped.villager().getMemory(MemoryKey.JOB_SITE);
+        if (jobSite != null && config.workstations_that_disable.contains(jobSite.getBlock().getType())) {
+            return OptimizationType.WORKSTATION;
         }
+
+        return wrapped.getOptimizationType();
     }
 }
