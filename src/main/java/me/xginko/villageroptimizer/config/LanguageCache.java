@@ -14,13 +14,24 @@ public class LanguageCache {
     private final MiniMessage miniMessage;
 
     public final Component no_permission;
+    public final List<Component> nametag_optimize_success, nametag_on_optimize_cooldown, nametag_unoptimize_success,
+            block_optimization_success, block_on_optimize_cooldown, block_unoptimize_success,
+            workstation_optimization_success, workstation_on_optimize_cooldown, workstation_unoptimize_success;
 
     public LanguageCache(String lang) throws Exception {
         this.lang = loadLang(new File(VillagerOptimizer.getInstance().getDataFolder() + File.separator + "lang", lang + ".yml"));
         this.miniMessage = MiniMessage.miniMessage();
 
-        // No Permission
-        this.no_permission = getTranslation("no-permission", "<red>You don't have permission to use this command.", false);
+        this.no_permission = getTranslation("messages.no-permission", "<red>You don't have permission to use this command.");
+        this.nametag_optimize_success = getListTranslation("messages.nametag.optimize-success", List.of("<green>Successfully optimized villager by using a nametag."));
+        this.nametag_on_optimize_cooldown = getListTranslation("messages.nametag.optimize-on-cooldown", List.of("<gray>You need to wait %time% until you can optimize this villager again."));
+        this.nametag_unoptimize_success = getListTranslation("messages.nametag.unoptimize-success", List.of("<green>Successfully unoptimized villager by using a nametag."));
+        this.block_optimization_success = getListTranslation("messages.block.optimize-success", List.of("<green>%villagertype% villager successfully optimized using block %blocktype%."));
+        this.block_on_optimize_cooldown = getListTranslation("messages.block.optimize-on-cooldown", List.of("<gray>You need to wait %time% until you can optimize this villager again."));
+        this.block_unoptimize_success = getListTranslation("messages.block.unoptimize-success", List.of("<green>Successfully unoptimized villager by moving it off a %blocktype% block."));
+        this.workstation_optimization_success = getListTranslation("messages.workstation.optimize-success", List.of("<green>%villagertype% villager successfully optimized using workstation block %blocktype%."));
+        this.workstation_on_optimize_cooldown = getListTranslation("messages.workstation.optimize-on-cooldown", List.of("<gray>You need to wait %time% until you can optimize this villager again."));
+        this.workstation_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success", List.of("<green>Successfully unoptimized villager by removing workstation block %blocktype%."));
 
         saveLang();
     }
@@ -43,23 +54,23 @@ public class LanguageCache {
         }
     }
 
-    public Component getTranslation(String path, String defaultTranslation, boolean upperCase) {
+    public Component getTranslation(String path, String defaultTranslation) {
         lang.addDefault(path, defaultTranslation);
-        return miniMessage.deserialize(upperCase ? lang.getString(path, defaultTranslation).toUpperCase() : lang.getString(path, defaultTranslation));
+        return miniMessage.deserialize(lang.getString(path, defaultTranslation));
     }
 
-    public Component getTranslation(String path, String defaultTranslation, boolean upperCase, String comment) {
+    public Component getTranslation(String path, String defaultTranslation, String comment) {
         lang.addDefault(path, defaultTranslation, comment);
-        return miniMessage.deserialize(upperCase ? lang.getString(path, defaultTranslation).toUpperCase() : lang.getString(path, defaultTranslation));
+        return miniMessage.deserialize(lang.getString(path, defaultTranslation));
     }
 
-    public List<Component> getListTranslation(String path, List<String> defaultTranslation, boolean upperCase) {
+    public List<Component> getListTranslation(String path, List<String> defaultTranslation) {
         lang.addDefault(path, defaultTranslation);
-        return lang.getStringList(path).stream().map(line -> miniMessage.deserialize(upperCase ? line.toUpperCase() : line)).toList();
+        return lang.getStringList(path).stream().map(miniMessage::deserialize).toList();
     }
 
-    public List<Component> getListTranslation(String path, List<String> defaultTranslation, boolean upperCase, String comment) {
+    public List<Component> getListTranslation(String path, List<String> defaultTranslation, String comment) {
         lang.addDefault(path, defaultTranslation, comment);
-        return lang.getStringList(path).stream().map(line -> miniMessage.deserialize(upperCase ? line.toUpperCase() : line)).toList();
+        return lang.getStringList(path).stream().map(miniMessage::deserialize).toList();
     }
 }

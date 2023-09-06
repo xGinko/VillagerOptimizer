@@ -6,22 +6,23 @@ import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Villager;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 public final class WrappedVillager {
 
-    private final Villager villager;
-    private final PersistentDataContainer villagerData;
+    private final @NotNull Villager villager;
+    private final @NotNull PersistentDataContainer villagerData;
 
-    public WrappedVillager(Villager villager) {
+    public WrappedVillager(@NotNull Villager villager) {
         this.villager = villager;
         this.villagerData = villager.getPersistentDataContainer();
     }
 
-    public Villager villager() {
+    public @NotNull Villager villager() {
         return villager;
     }
 
-    public static WrappedVillager fromVillager(Villager villager) {
+    public static @NotNull WrappedVillager fromVillager(Villager villager) {
         return VillagerOptimizer.getVillagerCache().get(villager);
     }
 
@@ -29,29 +30,34 @@ public final class WrappedVillager {
         return villagerData.has(Keys.OPTIMIZED.key());
     }
 
-    public boolean setOptimization(OptimizationType type) {
-        if (isOnOptimizeCooldown()) return false;
+    public @NotNull OptimizationType computePossibleOptimization() {
+        return VillagerOptimizer.computeOptimization(this);
+    }
 
+    public boolean setOptimization(OptimizationType type) {
         if (type.equals(OptimizationType.OFF) && isOptimized()) {
             villagerData.remove(Keys.OPTIMIZED.key());
             villager.setAware(true);
             villager.setAI(true);
-            setOptimizeCooldown(VillagerOptimizer.getConfiguration().state_change_cooldown);
         } else {
+            if (isOnOptimizeCooldown()) return false;
+            setOptimizeCooldown(VillagerOptimizer.getConfiguration().state_change_cooldown);
             villagerData.set(Keys.OPTIMIZED.key(), PersistentDataType.STRING, type.name());
             villager.setAware(false);
-            setOptimizeCooldown(VillagerOptimizer.getConfiguration().state_change_cooldown);
         }
-
         return true;
     }
 
-    public OptimizationType getOptimizationType() {
+    public @NotNull OptimizationType getOptimizationType() {
         return isOptimized() ? OptimizationType.valueOf(villagerData.get(Keys.OPTIMIZED.key(), PersistentDataType.STRING)) : OptimizationType.OFF;
     }
 
     public void setOptimizeCooldown(long milliseconds) {
         villagerData.set(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
+    }
+
+    public long getOptimizeCooldown() {
+        return villagerData.has(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) ? System.currentTimeMillis() - villagerData.get(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) : 0L;
     }
 
     public boolean isOnOptimizeCooldown() {

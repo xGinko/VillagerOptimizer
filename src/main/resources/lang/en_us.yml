@@ -1,0 +1,23 @@
+messages:
+  no-permission: "<red>You don't have permission to use this command."
+  nametag:
+    optimize-success:
+      - "<green>Successfully optimized villager by using a nametag."
+    optimize-on-cooldown:
+      - "<gray>You need to wait %time% until you can optimize this villager again."
+    unoptimize-success:
+      - "<green>Successfully unoptimized villager by using a nametag."
+  block:
+    optimize-success:
+      - "<green>%villagertype% villager successfully optimized using block %blocktype%."
+    optimize-on-cooldown:
+      - "<gray>You need to wait %time% until you can optimize this villager again."
+    unoptimize-success:
+      - "<green>Successfully unoptimized villager by moving it off a %blocktype% block."
+  workstation:
+    optimize-success:
+      - "<green>%villagertype% villager successfully optimized using workstation block %blocktype%."
+    optimize-on-cooldown:
+      - "<gray>You need to wait %time% until you can optimize this villager again."
+    unoptimize-success:
+      - "<green>Successfully unoptimized villager by removing workstation block %blocktype%."

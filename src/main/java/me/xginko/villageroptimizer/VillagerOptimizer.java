@@ -21,8 +21,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
-import java.util.jar.JarEntry;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -146,12 +148,11 @@ public final class VillagerOptimizer extends JavaPlugin {
     private Set<String> getDefaultLanguageFiles() {
         Set<String> languageFiles = new HashSet<>();
         try (JarFile jarFile = new JarFile(this.getFile())) {
-            Iterator<JarEntry> defFileIterator = jarFile.entries().asIterator();
-            while (defFileIterator.hasNext()) {
-                final String path = defFileIterator.next().getName();
+            jarFile.entries().asIterator().forEachRemaining(jarEntry -> {
+                final String path = jarEntry.getName();
                 if (path.startsWith("lang/") && path.endsWith(".yml"))
                     languageFiles.add(path);
-            }
+            });
         } catch (IOException e) {
             logger.severe("Error while getting default language file names! - " + e.getLocalizedMessage());
             e.printStackTrace();

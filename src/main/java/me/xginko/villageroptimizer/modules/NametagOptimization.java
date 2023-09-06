@@ -6,9 +6,12 @@ import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.models.VillagerCache;
 import me.xginko.villageroptimizer.models.WrappedVillager;
+import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,12 +22,13 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache cache;
     private final Config config;
-    private final boolean shouldLog;
+    private final boolean shouldLog, shouldNotifyPlayer;
 
     protected NametagOptimization() {
         this.cache = VillagerOptimizer.getVillagerCache();
         this.config = VillagerOptimizer.getConfiguration();
         this.shouldLog = config.getBoolean("optimization.methods.by-nametag.log", false);
+        this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-nametag.notify-player", true);
     }
 
     @Override
@@ -54,13 +58,31 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
 
         if (config.nametags.contains(nameTag.toLowerCase())) {
             if (!wVillager.isOptimized()) {
-                wVillager.setOptimization(OptimizationType.NAMETAG);
-                if (shouldLog) VillagerOptimizer.getLog().info(event.getPlayer().getName() + " optimized a villager using nametag: '" + nameTag + "'");
+                if (wVillager.setOptimization(OptimizationType.NAMETAG)) {
+                    if (shouldNotifyPlayer) {
+                        Player player = event.getPlayer();
+                        VillagerOptimizer.getLang(player.locale()).nametag_optimize_success.forEach(player::sendMessage);
+                    }
+                    if (shouldLog)
+                        VillagerOptimizer.getLog().info(event.getPlayer().getName() + " optimized a villager using nametag: '" + nameTag + "'");
+                } else {
+                    if (shouldNotifyPlayer) {
+                        Player player = event.getPlayer();
+                        VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line ->
+                            player.sendMessage(line.replaceText(TextReplacementConfig.builder().matchLiteral("%time").replacement(CommonUtils.formatTime(wVillager.getOptimizeCooldown())).build()))
+                        );
+                    }
+                }
             }
         } else {
             if (wVillager.isOptimized()) {
                 wVillager.setOptimization(OptimizationType.OFF);
-                if (shouldLog) VillagerOptimizer.getLog().info(event.getPlayer().getName() + " disabled optimizations for a villager using nametag: '" + nameTag + "'");
+                if (shouldNotifyPlayer) {
+                    Player player = event.getPlayer();
+                    VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
+                }
+                if (shouldLog)
+                    VillagerOptimizer.getLog().info(event.getPlayer().getName() + " disabled optimizations for a villager using nametag: '" + nameTag + "'");
             }
         }
     }
