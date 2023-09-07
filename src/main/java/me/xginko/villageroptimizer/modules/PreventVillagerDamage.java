@@ -2,7 +2,7 @@ package me.xginko.villageroptimizer.modules;
 
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.models.VillagerCache;
+import me.xginko.villageroptimizer.cache.VillagerManager;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -13,10 +13,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class PreventVillagerDamage implements VillagerOptimizerModule, Listener {
 
-    private final VillagerCache cache;
+    private final VillagerManager villagerManager;
 
     protected PreventVillagerDamage() {
-        this.cache = VillagerOptimizer.getVillagerCache();
+        this.villagerManager = VillagerOptimizer.getVillagerManager();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onDamageReceive(EntityDamageEvent event) {
         if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
-        if (cache.getOrAdd((Villager) event.getEntity()).isOptimized()) {
+        if (villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()) {
             event.setCancelled(true);
         }
     }
@@ -46,7 +46,7 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onPushByEntityAttack(EntityPushedByEntityAttackEvent event) {
         if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
-        if (cache.getOrAdd((Villager) event.getEntity()).isOptimized()) {
+        if (villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()) {
             event.setCancelled(true);
         }
     }

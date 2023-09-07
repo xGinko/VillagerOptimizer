@@ -3,7 +3,7 @@ package me.xginko.villageroptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.models.VillagerCache;
+import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import net.kyori.adventure.text.Component;
@@ -33,10 +33,10 @@ import java.util.regex.Pattern;
 public final class VillagerOptimizer extends JavaPlugin {
 
     private static VillagerOptimizer instance;
-    private static Logger logger;
-    private static Config config;
     private static HashMap<String, LanguageCache> languageCacheMap;
-    private static VillagerCache villagerCache;
+    private static VillagerManager villagerManager;
+    private static Config config;
+    private static Logger logger;
 
     @Override
     public void onEnable() {
@@ -49,54 +49,20 @@ public final class VillagerOptimizer extends JavaPlugin {
         logger.info("Done.");
     }
 
-    public static OptimizationType computeOptimization(@NotNull WrappedVillager wrapped) {
-        if (config.enable_nametag_optimization) {
-            Component name = wrapped.villager().customName();
-            if (name != null && config.nametags.contains(PlainTextComponentSerializer.plainText().serialize(name).toLowerCase())) {
-                return OptimizationType.NAMETAG;
-            }
-        }
-        if (config.enable_block_optimization) {
-            if (config.blocks_that_disable.contains(wrapped.villager().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
-                return OptimizationType.BLOCK;
-            }
-        }
-        if (config.enable_workstation_optimization) {
-            final Location jobSite = wrapped.villager().getMemory(MemoryKey.JOB_SITE);
-            if (
-                    jobSite != null
-                    && config.workstations_that_disable.contains(jobSite.getBlock().getType())
-                    && wrapped.villager().getLocation().distance(jobSite) <= config.workstation_max_distance
-            ) {
-                return OptimizationType.WORKSTATION;
-            }
-        }
-        return wrapped.getOptimizationType();
+    public static VillagerOptimizer getInstance()  {
+        return instance;
     }
-
-    public static OptimizationType computeOptimization(@NotNull Villager villager) {
-        if (config.enable_nametag_optimization) {
-            Component name = villager.customName();
-            if (name != null && config.nametags.contains(PlainTextComponentSerializer.plainText().serialize(name).toLowerCase())) {
-                return OptimizationType.NAMETAG;
-            }
-        }
-        if (config.enable_block_optimization) {
-            if (config.blocks_that_disable.contains(villager.getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
-                return OptimizationType.BLOCK;
-            }
-        }
-        if (config.enable_workstation_optimization) {
-            final Location jobSite = villager.getMemory(MemoryKey.JOB_SITE);
-            if (
-                    jobSite != null
-                    && config.workstations_that_disable.contains(jobSite.getBlock().getType())
-                    && villager.getLocation().distance(jobSite) <= config.workstation_max_distance
-            ) {
-                return OptimizationType.WORKSTATION;
-            }
-        }
-        return villagerCache.getOrAdd(villager).getOptimizationType();
+    public static VillagerManager getVillagerManager() {
+        return villagerManager;
+    }
+    public static Config getConfiguration() {
+        return config;
+    }
+    public static NamespacedKey getKey(String key) {
+        return new NamespacedKey(instance, key);
+    }
+    public static Logger getLog() {
+        return logger;
     }
 
     public void reloadPlugin() {
@@ -107,11 +73,11 @@ public final class VillagerOptimizer extends JavaPlugin {
     private void reloadConfiguration() {
         try {
             config = new Config();
-            villagerCache = new VillagerCache(config.cache_keep_time_seconds);
+            villagerManager = new VillagerManager(config.cache_keep_time_seconds);
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();
         } catch (Exception e) {
-            logger.severe("Failed to load config! - " + e.getLocalizedMessage());
+            logger.severe("Error while loading config! - " + e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -181,23 +147,53 @@ public final class VillagerOptimizer extends JavaPlugin {
         }
     }
 
-    public static VillagerOptimizer getInstance()  {
-        return instance;
+    public static OptimizationType computeOptimization(@NotNull WrappedVillager wrapped) {
+        if (config.enable_nametag_optimization) {
+            Component name = wrapped.villager().customName();
+            if (name != null && config.nametags.contains(PlainTextComponentSerializer.plainText().serialize(name).toLowerCase())) {
+                return OptimizationType.NAMETAG;
+            }
+        }
+        if (config.enable_block_optimization) {
+            if (config.blocks_that_disable.contains(wrapped.villager().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
+                return OptimizationType.BLOCK;
+            }
+        }
+        if (config.enable_workstation_optimization) {
+            final Location jobSite = wrapped.villager().getMemory(MemoryKey.JOB_SITE);
+            if (
+                    jobSite != null
+                    && config.workstations_that_disable.contains(jobSite.getBlock().getType())
+                    && wrapped.villager().getLocation().distance(jobSite) <= config.workstation_max_distance
+            ) {
+                return OptimizationType.WORKSTATION;
+            }
+        }
+        return wrapped.getOptimizationType();
     }
 
-    public static NamespacedKey getKey(String key) {
-        return new NamespacedKey(instance, key);
-    }
-
-    public static Config getConfiguration() {
-        return config;
-    }
-
-    public static Logger getLog() {
-        return logger;
-    }
-
-    public static VillagerCache getVillagerCache() {
-        return villagerCache;
+    public static OptimizationType computeOptimization(@NotNull Villager villager) {
+        if (config.enable_nametag_optimization) {
+            Component name = villager.customName();
+            if (name != null && config.nametags.contains(PlainTextComponentSerializer.plainText().serialize(name).toLowerCase())) {
+                return OptimizationType.NAMETAG;
+            }
+        }
+        if (config.enable_block_optimization) {
+            if (config.blocks_that_disable.contains(villager.getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) {
+                return OptimizationType.BLOCK;
+            }
+        }
+        if (config.enable_workstation_optimization) {
+            final Location jobSite = villager.getMemory(MemoryKey.JOB_SITE);
+            if (
+                    jobSite != null
+                    && config.workstations_that_disable.contains(jobSite.getBlock().getType())
+                    && villager.getLocation().distance(jobSite) <= config.workstation_max_distance
+            ) {
+                return OptimizationType.WORKSTATION;
+            }
+        }
+        return villagerManager.getOrAdd(villager).getOptimizationType();
     }
 }

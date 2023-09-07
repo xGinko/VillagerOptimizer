@@ -23,7 +23,7 @@ public final class WrappedVillager {
     }
 
     public static @NotNull WrappedVillager fromCache(Villager villager) {
-        return VillagerOptimizer.getVillagerCache().getOrAdd(villager);
+        return VillagerOptimizer.getVillagerManager().getOrAdd(villager);
     }
 
     public boolean isOptimized() {

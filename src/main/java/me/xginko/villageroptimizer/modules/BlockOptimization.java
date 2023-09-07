@@ -3,7 +3,7 @@ package me.xginko.villageroptimizer.modules;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.models.VillagerCache;
+import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -24,12 +24,12 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
-    private final VillagerCache cache;
+    private final VillagerManager villagerManager;
     private final Config config;
     private final boolean shouldLog, shouldNotifyPlayer;
 
     protected BlockOptimization() {
-        this.cache = VillagerOptimizer.getVillagerCache();
+        this.villagerManager = VillagerOptimizer.getVillagerManager();
         this.config = VillagerOptimizer.getConfiguration();
         this.config.addComment("optimization.methods.by-specific-block.enable", """
                 When enabled, villagers standing on the configured specific blocks will become optimized once a\s
@@ -63,7 +63,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
         placed.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,0.5,0.5).forEach(entity -> {
             if (entity.getType().equals(EntityType.VILLAGER)) {
-                WrappedVillager wVillager = cache.getOrAdd((Villager) entity);
+                WrappedVillager wVillager = villagerManager.getOrAdd((Villager) entity);
                 if (!wVillager.isOptimized()) {
                     if (wVillager.setOptimization(OptimizationType.BLOCK)) {
                         if (shouldNotifyPlayer) {
@@ -91,7 +91,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
         broken.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,0.5,0.5).forEach(entity -> {
             if (entity.getType().equals(EntityType.VILLAGER)) {
-                WrappedVillager wVillager = cache.getOrAdd((Villager) entity);
+                WrappedVillager wVillager = villagerManager.getOrAdd((Villager) entity);
                 if (wVillager.getOptimizationType().equals(OptimizationType.BLOCK)) {
                     wVillager.setOptimization(OptimizationType.OFF);
                     if (shouldNotifyPlayer) {
@@ -110,7 +110,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         Entity interacted = event.getRightClicked();
         if (!interacted.getType().equals(EntityType.VILLAGER)) return;
 
-        WrappedVillager wVillager = cache.getOrAdd((Villager) interacted);
+        WrappedVillager wVillager = villagerManager.getOrAdd((Villager) interacted);
         final Location entityLegs = interacted.getLocation();
 
         if (

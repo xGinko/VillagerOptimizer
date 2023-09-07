@@ -3,7 +3,7 @@ package me.xginko.villageroptimizer.modules;
 import io.papermc.paper.event.entity.EntityMoveEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.models.VillagerCache;
+import me.xginko.villageroptimizer.cache.VillagerManager;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,12 +12,12 @@ import org.bukkit.event.Listener;
 
 public class WorkstationOptimization implements VillagerOptimizerModule, Listener {
 
-    private final VillagerCache cache;
+    private final VillagerManager villagerManager;
     private final Config config;
     private final boolean shouldLog, shouldNotifyPlayer;
 
     protected WorkstationOptimization() {
-        this.cache = VillagerOptimizer.getVillagerCache();
+        this.villagerManager = VillagerOptimizer.getVillagerManager();
         this.config = VillagerOptimizer.getConfiguration();
         this.config.addComment("optimization.methods.by-workstation.enable", """
                 When enabled, villagers near a configured radius to a workstation specific to their profession\s

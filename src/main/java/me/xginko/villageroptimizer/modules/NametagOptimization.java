@@ -4,7 +4,7 @@ import io.papermc.paper.event.player.PlayerNameEntityEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.models.VillagerCache;
+import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.Component;
@@ -20,12 +20,12 @@ import org.bukkit.event.Listener;
 
 public class NametagOptimization implements VillagerOptimizerModule, Listener {
 
-    private final VillagerCache cache;
+    private final VillagerManager villagerManager;
     private final Config config;
     private final boolean shouldLog, shouldNotifyPlayer;
 
     protected NametagOptimization() {
-        this.cache = VillagerOptimizer.getVillagerCache();
+        this.villagerManager = VillagerOptimizer.getVillagerManager();
         this.config = VillagerOptimizer.getConfiguration();
         this.config.addComment("optimization.methods.by-nametag.enable",
                 """
@@ -60,7 +60,7 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
         if (name == null) return;
 
         final String nameTag = PlainTextComponentSerializer.plainText().serialize(name);
-        WrappedVillager wVillager = cache.getOrAdd((Villager) event.getEntity());
+        WrappedVillager wVillager = villagerManager.getOrAdd((Villager) event.getEntity());
 
         if (config.nametags.contains(nameTag.toLowerCase())) {
             if (!wVillager.isOptimized()) {

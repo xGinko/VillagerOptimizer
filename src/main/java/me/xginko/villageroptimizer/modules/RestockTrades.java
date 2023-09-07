@@ -2,7 +2,7 @@ package me.xginko.villageroptimizer.modules;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.models.VillagerCache;
+import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
@@ -14,12 +14,12 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class RestockTrades implements VillagerOptimizerModule, Listener {
 
-    private final VillagerCache cache;
+    private final VillagerManager villagerManager;
     private final long restock_delay;
     private final boolean shouldLog;
 
     protected RestockTrades() {
-        this.cache = VillagerOptimizer.getVillagerCache();
+        this.villagerManager = VillagerOptimizer.getVillagerManager();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("optimization.trade-restocking.enable", """
                 This is for automatic restocking of trades for optimized villagers. Optimized Villagers\s
@@ -48,7 +48,7 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onInteract(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
-        WrappedVillager wVillager = cache.getOrAdd((Villager) event.getRightClicked());
+        WrappedVillager wVillager = villagerManager.getOrAdd((Villager) event.getRightClicked());
         if (!wVillager.isOptimized()) return;
 
 
