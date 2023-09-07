@@ -15,14 +15,14 @@ public final class WrappedVillager {
 
     public WrappedVillager(@NotNull Villager villager) {
         this.villager = villager;
-        this.villagerData = villager.getPersistentDataContainer();
+        this.villagerData = this.villager.getPersistentDataContainer();
     }
 
     public @NotNull Villager villager() {
         return villager;
     }
 
-    public static @NotNull WrappedVillager fromVillager(Villager villager) {
+    public static @NotNull WrappedVillager fromCache(Villager villager) {
         return VillagerOptimizer.getVillagerCache().get(villager);
     }
 

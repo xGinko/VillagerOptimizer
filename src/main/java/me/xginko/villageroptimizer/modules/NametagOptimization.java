@@ -27,6 +27,12 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
     protected NametagOptimization() {
         this.cache = VillagerOptimizer.getVillagerCache();
         this.config = VillagerOptimizer.getConfiguration();
+        this.config.addComment("optimization.methods.by-nametag.enable",
+                """
+                Enable optimization by naming villagers to one of the names configured below.\s
+                Nametag optimized villagers will be unoptimized again when they are renamed to something else.
+                """
+        );
         this.shouldLog = config.getBoolean("optimization.methods.by-nametag.log", false);
         this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-nametag.notify-player", true);
     }
@@ -48,7 +54,7 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onNametag(PlayerNameEntityEvent event) {
+    private void onPlayerNameEntity(PlayerNameEntityEvent event) {
         if (!event.getEntity().getType().equals(EntityType.VILLAGER)) return;
         Component name = event.getName();
         if (name == null) return;
@@ -68,14 +74,13 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
                 } else {
                     if (shouldNotifyPlayer) {
                         Player player = event.getPlayer();
-                        VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line ->
-                            player.sendMessage(line.replaceText(TextReplacementConfig.builder().matchLiteral("%time").replacement(CommonUtils.formatTime(wVillager.getOptimizeCooldown())).build()))
-                        );
+                        VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
+                                .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(wVillager.getOptimizeCooldown())).build())));
                     }
                 }
             }
         } else {
-            if (wVillager.isOptimized()) {
+            if (wVillager.getOptimizationType().equals(OptimizationType.NAMETAG)) {
                 wVillager.setOptimization(OptimizationType.OFF);
                 if (shouldNotifyPlayer) {
                     Player player = event.getPlayer();

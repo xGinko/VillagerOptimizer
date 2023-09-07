@@ -36,16 +36,16 @@ public class AntiVillagerDamage implements VillagerOptimizerModule, Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onDamage(EntityDamageEvent event) {
-        if (!event.getEntity().getType().equals(EntityType.VILLAGER)) return;
+    private void onDamageReceive(EntityDamageEvent event) {
+        if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
         if (cache.get((Villager) event.getEntity()).isOptimized()) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onPathfind(EntityPushedByEntityAttackEvent event) {
-        if (!event.getEntity().getType().equals(EntityType.VILLAGER)) return;
+    private void onPushByEntityAttack(EntityPushedByEntityAttackEvent event) {
+        if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
         if (cache.get((Villager) event.getEntity()).isOptimized()) {
             event.setCancelled(true);
         }

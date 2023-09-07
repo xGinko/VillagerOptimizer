@@ -1,29 +1,43 @@
 package me.xginko.villageroptimizer.modules;
 
-import io.papermc.paper.event.entity.EntityMoveEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.models.VillagerCache;
 import me.xginko.villageroptimizer.models.WrappedVillager;
+import me.xginko.villageroptimizer.utils.CommonUtils;
+import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache cache;
     private final Config config;
-    private final boolean shouldLog;
+    private final boolean shouldLog, shouldNotifyPlayer;
 
     protected BlockOptimization() {
         this.cache = VillagerOptimizer.getVillagerCache();
         this.config = VillagerOptimizer.getConfiguration();
+        this.config.addComment("optimization.methods.by-specific-block.enable", """
+                When enabled, villagers standing on the configured specific blocks will become optimized once a\s
+                player interacts with them. If the block is broken or moved, the villager will become unoptimized\s
+                again once a player interacts with the villager afterwards.
+                """);
         this.shouldLog = config.getBoolean("optimization.methods.by-specific-block.log", false);
+        this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-specific-block.notify-player", true);
     }
 
     @Override
@@ -43,24 +57,91 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    private void onEntityMove(EntityMoveEvent event) {
-        if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
+    private void onBlockPlace(BlockPlaceEvent event) {
+        Block placed = event.getBlock();
+        if (!config.blocks_that_disable.contains(placed.getType())) return;
 
-        final Location entityLegs = event.getEntity().getLocation();
+        placed.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,0.5,0.5).forEach(entity -> {
+            if (entity.getType().equals(EntityType.VILLAGER)) {
+                WrappedVillager wVillager = cache.get((Villager) entity);
+                if (!wVillager.isOptimized()) {
+                    if (wVillager.setOptimization(OptimizationType.BLOCK)) {
+                        if (shouldNotifyPlayer) {
+                            Player player = event.getPlayer();
+                            VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(player::sendMessage);
+                        }
+                        if (shouldLog)
+                            VillagerOptimizer.getLog().info("Villager was optimized by block at "+wVillager.villager().getLocation());
+                    } else {
+                        if (shouldNotifyPlayer) {
+                            Player player = event.getPlayer();
+                            VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line
+                                    .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(wVillager.getOptimizeCooldown())).build())));
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    private void onBlockBreak(BlockBreakEvent event) {
+        Block broken = event.getBlock();
+        if (!config.blocks_that_disable.contains(broken.getType())) return;
+
+        broken.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,0.5,0.5).forEach(entity -> {
+            if (entity.getType().equals(EntityType.VILLAGER)) {
+                WrappedVillager wVillager = cache.get((Villager) entity);
+                if (wVillager.getOptimizationType().equals(OptimizationType.BLOCK)) {
+                    wVillager.setOptimization(OptimizationType.OFF);
+                    if (shouldNotifyPlayer) {
+                        Player player = event.getPlayer();
+                        VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(player::sendMessage);
+                    }
+                    if (shouldLog)
+                        VillagerOptimizer.getLog().info("Villager unoptimized because no longer standing on optimization block at "+wVillager.villager().getLocation());
+                }
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    private void onPlayerInteract(PlayerInteractEntityEvent event) {
+        Entity interacted = event.getRightClicked();
+        if (!interacted.getType().equals(EntityType.VILLAGER)) return;
+
+        WrappedVillager wVillager = cache.get((Villager) interacted);
+        final Location entityLegs = interacted.getLocation();
+
         if (
-                config.blocks_that_disable.contains(entityLegs.getBlock().getType())
+                config.blocks_that_disable.contains(entityLegs.getBlock().getType()) // for slabs and sink in blocks
                 || config.blocks_that_disable.contains(entityLegs.clone().subtract(0,1,0).getBlock().getType())
         ) {
-            WrappedVillager wVillager = cache.get((Villager) event.getEntity());
             if (!wVillager.isOptimized()) {
-                wVillager.setOptimization(OptimizationType.BLOCK);
-                if (shouldLog) VillagerOptimizer.getLog().info("Villager moved onto an optimization block at "+wVillager.villager().getLocation());
+                if (wVillager.setOptimization(OptimizationType.BLOCK)) {
+                    if (shouldNotifyPlayer) {
+                        Player player = event.getPlayer();
+                        VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(player::sendMessage);
+                    }
+                    if (shouldLog)
+                        VillagerOptimizer.getLog().info("Villager was optimized by block at "+wVillager.villager().getLocation());
+                } else {
+                    if (shouldNotifyPlayer) {
+                        Player player = event.getPlayer();
+                        VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line
+                                .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(wVillager.getOptimizeCooldown())).build())));
+                    }
+                }
             }
         } else {
-            WrappedVillager wVillager = cache.get((Villager) event.getEntity());
-            if (wVillager.isOptimized()) {
+            if (wVillager.getOptimizationType().equals(OptimizationType.BLOCK)) {
                 wVillager.setOptimization(OptimizationType.OFF);
-                if (shouldLog) VillagerOptimizer.getLog().info("Villager moved away from an optimization block at "+wVillager.villager().getLocation());
+                if (shouldNotifyPlayer) {
+                    Player player = event.getPlayer();
+                    VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(player::sendMessage);
+                }
+                if (shouldLog)
+                    VillagerOptimizer.getLog().info("Villager unoptimized because no longer standing on optimization block at "+wVillager.villager().getLocation());
             }
         }
     }

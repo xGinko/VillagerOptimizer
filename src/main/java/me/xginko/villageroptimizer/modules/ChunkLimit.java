@@ -115,6 +115,6 @@ public class ChunkLimit implements VillagerOptimizerModule, Listener {
 
     private int getProfessionPriority(Villager villager) {
         Villager.Profession profession = villager.getProfession();
-        return removalPriority.contains(profession) && !WrappedVillager.fromVillager(villager).isOptimized() ? removalPriority.indexOf(profession) : Integer.MAX_VALUE;
+        return removalPriority.contains(profession) && !WrappedVillager.fromCache(villager).isOptimized() ? removalPriority.indexOf(profession) : Integer.MAX_VALUE;
     }
 }

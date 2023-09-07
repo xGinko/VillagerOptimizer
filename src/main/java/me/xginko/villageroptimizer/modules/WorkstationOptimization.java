@@ -14,12 +14,17 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
     private final VillagerCache cache;
     private final Config config;
-    private final boolean shouldLog;
+    private final boolean shouldLog, shouldNotifyPlayer;
 
     protected WorkstationOptimization() {
         this.cache = VillagerOptimizer.getVillagerCache();
         this.config = VillagerOptimizer.getConfiguration();
+        this.config.addComment("optimization.methods.by-workstation.enable", """
+                When enabled, villagers near a configured radius to a workstation specific to their profession\s
+                will be optimized.
+                """);
         this.shouldLog = config.getBoolean("optimization.methods.by-workstation.log", false);
+        this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-workstation.notify-player", true);
     }
 
     @Override
