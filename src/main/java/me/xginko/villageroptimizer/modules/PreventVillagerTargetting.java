@@ -13,11 +13,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 
-public class AntiVillagerTargetting implements VillagerOptimizerModule, Listener {
+public class PreventVillagerTargetting implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache cache;
 
-    protected AntiVillagerTargetting() {
+    protected PreventVillagerTargetting() {
         this.cache = VillagerOptimizer.getVillagerCache();
     }
 
@@ -39,14 +39,14 @@ public class AntiVillagerTargetting implements VillagerOptimizerModule, Listener
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onTarget(EntityTargetLivingEntityEvent event) {
-        if (event.getTarget() instanceof Villager villager && cache.get(villager).isOptimized()) {
+        if (event.getTarget() instanceof Villager villager && cache.getOrAdd(villager).isOptimized()) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onEntityTargetVillager(EntityPathfindEvent event) {
-        if (event.getTargetEntity() instanceof Villager villager && cache.get(villager).isOptimized()) {
+        if (event.getTargetEntity() instanceof Villager villager && cache.getOrAdd(villager).isOptimized()) {
             event.setCancelled(true);
         }
     }
@@ -56,7 +56,7 @@ public class AntiVillagerTargetting implements VillagerOptimizerModule, Listener
         if (
                 event.getEntityType().equals(EntityType.VILLAGER)
                 && event.getDamager() instanceof Mob attacker
-                && cache.get((Villager) event.getEntity()).isOptimized()
+                && cache.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {
             attacker.setTarget(null);
         }

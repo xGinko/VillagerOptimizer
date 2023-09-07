@@ -60,7 +60,7 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
         if (name == null) return;
 
         final String nameTag = PlainTextComponentSerializer.plainText().serialize(name);
-        WrappedVillager wVillager = cache.get((Villager) event.getEntity());
+        WrappedVillager wVillager = cache.getOrAdd((Villager) event.getEntity());
 
         if (config.nametags.contains(nameTag.toLowerCase())) {
             if (!wVillager.isOptimized()) {

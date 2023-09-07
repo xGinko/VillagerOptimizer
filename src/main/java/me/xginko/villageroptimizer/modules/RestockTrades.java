@@ -12,13 +12,13 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
-public class RestockOptimized implements VillagerOptimizerModule, Listener {
+public class RestockTrades implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache cache;
     private final long restock_delay;
     private final boolean shouldLog;
 
-    public RestockOptimized() {
+    protected RestockTrades() {
         this.cache = VillagerOptimizer.getVillagerCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("optimization.trade-restocking.enable", """
@@ -48,7 +48,7 @@ public class RestockOptimized implements VillagerOptimizerModule, Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onInteract(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
-        WrappedVillager wVillager = cache.get((Villager) event.getRightClicked());
+        WrappedVillager wVillager = cache.getOrAdd((Villager) event.getRightClicked());
         if (!wVillager.isOptimized()) return;
 
 

@@ -14,14 +14,12 @@ public interface VillagerOptimizerModule {
         modules.forEach(VillagerOptimizerModule::disable);
         modules.clear();
 
-        modules.add(new AntiVillagerDamage());
-        modules.add(new AntiVillagerTargetting());
-
+        modules.add(new ChunkLimit());
         modules.add(new NametagOptimization());
         modules.add(new BlockOptimization());
         modules.add(new WorkstationOptimization());
-
-        modules.add(new ChunkLimit());
+        modules.add(new PreventVillagerDamage());
+        modules.add(new PreventVillagerTargetting());
 
         for (VillagerOptimizerModule module : modules) {
             if (module.shouldEnable()) module.enable();

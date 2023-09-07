@@ -63,7 +63,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
         placed.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,0.5,0.5).forEach(entity -> {
             if (entity.getType().equals(EntityType.VILLAGER)) {
-                WrappedVillager wVillager = cache.get((Villager) entity);
+                WrappedVillager wVillager = cache.getOrAdd((Villager) entity);
                 if (!wVillager.isOptimized()) {
                     if (wVillager.setOptimization(OptimizationType.BLOCK)) {
                         if (shouldNotifyPlayer) {
@@ -91,7 +91,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
         broken.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,0.5,0.5).forEach(entity -> {
             if (entity.getType().equals(EntityType.VILLAGER)) {
-                WrappedVillager wVillager = cache.get((Villager) entity);
+                WrappedVillager wVillager = cache.getOrAdd((Villager) entity);
                 if (wVillager.getOptimizationType().equals(OptimizationType.BLOCK)) {
                     wVillager.setOptimization(OptimizationType.OFF);
                     if (shouldNotifyPlayer) {
@@ -110,7 +110,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         Entity interacted = event.getRightClicked();
         if (!interacted.getType().equals(EntityType.VILLAGER)) return;
 
-        WrappedVillager wVillager = cache.get((Villager) interacted);
+        WrappedVillager wVillager = cache.getOrAdd((Villager) interacted);
         final Location entityLegs = interacted.getLocation();
 
         if (

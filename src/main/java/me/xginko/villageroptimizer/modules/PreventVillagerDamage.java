@@ -11,11 +11,11 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class AntiVillagerDamage implements VillagerOptimizerModule, Listener {
+public class PreventVillagerDamage implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache cache;
 
-    protected AntiVillagerDamage() {
+    protected PreventVillagerDamage() {
         this.cache = VillagerOptimizer.getVillagerCache();
     }
 
@@ -38,7 +38,7 @@ public class AntiVillagerDamage implements VillagerOptimizerModule, Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onDamageReceive(EntityDamageEvent event) {
         if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
-        if (cache.get((Villager) event.getEntity()).isOptimized()) {
+        if (cache.getOrAdd((Villager) event.getEntity()).isOptimized()) {
             event.setCancelled(true);
         }
     }
@@ -46,7 +46,7 @@ public class AntiVillagerDamage implements VillagerOptimizerModule, Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onPushByEntityAttack(EntityPushedByEntityAttackEvent event) {
         if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
-        if (cache.get((Villager) event.getEntity()).isOptimized()) {
+        if (cache.getOrAdd((Villager) event.getEntity()).isOptimized()) {
             event.setCancelled(true);
         }
     }

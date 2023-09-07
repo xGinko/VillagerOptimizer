@@ -28,7 +28,7 @@ public class VillagerCache {
         return wrappedVillager == null && Bukkit.getEntity(uuid) instanceof Villager villager ? add(villager) : wrappedVillager;
     }
 
-    public @NotNull WrappedVillager get(@NotNull Villager villager) {
+    public @NotNull WrappedVillager getOrAdd(@NotNull Villager villager) {
         WrappedVillager wrappedVillager = villagerCache.getIfPresent(villager.getUniqueId());
         return wrappedVillager == null ? add(new WrappedVillager(villager)) : add(wrappedVillager);
     }

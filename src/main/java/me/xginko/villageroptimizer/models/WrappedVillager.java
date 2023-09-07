@@ -23,14 +23,14 @@ public final class WrappedVillager {
     }
 
     public static @NotNull WrappedVillager fromCache(Villager villager) {
-        return VillagerOptimizer.getVillagerCache().get(villager);
+        return VillagerOptimizer.getVillagerCache().getOrAdd(villager);
     }
 
     public boolean isOptimized() {
         return villagerData.has(Keys.OPTIMIZED.key());
     }
 
-    public @NotNull OptimizationType computePossibleOptimization() {
+    public @NotNull OptimizationType computeOptimization() {
         return VillagerOptimizer.computeOptimization(this);
     }
 
