@@ -120,16 +120,18 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         final Location entityLegs = interacted.getLocation();
 
         if (
-                config.blocks_that_disable.contains(entityLegs.getBlock().getType()) // for slabs and sink in blocks
+                config.blocks_that_disable.contains(entityLegs.getBlock().getType()) // check for blocks inside the entity's legs because of slabs and sink-in blocks
                 || config.blocks_that_disable.contains(entityLegs.clone().subtract(0,1,0).getBlock().getType())
         ) {
             if (!wVillager.isOptimized()) {
                 if (wVillager.setOptimization(OptimizationType.BLOCK)) {
                     if (shouldNotifyPlayer) {
                         Player player = event.getPlayer();
+                        final String vilType = wVillager.villager().getProfession().toString().toLowerCase();
+                        final String blockType = entityLegs.getBlock().getType().toString().toLowerCase();
                         VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
-                                .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(wVillager.villager().getProfession().toString().toLowerCase()).build())
-                                .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(entityLegs.getBlock().getType().toString().toLowerCase()).build())
+                                .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(vilType).build())
+                                .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(blockType).build())
                         ));
                     }
                     if (shouldLog)
@@ -137,8 +139,10 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 } else {
                     if (shouldNotifyPlayer) {
                         Player player = event.getPlayer();
+                        final long optimizeCoolDown = wVillager.getOptimizeCooldown();
                         VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                                .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(wVillager.getOptimizeCooldown())).build())));
+                                .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(optimizeCoolDown)).build()))
+                        );
                     }
                 }
             }
@@ -147,9 +151,11 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 wVillager.setOptimization(OptimizationType.OFF);
                 if (shouldNotifyPlayer) {
                     Player player = event.getPlayer();
+                    final String vilType = wVillager.villager().getProfession().toString().toLowerCase();
+                    final String blockType = entityLegs.getBlock().getType().toString().toLowerCase();
                     VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(wVillager.villager().getProfession().toString().toLowerCase()).build())
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(entityLegs.getBlock().getType().toString().toLowerCase()).build())
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(vilType).build())
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(blockType).build())
                     ));
                 }
                 if (shouldLog)

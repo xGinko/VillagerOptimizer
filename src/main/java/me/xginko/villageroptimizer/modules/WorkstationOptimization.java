@@ -6,7 +6,6 @@ import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -85,18 +84,22 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         if (closest.setOptimization(OptimizationType.WORKSTATION)) {
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                for (Component line : VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success) player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(closest.villager().getProfession().toString().toLowerCase()).build())
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(placed.getType().toString().toLowerCase()).build())
-                );
+                final String vilType = closest.villager().getProfession().toString().toLowerCase();
+                final String workstation = placed.getType().toString().toLowerCase();
+                VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(vilType).build())
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(workstation).build())
+                ));
             }
             if (shouldLog)
                 VillagerOptimizer.getLog().info(event.getPlayer().getName() + " optimized a villager using workstation: '" + placed.getType().toString().toLowerCase() + "'");
         } else {
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                for (Component line : VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown) player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(closest.getOptimizeCooldown())).build()));
+                final long optimizeCoolDown = closest.getOptimizeCooldown();
+                VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(optimizeCoolDown)).build())
+                ));
             }
         }
     }
@@ -125,10 +128,12 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         if (closest != null && closest.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                for (Component line : VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success) player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(closest.villager().getProfession().toString().toLowerCase()).build())
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(placed.getType().toString().toLowerCase()).build())
-                );
+                final String vilType = closest.villager().getProfession().toString().toLowerCase();
+                final String workstation = placed.getType().toString().toLowerCase();
+                VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(vilType).build())
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(workstation).build())
+                ));
             }
             if (shouldLog)
                 VillagerOptimizer.getLog().info(event.getPlayer().getName() + " unoptimized a villager by breaking workstation: '" + placed.getType().toString().toLowerCase() + "'");
