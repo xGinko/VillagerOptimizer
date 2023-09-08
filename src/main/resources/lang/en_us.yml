@@ -1,7 +1,8 @@
 messages:
   no-permission: "<red>You don't have permission to use this command."
-  restock-success:
-    - "<green>All trades restocked! Next restock in %time%"
+  trade-restock:
+    success:
+      - "<green>All trades restocked! Next restock in %time%"
   nametag:
     optimize-success:
       - "<green>Successfully optimized villager by using a nametag."
@@ -23,3 +24,10 @@ messages:
       - "<gray>You need to wait %time% until you can optimize this villager again."
     unoptimize-success:
       - "<green>Successfully unoptimized villager by removing workstation block %blocktype%."
+  command:
+    optimize-success:
+      - "<green>Successfully optimized %amount% villager(s) in a radius of %radius% blocks."
+    command-on-cooldown:
+      - "<gray>You need to wait %time% until you can use this command again."
+    unoptimize-success:
+      - "<green>Successfully unoptimized %amount% villager(s) in a radius of %radius% blocks."

@@ -24,7 +24,7 @@ public class LanguageCache {
         this.miniMessage = MiniMessage.miniMessage();
 
         this.no_permission = getTranslation("messages.no-permission", "<red>You don't have permission to use this command.");
-        this.trades_restocked = getListTranslation("messages.restock-success", List.of("<green>All trades restocked!"));
+        this.trades_restocked = getListTranslation("messages.trade-restock.success", List.of("<green>All trades restocked!"));
         this.nametag_optimize_success = getListTranslation("messages.nametag.optimize-success", List.of("<green>Successfully optimized villager by using a nametag."));
         this.nametag_on_optimize_cooldown = getListTranslation("messages.nametag.optimize-on-cooldown", List.of("<gray>You need to wait %time% until you can optimize this villager again."));
         this.nametag_unoptimize_success = getListTranslation("messages.nametag.unoptimize-success", List.of("<green>Successfully unoptimized villager by using a nametag."));
