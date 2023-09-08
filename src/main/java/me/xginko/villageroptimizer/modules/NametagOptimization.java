@@ -2,14 +2,15 @@ package me.xginko.villageroptimizer.modules;
 
 import io.papermc.paper.event.player.PlayerNameEntityEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -17,22 +18,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 
 public class NametagOptimization implements VillagerOptimizerModule, Listener {
 
     private final VillagerManager villagerManager;
     private final Config config;
-    private final boolean shouldLog, shouldNotifyPlayer;
+    private final boolean shouldLog, shouldNotifyPlayer, consumeNametag;
 
     protected NametagOptimization() {
         this.villagerManager = VillagerOptimizer.getVillagerManager();
         this.config = VillagerOptimizer.getConfiguration();
-        this.config.addComment("optimization.methods.by-nametag.enable",
-                """
+        this.config.addComment("optimization.methods.by-nametag.enable", """
                 Enable optimization by naming villagers to one of the names configured below.\s
                 Nametag optimized villagers will be unoptimized again when they are renamed to something else.
-                """
-        );
+                """);
+        this.consumeNametag = config.getBoolean("optimization.methods.by-nametag.nametags-get-consumed", true);
         this.shouldLog = config.getBoolean("optimization.methods.by-nametag.log", false);
         this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-nametag.notify-player", true);
     }
@@ -61,19 +62,24 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
 
         final String nameTag = PlainTextComponentSerializer.plainText().serialize(name);
         WrappedVillager wVillager = villagerManager.getOrAdd((Villager) event.getEntity());
+        Player player = event.getPlayer();
 
         if (config.nametags.contains(nameTag.toLowerCase())) {
             if (!wVillager.isOptimized()) {
                 if (wVillager.setOptimization(OptimizationType.NAMETAG)) {
-                    if (shouldNotifyPlayer) {
-                        Player player = event.getPlayer();
-                        VillagerOptimizer.getLang(player.locale()).nametag_optimize_success.forEach(player::sendMessage);
+                    if (!consumeNametag) {
+                        ItemStack mainHand = player.getInventory().getItemInMainHand();
+                        ItemStack offHand = player.getInventory().getItemInOffHand();
+                        if (mainHand.getType().equals(Material.NAME_TAG)) mainHand.add();
+                        else if (offHand.getType().equals(Material.NAME_TAG)) offHand.add();
                     }
+                    if (shouldNotifyPlayer)
+                        VillagerOptimizer.getLang(player.locale()).nametag_optimize_success.forEach(player::sendMessage);
                     if (shouldLog)
-                        VillagerOptimizer.getLog().info(event.getPlayer().getName() + " optimized a villager using nametag: '" + nameTag + "'");
+                        VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using nametag: '" + nameTag + "'");
                 } else {
+                    event.setCancelled(true);
                     if (shouldNotifyPlayer) {
-                        Player player = event.getPlayer();
                         VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                                 .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(wVillager.getOptimizeCooldown())).build())));
                     }
@@ -82,10 +88,8 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
         } else {
             if (wVillager.getOptimizationType().equals(OptimizationType.NAMETAG)) {
                 wVillager.setOptimization(OptimizationType.OFF);
-                if (shouldNotifyPlayer) {
-                    Player player = event.getPlayer();
+                if (shouldNotifyPlayer)
                     VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
-                }
                 if (shouldLog)
                     VillagerOptimizer.getLog().info(event.getPlayer().getName() + " disabled optimizations for a villager using nametag: '" + nameTag + "'");
             }

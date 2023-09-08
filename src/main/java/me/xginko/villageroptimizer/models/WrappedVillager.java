@@ -9,7 +9,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 public final class WrappedVillager {
-
+    /*
+    *   TODO: Refresh cache when information is read or written (but efficiently)
+    * */
     private final @NotNull Villager villager;
     private final @NotNull PersistentDataContainer dataContainer;
 

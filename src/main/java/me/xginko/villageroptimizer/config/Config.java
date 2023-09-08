@@ -31,18 +31,14 @@ public class Config {
         this.config = loadConfig(new File(VillagerOptimizer.getInstance().getDataFolder(), "config.yml"));
         structureConfig();
         /**
-         * Language
-         */
-        this.default_lang = Locale.forLanguageTag(
-                getString("language.default-language", "en_us",
-                        "The default language that will be used if auto-language is false or no matching language file was found.")
-                .replace("_", "-"));
-        this.auto_lang = getBoolean("language.auto-language", true, "If set to true, will display messages based on client language");
-        /**
          * General
          */
-        this.cache_enabled = getBoolean("general.plugin-cache.enable", true, "Leave enabled if you don't know what you're doing and or don't experience any issues.");
-        this.cache_keep_time_seconds = getInt("general.plugin-cache.expire-after-x-seconds", 30, "The amount of time in seconds a villager will be kept in cache.");
+        this.default_lang = Locale.forLanguageTag(
+                getString("general.default-language", "en_us",
+                        "The default language that will be used if auto-language is false or no matching language file was found.")
+                .replace("_", "-"));
+        this.auto_lang = getBoolean("general.auto-language", true, "If set to true, will display messages based on client language");
+        this.cache_keep_time_seconds = getInt("general.cache-keep-time-seconds", 30, "The amount of time in seconds a villager will be kept in the plugin's cache.");
         /**
          * Optimization
          */
@@ -52,12 +48,10 @@ public class Config {
         this.nametags.addAll(getList("optimization.methods.by-nametag.names", List.of("Optimize", "DisableAI"), "Names are case insensitive")
                 .stream().map(String::toLowerCase).toList());
         // Workstations
-        this.enable_workstation_optimization = getBoolean("optimization.methods.by-workstation.enable", true,
-                        """
+        this.enable_workstation_optimization = getBoolean("optimization.methods.by-workstation.enable", true, """
                         Optimize villagers that are standing near their acquired workstations /s
                         Values here need to be valid bukkit Material enums for your server version.
-                        """
-        );
+                        """);
         this.workstation_max_distance = getDouble("optimization.methods.by-workstation.disable-range-in-blocks", 4.0,
                 "How close in blocks a villager needs to be to get optimized by its workstation");
         this.getList("optimization.methods.by-workstation.workstation-materials", List.of(
@@ -72,12 +66,10 @@ public class Config {
             }
         });
         // Blocks
-        this.enable_block_optimization = getBoolean("optimization.methods.by-specific-block.enable", true,
-                """
+        this.enable_block_optimization = getBoolean("optimization.methods.by-specific-block.enable", true, """
                         Optimize villagers that are standing on these specific block materials /s
                         Values here need to be valid bukkit Material enums for your server version.
-                        """
-        );
+                        """);
         this.getList("optimization.methods.by-specific-block.materials", List.of(
                 "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
         )).forEach(configuredMaterial -> {
@@ -109,7 +101,7 @@ public class Config {
 
     private void structureConfig() {
         config.addDefault("config-version", 1.00);
-        createTitledSection("Language", "language");
+        createTitledSection("General", "general");
         createTitledSection("Optimization", "optimization");
     }
 

@@ -70,7 +70,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
             Villager villager = (Villager) entity;
-            Villager.Profession profession = villager.getProfession();
+            final Villager.Profession profession = villager.getProfession();
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
 
             WrappedVillager wVillager = villagerManager.getOrAdd(villager);
@@ -116,7 +116,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
             Villager villager = (Villager) entity;
-            Villager.Profession profession = villager.getProfession();
+            final Villager.Profession profession = villager.getProfession();
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
 
             WrappedVillager wVillager = villagerManager.getOrAdd(villager);
