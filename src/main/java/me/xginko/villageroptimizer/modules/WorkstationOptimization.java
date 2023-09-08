@@ -69,15 +69,14 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         double closestDistance = Double.MAX_VALUE;
 
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
-            if (entity.getType().equals(EntityType.VILLAGER)) {
-                Villager villager = (Villager) entity;
-                Villager.Profession profession = villager.getProfession();
-                if (!profession.equals(Villager.Profession.NONE) && !profession.equals(Villager.Profession.NITWIT)) {
-                    WrappedVillager wVillager = villagerManager.getOrAdd(villager);
-                    if (!wVillager.isOptimized() && entity.getLocation().distance(workstationLoc) < closestDistance) {
-                        closest = wVillager;
-                    }
-                }
+            if (!entity.getType().equals(EntityType.VILLAGER)) continue;
+            Villager villager = (Villager) entity;
+            Villager.Profession profession = villager.getProfession();
+            if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
+
+            WrappedVillager wVillager = villagerManager.getOrAdd(villager);
+            if (!wVillager.isOptimized() && entity.getLocation().distance(workstationLoc) < closestDistance) {
+                closest = wVillager;
             }
         }
 
@@ -112,15 +111,14 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         double closestDistance = Double.MAX_VALUE;
 
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
-            if (entity.getType().equals(EntityType.VILLAGER)) {
-                Villager villager = (Villager) entity;
-                Villager.Profession profession = villager.getProfession();
-                if (!profession.equals(Villager.Profession.NONE) && !profession.equals(Villager.Profession.NITWIT)) {
-                    WrappedVillager wVillager = villagerManager.getOrAdd(villager);
-                    if (wVillager.isOptimized() && entity.getLocation().distance(workstationLoc) < closestDistance) {
-                        closest = wVillager;
-                    }
-                }
+            if (!entity.getType().equals(EntityType.VILLAGER)) continue;
+            Villager villager = (Villager) entity;
+            Villager.Profession profession = villager.getProfession();
+            if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
+
+            WrappedVillager wVillager = villagerManager.getOrAdd(villager);
+            if (wVillager.isOptimized() && entity.getLocation().distance(workstationLoc) < closestDistance) {
+                closest = wVillager;
             }
         }
 
