@@ -17,15 +17,14 @@ public class Config {
     private final ConfigFile config;
 
     public final Locale default_lang;
-    public final boolean auto_lang, enable_nametag_optimization, enable_workstation_optimization, enable_block_optimization,
-        cache_enabled;
+    public final boolean auto_lang, enable_nametag_optimization, enable_workstation_optimization, enable_block_optimization;
     public final int state_change_cooldown;
     public final double workstation_max_distance;
     public final long cache_keep_time_seconds;
 
-    public final HashSet<String> nametags = new HashSet<>(2);
-    public final HashSet<Material> blocks_that_disable = new HashSet<>(3);
-    public final HashSet<Material> workstations_that_disable = new HashSet<>(13);
+    public final HashSet<String> nametags = new HashSet<>(4);
+    public final HashSet<Material> blocks_that_disable = new HashSet<>(4);
+    public final HashSet<Material> workstations_that_disable = new HashSet<>(14);
 
     public Config() throws Exception {
         this.config = loadConfig(new File(VillagerOptimizer.getInstance().getDataFolder(), "config.yml"));
