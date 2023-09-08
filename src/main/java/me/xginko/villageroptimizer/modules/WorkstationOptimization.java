@@ -6,6 +6,7 @@ import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -19,9 +20,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-
-import java.util.Comparator;
-import java.util.List;
 
 public class WorkstationOptimization implements VillagerOptimizerModule, Listener {
 
@@ -67,36 +65,39 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         if (!config.workstations_that_disable.contains(placed.getType())) return;
 
         final Location workstationLoc = placed.getLocation();
+        WrappedVillager closest = null;
+        double closestDistance = Double.MAX_VALUE;
 
-        List<Entity> nearbyUnoptimized = workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius).stream().sorted(Comparator.comparingInt(entity -> {
+        for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (entity.getType().equals(EntityType.VILLAGER)) {
                 Villager villager = (Villager) entity;
                 Villager.Profession profession = villager.getProfession();
-                if (!profession.equals(Villager.Profession.NONE) && !profession.equals(Villager.Profession.NITWIT) && !villagerManager.getOrAdd(villager).isOptimized()) {
-                    return (int) entity.getLocation().distance(workstationLoc);
+                if (!profession.equals(Villager.Profession.NONE) && !profession.equals(Villager.Profession.NITWIT)) {
+                    WrappedVillager wVillager = villagerManager.getOrAdd(villager);
+                    if (!wVillager.isOptimized() && entity.getLocation().distance(workstationLoc) < closestDistance) {
+                        closest = wVillager;
+                    }
                 }
             }
-            return Integer.MAX_VALUE;
-        })).toList();
+        }
 
-        if (nearbyUnoptimized.isEmpty()) return;
-        WrappedVillager closest = villagerManager.getOrAdd((Villager) nearbyUnoptimized.get(0));
+        if (closest == null) return;
 
         if (closest.setOptimization(OptimizationType.WORKSTATION)) {
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                VillagerOptimizer.getLang(player.locale()).workstation_optimize_success.forEach(line -> player.sendMessage(line
+                for (Component line : VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success) player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(closest.villager().getProfession().toString().toLowerCase()).build())
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(placed.getType().toString().toLowerCase()).build())
-                ));
+                );
             }
             if (shouldLog)
                 VillagerOptimizer.getLog().info(event.getPlayer().getName() + " optimized a villager using workstation: '" + placed.getType().toString().toLowerCase() + "'");
         } else {
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(closest.getOptimizeCooldown())).build())));
+                for (Component line : VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown) player.sendMessage(line
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(closest.getOptimizeCooldown())).build()));
             }
         }
     }
@@ -107,28 +108,29 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         if (!config.workstations_that_disable.contains(placed.getType())) return;
 
         final Location workstationLoc = placed.getLocation();
+        WrappedVillager closest = null;
+        double closestDistance = Double.MAX_VALUE;
 
-        List<Entity> nearbyOptimized = workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius).stream().sorted(Comparator.comparingInt(entity -> {
+        for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (entity.getType().equals(EntityType.VILLAGER)) {
                 Villager villager = (Villager) entity;
                 Villager.Profession profession = villager.getProfession();
-                if (!profession.equals(Villager.Profession.NONE) && !profession.equals(Villager.Profession.NITWIT) && villagerManager.getOrAdd(villager).isOptimized()) {
-                    return (int) entity.getLocation().distance(workstationLoc);
+                if (!profession.equals(Villager.Profession.NONE) && !profession.equals(Villager.Profession.NITWIT)) {
+                    WrappedVillager wVillager = villagerManager.getOrAdd(villager);
+                    if (wVillager.isOptimized() && entity.getLocation().distance(workstationLoc) < closestDistance) {
+                        closest = wVillager;
+                    }
                 }
             }
-            return Integer.MAX_VALUE;
-        })).toList();
+        }
 
-        if (nearbyOptimized.isEmpty()) return;
-        WrappedVillager closest = villagerManager.getOrAdd((Villager) nearbyOptimized.get(0));
-
-        if (closest.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
+        if (closest != null && closest.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
+                for (Component line : VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success) player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(closest.villager().getProfession().toString().toLowerCase()).build())
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(placed.getType().toString().toLowerCase()).build())
-                ));
+                );
             }
             if (shouldLog)
                 VillagerOptimizer.getLog().info(event.getPlayer().getName() + " unoptimized a villager by breaking workstation: '" + placed.getType().toString().toLowerCase() + "'");
