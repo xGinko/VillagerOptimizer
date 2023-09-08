@@ -68,23 +68,18 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
         final Location workstationLoc = placed.getLocation();
 
-        List<Entity> nearbyUnoptimized = workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)
-                .stream().sorted(Comparator.comparingInt(entity -> {
-                    if (entity.getType().equals(EntityType.VILLAGER)) {
-                        Villager villager = (Villager) entity;
-                        Villager.Profession profession = villager.getProfession();
-                        if (
-                                !profession.equals(Villager.Profession.NONE)
-                                && !profession.equals(Villager.Profession.NITWIT)
-                                && !villagerManager.getOrAdd(villager).isOptimized()
-                        ) {
-                            return (int) entity.getLocation().distance(workstationLoc);
-                        }
-                    }
-                    return Integer.MAX_VALUE;
-                })).toList();
-        if (nearbyUnoptimized.isEmpty()) return;
+        List<Entity> nearbyUnoptimized = workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius).stream().sorted(Comparator.comparingInt(entity -> {
+            if (entity.getType().equals(EntityType.VILLAGER)) {
+                Villager villager = (Villager) entity;
+                Villager.Profession profession = villager.getProfession();
+                if (!profession.equals(Villager.Profession.NONE) && !profession.equals(Villager.Profession.NITWIT) && !villagerManager.getOrAdd(villager).isOptimized()) {
+                    return (int) entity.getLocation().distance(workstationLoc);
+                }
+            }
+            return Integer.MAX_VALUE;
+        })).toList();
 
+        if (nearbyUnoptimized.isEmpty()) return;
         WrappedVillager closest = villagerManager.getOrAdd((Villager) nearbyUnoptimized.get(0));
 
         if (closest.setOptimization(OptimizationType.WORKSTATION)) {
@@ -113,23 +108,18 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
         final Location workstationLoc = placed.getLocation();
 
-        List<Entity> nearbyOptimized = workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)
-                .stream().sorted(Comparator.comparingInt(entity -> {
-                    if (entity.getType().equals(EntityType.VILLAGER)) {
-                        Villager villager = (Villager) entity;
-                        Villager.Profession profession = villager.getProfession();
-                        if (
-                                !profession.equals(Villager.Profession.NONE)
-                                && !profession.equals(Villager.Profession.NITWIT)
-                                && villagerManager.getOrAdd(villager).isOptimized()
-                        ) {
-                            return (int) entity.getLocation().distance(workstationLoc);
-                        }
-                    }
-                    return Integer.MAX_VALUE;
-                })).toList();
-        if (nearbyOptimized.isEmpty()) return;
+        List<Entity> nearbyOptimized = workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius).stream().sorted(Comparator.comparingInt(entity -> {
+            if (entity.getType().equals(EntityType.VILLAGER)) {
+                Villager villager = (Villager) entity;
+                Villager.Profession profession = villager.getProfession();
+                if (!profession.equals(Villager.Profession.NONE) && !profession.equals(Villager.Profession.NITWIT) && villagerManager.getOrAdd(villager).isOptimized()) {
+                    return (int) entity.getLocation().distance(workstationLoc);
+                }
+            }
+            return Integer.MAX_VALUE;
+        })).toList();
 
+        if (nearbyOptimized.isEmpty()) return;
         WrappedVillager closest = villagerManager.getOrAdd((Villager) nearbyOptimized.get(0));
 
         if (closest.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
