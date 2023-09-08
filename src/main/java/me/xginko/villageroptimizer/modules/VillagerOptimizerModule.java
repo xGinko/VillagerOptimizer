@@ -20,6 +20,8 @@ public interface VillagerOptimizerModule {
         modules.add(new WorkstationOptimization());
         modules.add(new PreventVillagerDamage());
         modules.add(new PreventVillagerTargetting());
+        modules.add(new RestockTrades());
+        modules.add(new LevelVillagers());
 
         for (VillagerOptimizerModule module : modules) {
             if (module.shouldEnable()) module.enable();

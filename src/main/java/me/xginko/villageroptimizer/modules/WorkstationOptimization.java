@@ -25,6 +25,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
     private final VillagerManager villagerManager;
     private final Config config;
     private final boolean shouldLog, shouldNotifyPlayer;
+    private final long cooldown;
     private final double search_radius;
 
     protected WorkstationOptimization() {
@@ -38,6 +39,10 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
                 The radius in blocks a villager can be away from the player when he places a workstation.\s
                 The closest unoptimized villager to the player will be optimized.
                 """);
+        this.cooldown = config.getInt("optimization.methods.by-workstation.optimize-cooldown-seconds", 600, """
+                Cooldown in seconds until a villager can be optimized again using this method. \s
+                Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.
+                """) * 1000L;
         this.shouldLog = config.getBoolean("optimization.methods.by-workstation.log", false);
         this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-workstation.notify-player", true);
     }
@@ -81,7 +86,9 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
         if (closest == null) return;
 
-        if (closest.setOptimization(OptimizationType.WORKSTATION)) {
+        if (closest.canOptimize(cooldown)) {
+            closest.setOptimization(OptimizationType.WORKSTATION);
+            closest.saveOptimizeTime();
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
                 final String vilType = closest.villager().getProfession().toString().toLowerCase();
@@ -96,7 +103,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         } else {
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                final long optimizeCoolDown = closest.getOptimizeCooldown();
+                final long optimizeCoolDown = closest.getOptimizeCooldownMillis(cooldown);
                 VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(optimizeCoolDown)).build())
                 ));

@@ -2,10 +2,12 @@ package me.xginko.villageroptimizer.modules;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.cache.VillagerManager;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class LevelVillagers implements VillagerOptimizerModule, Listener {
 
@@ -35,7 +37,9 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    private void onSomething() {
+    private void onTradeInventoryClose(InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() instanceof Villager villager) {
 
+        }
     }
 }

@@ -5,10 +5,10 @@ import org.bukkit.NamespacedKey;
 
 public enum Keys {
 
-    OPTIMIZED(VillagerOptimizer.getKey("optimized")),
-    COOLDOWN_OPTIMIZE(VillagerOptimizer.getKey("optimize-cooldown")),
-    COOLDOWN_EXPERIENCE(VillagerOptimizer.getKey("experience-cooldown")),
-    WORLDTIME(VillagerOptimizer.getKey("last-restock-time"));
+    OPTIMIZATION(VillagerOptimizer.getKey("optimization")),
+    LAST_OPTIMIZE(VillagerOptimizer.getKey("last-optimize")),
+    LAST_LEVELUP(VillagerOptimizer.getKey("last-levelup")),
+    LAST_RESTOCK(VillagerOptimizer.getKey("last-restock"));
 
     private final NamespacedKey key;
 

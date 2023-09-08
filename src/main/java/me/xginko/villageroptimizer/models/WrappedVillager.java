@@ -1,6 +1,5 @@
 package me.xginko.villageroptimizer.models;
 
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.enums.Keys;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Villager;
@@ -9,9 +8,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 public final class WrappedVillager {
-    /*
-    *   TODO: Refresh cache when information is read or written (but efficiently)
-    * */
+
     private final @NotNull Villager villager;
     private final @NotNull PersistentDataContainer dataContainer;
 
@@ -20,72 +17,132 @@ public final class WrappedVillager {
         this.dataContainer = this.villager.getPersistentDataContainer();
     }
 
+    /**
+     * @return The villager inside the wrapper.
+     */
     public @NotNull Villager villager() {
         return villager;
     }
 
-    public static @NotNull WrappedVillager fromCache(Villager villager) {
-        return VillagerOptimizer.getVillagerManager().getOrAdd(villager);
-    }
-
+    /**
+     * @return True if the villager is optimized by the plugin, otherwise false.
+     */
     public boolean isOptimized() {
-        return dataContainer.has(Keys.OPTIMIZED.key());
+        return dataContainer.has(Keys.OPTIMIZATION.key());
     }
 
-    public boolean setOptimization(OptimizationType type) {
+    /**
+     * @param cooldown_millis The configured cooldown in millis until the next optimization is allowed to occur.
+     * @return True if villager can be optimized again, otherwise false.
+     */
+    public boolean canOptimize(final long cooldown_millis) {
+        return getLastOptimize() + cooldown_millis <= System.currentTimeMillis();
+    }
+
+    /**
+     * @param type OptimizationType the villager should be set to.
+     */
+    public void setOptimization(OptimizationType type) {
         if (type.equals(OptimizationType.OFF) && isOptimized()) {
-            dataContainer.remove(Keys.OPTIMIZED.key());
+            dataContainer.remove(Keys.OPTIMIZATION.key());
             villager.setAware(true);
             villager.setAI(true);
         } else {
-            if (isOnOptimizeCooldown()) return false;
-            dataContainer.set(Keys.OPTIMIZED.key(), PersistentDataType.STRING, type.name());
+            dataContainer.set(Keys.OPTIMIZATION.key(), PersistentDataType.STRING, type.name());
             villager.setAware(false);
-            setOptimizeCooldown(VillagerOptimizer.getConfiguration().optimize_cooldown_millis);
         }
-        return true;
     }
 
+    /**
+     * @return The current OptimizationType of the villager.
+     */
     public @NotNull OptimizationType getOptimizationType() {
-        return isOptimized() ? OptimizationType.valueOf(dataContainer.get(Keys.OPTIMIZED.key(), PersistentDataType.STRING)) : OptimizationType.OFF;
+        return isOptimized() ? OptimizationType.valueOf(dataContainer.get(Keys.OPTIMIZATION.key(), PersistentDataType.STRING)) : OptimizationType.OFF;
     }
 
-    public void setOptimizeCooldown(long milliseconds) {
-        dataContainer.set(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
+    /**
+     * Saves the system time in millis when the villager was last optimized.
+     */
+    public void saveOptimizeTime() {
+        dataContainer.set(Keys.LAST_OPTIMIZE.key(), PersistentDataType.LONG, System.currentTimeMillis());
     }
 
-    public long getOptimizeCooldown() {
-        return dataContainer.has(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) ? System.currentTimeMillis() - dataContainer.get(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) : 0L;
+    /**
+     * @return The system time in millis when the villager was last optimized, 0L if the villager was never optimized.
+     */
+    public long getLastOptimize() {
+        return dataContainer.has(Keys.LAST_OPTIMIZE.key(), PersistentDataType.LONG) ? dataContainer.get(Keys.LAST_OPTIMIZE.key(), PersistentDataType.LONG) : 0L;
     }
 
-    public boolean isOnOptimizeCooldown() {
-        return dataContainer.has(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) && dataContainer.get(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
+    /**
+     * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
+     * @return The time left in millis until the villager can be optimized again.
+     */
+    public long getOptimizeCooldownMillis(final long cooldown_millis) {
+        return dataContainer.has(Keys.LAST_OPTIMIZE.key(), PersistentDataType.LONG) ? (System.currentTimeMillis() - (dataContainer.get(Keys.LAST_OPTIMIZE.key(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
     }
 
-    public void setExpCooldown(long milliseconds) {
-        dataContainer.set(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
-    }
-
-    public boolean isOnExpCooldown() {
-        return dataContainer.has(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) && dataContainer.get(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
-    }
-
+    /**
+     * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
+     * @return True if the villager has been loaded long enough.
+     */
     public boolean canRestock(final long cooldown_millis) {
-        final long lastRestock = getRestockTimestamp();
-        if (lastRestock == 0L) return true;
-        return lastRestock + cooldown_millis <= villager.getWorld().getFullTime();
+        return getLastRestock() + cooldown_millis <= villager.getWorld().getFullTime();
     }
 
+    /**
+     * Restock all trading recipes.
+     */
     public void restock() {
         villager.getRecipes().forEach(recipe -> recipe.setUses(0));
-        saveRestockTimestamp();
     }
 
-    public void saveRestockTimestamp() {
-        dataContainer.set(Keys.WORLDTIME.key(), PersistentDataType.LONG, villager.getWorld().getFullTime());
+    /**
+     * Saves the time of the in-game world when the entity was last restocked.
+     */
+    public void saveRestockTime() {
+        dataContainer.set(Keys.LAST_RESTOCK.key(), PersistentDataType.LONG, villager.getWorld().getFullTime());
     }
 
-    public long getRestockTimestamp() {
-        return dataContainer.has(Keys.WORLDTIME.key(), PersistentDataType.LONG) ? dataContainer.get(Keys.WORLDTIME.key(), PersistentDataType.LONG) : 0L;
+    /**
+     * @return The time of the in-game world when the entity was last restocked.
+     */
+    public long getLastRestock() {
+        return dataContainer.has(Keys.LAST_RESTOCK.key(), PersistentDataType.LONG) ? dataContainer.get(Keys.LAST_RESTOCK.key(), PersistentDataType.LONG) : 0L;
+    }
+
+    /**
+     * @return The level between 1-5 calculated from the villagers experience.
+     */
+    public int calculateLevel() {
+        // https://minecraft.fandom.com/wiki/Trading#Mechanics
+        int vilEXP = villager.getVillagerExperience();
+        if (vilEXP >= 250) return 5;
+        if (vilEXP >= 150) return 4;
+        if (vilEXP >= 70) return 3;
+        if (vilEXP >= 10) return 2;
+        return 1;
+    }
+
+    /**
+     * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
+     * @return The system time in millis when the villager was last optimized, 0L if the villager was never optimized.
+     */
+    public boolean canLevelUp(final long cooldown_millis) {
+        return dataContainer.has(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) && dataContainer.get(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) + cooldown_millis <= villager.getWorld().getFullTime();
+    }
+
+    /**
+     * Saves the time of the in-game world when the entity was last leveled up.
+     */
+    public void saveLastLevelUp() {
+        dataContainer.set(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG, villager.getWorld().getFullTime());
+    }
+
+    /**
+     * @return The time of the in-game world when the entity was last leveled up.
+     */
+    public long getLastLevelUpTime() {
+        return dataContainer.has(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) ? dataContainer.get(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) : 0L;
     }
 }

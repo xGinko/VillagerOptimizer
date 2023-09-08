@@ -58,6 +58,7 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
 
         if (wVillager.canRestock(restock_delay)) {
             wVillager.restock();
+            wVillager.saveRestockTime();
             if (notifyPlayer) {
                 Player player = event.getPlayer();
                 VillagerOptimizer.getLang(player.locale()).trades_restocked.forEach(line -> player.sendMessage(line
