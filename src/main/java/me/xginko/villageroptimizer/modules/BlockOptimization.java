@@ -61,14 +61,17 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         Block placed = event.getBlock();
         if (!config.blocks_that_disable.contains(placed.getType())) return;
 
-        placed.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,0.5,0.5).forEach(entity -> {
+        placed.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,1,0.5).forEach(entity -> {
             if (entity.getType().equals(EntityType.VILLAGER)) {
                 WrappedVillager wVillager = villagerManager.getOrAdd((Villager) entity);
                 if (!wVillager.isOptimized()) {
                     if (wVillager.setOptimization(OptimizationType.BLOCK)) {
                         if (shouldNotifyPlayer) {
                             Player player = event.getPlayer();
-                            VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(player::sendMessage);
+                            VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
+                                    .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(wVillager.villager().getProfession().toString().toLowerCase()).build())
+                                    .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(placed.getType().toString().toLowerCase()).build())
+                            ));
                         }
                         if (shouldLog)
                             VillagerOptimizer.getLog().info("Villager was optimized by block at "+wVillager.villager().getLocation());
@@ -89,14 +92,17 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         Block broken = event.getBlock();
         if (!config.blocks_that_disable.contains(broken.getType())) return;
 
-        broken.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,0.5,0.5).forEach(entity -> {
+        broken.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,1,0.5).forEach(entity -> {
             if (entity.getType().equals(EntityType.VILLAGER)) {
                 WrappedVillager wVillager = villagerManager.getOrAdd((Villager) entity);
                 if (wVillager.getOptimizationType().equals(OptimizationType.BLOCK)) {
                     wVillager.setOptimization(OptimizationType.OFF);
                     if (shouldNotifyPlayer) {
                         Player player = event.getPlayer();
-                        VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(player::sendMessage);
+                        VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
+                                .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(wVillager.villager().getProfession().toString().toLowerCase()).build())
+                                .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(broken.getType().toString().toLowerCase()).build())
+                        ));
                     }
                     if (shouldLog)
                         VillagerOptimizer.getLog().info("Villager unoptimized because no longer standing on optimization block at "+wVillager.villager().getLocation());
@@ -121,7 +127,10 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 if (wVillager.setOptimization(OptimizationType.BLOCK)) {
                     if (shouldNotifyPlayer) {
                         Player player = event.getPlayer();
-                        VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(player::sendMessage);
+                        VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
+                                .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(wVillager.villager().getProfession().toString().toLowerCase()).build())
+                                .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(entityLegs.getBlock().getType().toString().toLowerCase()).build())
+                        ));
                     }
                     if (shouldLog)
                         VillagerOptimizer.getLog().info("Villager was optimized by block at "+wVillager.villager().getLocation());
@@ -138,7 +147,10 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 wVillager.setOptimization(OptimizationType.OFF);
                 if (shouldNotifyPlayer) {
                     Player player = event.getPlayer();
-                    VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(player::sendMessage);
+                    VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(wVillager.villager().getProfession().toString().toLowerCase()).build())
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(entityLegs.getBlock().getType().toString().toLowerCase()).build())
+                    ));
                 }
                 if (shouldLog)
                     VillagerOptimizer.getLog().info("Villager unoptimized because no longer standing on optimization block at "+wVillager.villager().getLocation());

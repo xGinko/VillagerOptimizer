@@ -14,7 +14,7 @@ public interface VillagerOptimizerModule {
         modules.forEach(VillagerOptimizerModule::disable);
         modules.clear();
 
-        modules.add(new ChunkLimit());
+        modules.add(new VillagerChunkLimit());
         modules.add(new NametagOptimization());
         modules.add(new BlockOptimization());
         modules.add(new WorkstationOptimization());

@@ -16,7 +16,7 @@ public class LanguageCache {
     public final Component no_permission;
     public final List<Component> nametag_optimize_success, nametag_on_optimize_cooldown, nametag_unoptimize_success,
             block_optimize_success, block_on_optimize_cooldown, block_unoptimize_success,
-            workstation_optimization_success, workstation_on_optimize_cooldown, workstation_unoptimize_success;
+            workstation_optimize_success, workstation_on_optimize_cooldown, workstation_unoptimize_success;
 
     public LanguageCache(String lang) throws Exception {
         this.lang = loadLang(new File(VillagerOptimizer.getInstance().getDataFolder() + File.separator + "lang", lang + ".yml"));
@@ -28,10 +28,10 @@ public class LanguageCache {
         this.nametag_unoptimize_success = getListTranslation("messages.nametag.unoptimize-success", List.of("<green>Successfully unoptimized villager by using a nametag."));
         this.block_optimize_success = getListTranslation("messages.block.optimize-success", List.of("<green>%villagertype% villager successfully optimized using block %blocktype%."));
         this.block_on_optimize_cooldown = getListTranslation("messages.block.optimize-on-cooldown", List.of("<gray>You need to wait %time% until you can optimize this villager again."));
-        this.block_unoptimize_success = getListTranslation("messages.block.unoptimize-success", List.of("<green>Successfully unoptimized villager by moving it off a %blocktype% block."));
-        this.workstation_optimization_success = getListTranslation("messages.workstation.optimize-success", List.of("<green>%villagertype% villager successfully optimized using workstation block %blocktype%."));
+        this.block_unoptimize_success = getListTranslation("messages.block.unoptimize-success", List.of("<green>Successfully unoptimized %villagertype% villager by removing %blocktype%."));
+        this.workstation_optimize_success = getListTranslation("messages.workstation.optimize-success", List.of("<green>%villagertype% villager successfully optimized using workstation %workstation%."));
         this.workstation_on_optimize_cooldown = getListTranslation("messages.workstation.optimize-on-cooldown", List.of("<gray>You need to wait %time% until you can optimize this villager again."));
-        this.workstation_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success", List.of("<green>Successfully unoptimized villager by removing workstation block %blocktype%."));
+        this.workstation_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success", List.of("<green>Successfully unoptimized %villagertype% villager by removing workstation block %workstation%."));
 
         saveLang();
     }

@@ -11,11 +11,11 @@ import org.jetbrains.annotations.NotNull;
 public final class WrappedVillager {
 
     private final @NotNull Villager villager;
-    private final @NotNull PersistentDataContainer villagerData;
+    private final @NotNull PersistentDataContainer dataContainer;
 
     public WrappedVillager(@NotNull Villager villager) {
         this.villager = villager;
-        this.villagerData = this.villager.getPersistentDataContainer();
+        this.dataContainer = this.villager.getPersistentDataContainer();
     }
 
     public @NotNull Villager villager() {
@@ -27,41 +27,37 @@ public final class WrappedVillager {
     }
 
     public boolean isOptimized() {
-        return villagerData.has(Keys.OPTIMIZED.key());
-    }
-
-    public @NotNull OptimizationType computeOptimization() {
-        return VillagerOptimizer.computeOptimization(this);
+        return dataContainer.has(Keys.OPTIMIZED.key());
     }
 
     public boolean setOptimization(OptimizationType type) {
         if (type.equals(OptimizationType.OFF) && isOptimized()) {
-            villagerData.remove(Keys.OPTIMIZED.key());
+            dataContainer.remove(Keys.OPTIMIZED.key());
             villager.setAware(true);
             villager.setAI(true);
         } else {
             if (isOnOptimizeCooldown()) return false;
-            setOptimizeCooldown(VillagerOptimizer.getConfiguration().state_change_cooldown);
-            villagerData.set(Keys.OPTIMIZED.key(), PersistentDataType.STRING, type.name());
+            dataContainer.set(Keys.OPTIMIZED.key(), PersistentDataType.STRING, type.name());
             villager.setAware(false);
+            setOptimizeCooldown(VillagerOptimizer.getConfiguration().state_change_cooldown);
         }
         return true;
     }
 
     public @NotNull OptimizationType getOptimizationType() {
-        return isOptimized() ? OptimizationType.valueOf(villagerData.get(Keys.OPTIMIZED.key(), PersistentDataType.STRING)) : OptimizationType.OFF;
+        return isOptimized() ? OptimizationType.valueOf(dataContainer.get(Keys.OPTIMIZED.key(), PersistentDataType.STRING)) : OptimizationType.OFF;
     }
 
     public void setOptimizeCooldown(long milliseconds) {
-        villagerData.set(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
+        dataContainer.set(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
     }
 
     public long getOptimizeCooldown() {
-        return villagerData.has(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) ? System.currentTimeMillis() - villagerData.get(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) : 0L;
+        return dataContainer.has(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) ? System.currentTimeMillis() - dataContainer.get(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) : 0L;
     }
 
     public boolean isOnOptimizeCooldown() {
-        return villagerData.has(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) && villagerData.get(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
+        return dataContainer.has(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) && dataContainer.get(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
     }
 
     public void restock() {
@@ -69,20 +65,20 @@ public final class WrappedVillager {
     }
 
     public void setExpCooldown(long milliseconds) {
-        villagerData.set(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
+        dataContainer.set(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
     }
 
     public boolean isOnExpCooldown() {
-        return villagerData.has(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) && villagerData.get(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
+        return dataContainer.has(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) && dataContainer.get(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
     }
 
     public long saveWorldTime() {
         final long worldTime = villager.getWorld().getFullTime();
-        villagerData.set(Keys.WORLDTIME.key(), PersistentDataType.LONG, worldTime);
+        dataContainer.set(Keys.WORLDTIME.key(), PersistentDataType.LONG, worldTime);
         return worldTime;
     }
 
     public long getSavedWorldTime() {
-        return villagerData.has(Keys.WORLDTIME.key(), PersistentDataType.LONG) ? villagerData.get(Keys.WORLDTIME.key(), PersistentDataType.LONG) : saveWorldTime();
+        return dataContainer.has(Keys.WORLDTIME.key(), PersistentDataType.LONG) ? dataContainer.get(Keys.WORLDTIME.key(), PersistentDataType.LONG) : saveWorldTime();
     }
 }

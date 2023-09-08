@@ -37,16 +37,20 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onDamageReceive(EntityDamageEvent event) {
-        if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
-        if (villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()) {
+        if (
+                !event.getEntityType().equals(EntityType.VILLAGER)
+                && villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()
+        ) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onPushByEntityAttack(EntityPushedByEntityAttackEvent event) {
-        if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
-        if (villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()) {
+        if (
+                !event.getEntityType().equals(EntityType.VILLAGER)
+                && villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()
+        ) {
             event.setCancelled(true);
         }
     }
