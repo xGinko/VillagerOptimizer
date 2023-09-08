@@ -1,5 +1,7 @@
 messages:
   no-permission: "<red>You don't have permission to use this command."
+  restock-success:
+    - "<green>All trades restocked! Next restock in %time%"
   nametag:
     optimize-success:
       - "<green>Successfully optimized villager by using a nametag."

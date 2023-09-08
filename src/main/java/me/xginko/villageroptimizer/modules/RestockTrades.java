@@ -1,10 +1,13 @@
 package me.xginko.villageroptimizer.modules;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.models.WrappedVillager;
+import me.xginko.villageroptimizer.utils.CommonUtils;
+import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,7 +19,7 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
 
     private final VillagerManager villagerManager;
     private final long restock_delay;
-    private final boolean shouldLog;
+    private final boolean shouldLog, notifyPlayer;
 
     protected RestockTrades() {
         this.villagerManager = VillagerOptimizer.getVillagerManager();
@@ -25,8 +28,10 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
                 This is for automatic restocking of trades for optimized villagers. Optimized Villagers\s
                 Don't have enough AI to do trade restocks themselves, so this needs to always be enabled.
                 """);
-        this.restock_delay = config.getInt("optimization.trade-restocking.delay-in-ticks", 1200);
+        this.restock_delay = config.getInt("optimization.trade-restocking.delay-in-ticks", 1200) * 50L;
         this.shouldLog = config.getBoolean("optimization.trade-restocking.log", false);
+        this.notifyPlayer = config.getBoolean("optimization.trade-restocking.notify-player", true,
+                "Sends the player a message when the trades were restocked on a clicked villager.");
     }
 
     @Override
@@ -48,9 +53,19 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onInteract(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
+
         WrappedVillager wVillager = villagerManager.getOrAdd((Villager) event.getRightClicked());
-        if (!wVillager.isOptimized()) return;
 
-
+        if (wVillager.isOptimized() && wVillager.canRestock(restock_delay)) {
+            wVillager.restock();
+            if (notifyPlayer) {
+                Player player = event.getPlayer();
+                VillagerOptimizer.getLang(player.locale()).trades_restocked.forEach(line -> player.sendMessage(line
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(restock_delay)).build()))
+                );
+            }
+            if (shouldLog)
+                VillagerOptimizer.getLog().info("Restocked optimized villager at "+ wVillager.villager().getLocation());
+        }
     }
 }

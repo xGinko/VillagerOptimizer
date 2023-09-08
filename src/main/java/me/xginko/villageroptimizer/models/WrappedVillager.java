@@ -41,7 +41,7 @@ public final class WrappedVillager {
             if (isOnOptimizeCooldown()) return false;
             dataContainer.set(Keys.OPTIMIZED.key(), PersistentDataType.STRING, type.name());
             villager.setAware(false);
-            setOptimizeCooldown(VillagerOptimizer.getConfiguration().state_change_cooldown);
+            setOptimizeCooldown(VillagerOptimizer.getConfiguration().optimize_cooldown_millis);
         }
         return true;
     }
@@ -62,10 +62,6 @@ public final class WrappedVillager {
         return dataContainer.has(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) && dataContainer.get(Keys.COOLDOWN_OPTIMIZE.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
     }
 
-    public void restock() {
-        villager.getRecipes().forEach(recipe -> recipe.setUses(0));
-    }
-
     public void setExpCooldown(long milliseconds) {
         dataContainer.set(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG, System.currentTimeMillis() + milliseconds);
     }
@@ -74,13 +70,22 @@ public final class WrappedVillager {
         return dataContainer.has(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) && dataContainer.get(Keys.COOLDOWN_EXPERIENCE.key(), PersistentDataType.LONG) <= System.currentTimeMillis();
     }
 
-    public long saveWorldTime() {
-        final long worldTime = villager.getWorld().getFullTime();
-        dataContainer.set(Keys.WORLDTIME.key(), PersistentDataType.LONG, worldTime);
-        return worldTime;
+    public boolean canRestock(final long cooldown_millis) {
+        final long lastRestock = getRestockTimestamp();
+        if (lastRestock == 0L) return true;
+        return lastRestock + cooldown_millis <= villager.getWorld().getFullTime();
     }
 
-    public long getSavedWorldTime() {
-        return dataContainer.has(Keys.WORLDTIME.key(), PersistentDataType.LONG) ? dataContainer.get(Keys.WORLDTIME.key(), PersistentDataType.LONG) : saveWorldTime();
+    public void restock() {
+        villager.getRecipes().forEach(recipe -> recipe.setUses(0));
+        saveRestockTimestamp();
+    }
+
+    public void saveRestockTimestamp() {
+        dataContainer.set(Keys.WORLDTIME.key(), PersistentDataType.LONG, villager.getWorld().getFullTime());
+    }
+
+    public long getRestockTimestamp() {
+        return dataContainer.has(Keys.WORLDTIME.key(), PersistentDataType.LONG) ? dataContainer.get(Keys.WORLDTIME.key(), PersistentDataType.LONG) : 0L;
     }
 }

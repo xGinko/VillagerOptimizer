@@ -18,9 +18,7 @@ public class Config {
 
     public final Locale default_lang;
     public final boolean auto_lang, enable_nametag_optimization, enable_workstation_optimization, enable_block_optimization;
-    public final int state_change_cooldown;
-    public final double workstation_max_distance;
-    public final long cache_keep_time_seconds;
+    public final long cache_keep_time_seconds, optimize_cooldown_millis;
 
     public final HashSet<String> nametags = new HashSet<>(4);
     public final HashSet<Material> blocks_that_disable = new HashSet<>(4);
@@ -41,7 +39,7 @@ public class Config {
         /**
          * Optimization
          */
-        this.state_change_cooldown = getInt("optimization.state-change-cooldown-in-seconds", 600);
+        this.optimize_cooldown_millis = getInt("optimization.state-change-cooldown-in-seconds", 600) * 1000L;
         // Nametags
         this.enable_nametag_optimization = getBoolean("optimization.methods.by-nametag.enable", true);
         this.nametags.addAll(getList("optimization.methods.by-nametag.names", List.of("Optimize", "DisableAI"), "Names are case insensitive")
@@ -51,8 +49,6 @@ public class Config {
                         Optimize villagers that are standing near their acquired workstations /s
                         Values here need to be valid bukkit Material enums for your server version.
                         """);
-        this.workstation_max_distance = getDouble("optimization.methods.by-workstation.disable-range-in-blocks", 4.0,
-                "How close in blocks a villager needs to be to get optimized by its workstation");
         this.getList("optimization.methods.by-workstation.workstation-materials", List.of(
                 "COMPOSTER", "SMOKER", "BARREL", "LOOM", "BLAST_FURNACE", "BREWING_STAND", "CAULDRON",
                 "FLETCHING_TABLE", "CARTOGRAPHY_TABLE", "LECTERN", "SMITHING_TABLE", "STONECUTTER", "GRINDSTONE"

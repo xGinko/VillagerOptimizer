@@ -7,7 +7,7 @@ import java.util.logging.Level;
 public class LogUtils {
 
     public static void moduleLog(Level logLevel, String path, String logMessage) {
-        VillagerOptimizer.getLog().log(logLevel, "<" + path + "> " + logMessage);
+        VillagerOptimizer.getLog().log(logLevel, "(" + path + ") " + logMessage);
     }
 
     public static void materialNotRecognized(String path, String material) {
