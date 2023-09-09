@@ -3,11 +3,8 @@ package me.xginko.villageroptimizer.config;
 import io.github.thatsmusic99.configurationmaster.api.ConfigFile;
 import io.github.thatsmusic99.configurationmaster.api.ConfigSection;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.utils.LogUtils;
-import org.bukkit.Material;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -15,66 +12,21 @@ import java.util.Map;
 public class Config {
 
     private final ConfigFile config;
-
     public final Locale default_lang;
-    public final boolean auto_lang, enable_nametag_optimization, enable_workstation_optimization, enable_block_optimization;
-    public final long cache_keep_time_seconds, optimize_cooldown_millis;
-
-    public final HashSet<String> nametags = new HashSet<>(4);
-    public final HashSet<Material> blocks_that_disable = new HashSet<>(4);
-    public final HashSet<Material> workstations_that_disable = new HashSet<>(14);
+    public final boolean auto_lang;
+    public final long cache_keep_time_seconds;
 
     public Config() throws Exception {
         this.config = loadConfig(new File(VillagerOptimizer.getInstance().getDataFolder(), "config.yml"));
         structureConfig();
-        /**
-         * General
-         */
         this.default_lang = Locale.forLanguageTag(
                 getString("general.default-language", "en_us",
                         "The default language that will be used if auto-language is false or no matching language file was found.")
                 .replace("_", "-"));
-        this.auto_lang = getBoolean("general.auto-language", true, "If set to true, will display messages based on client language");
-        this.cache_keep_time_seconds = getInt("general.cache-keep-time-seconds", 30, "The amount of time in seconds a villager will be kept in the plugin's cache.");
-        /**
-         * Optimization
-         */
-        this.optimize_cooldown_millis = getInt("optimization.state-change-cooldown-in-seconds", 600) * 1000L;
-        // Nametags
-        this.enable_nametag_optimization = getBoolean("optimization.methods.by-nametag.enable", true);
-        this.nametags.addAll(getList("optimization.methods.by-nametag.names", List.of("Optimize", "DisableAI"), "Names are case insensitive")
-                .stream().map(String::toLowerCase).toList());
-        // Workstations
-        this.enable_workstation_optimization = getBoolean("optimization.methods.by-workstation.enable", true, """
-                        Optimize villagers that are standing near their acquired workstations /s
-                        Values here need to be valid bukkit Material enums for your server version.
-                        """);
-        this.getList("optimization.methods.by-workstation.workstation-materials", List.of(
-                "COMPOSTER", "SMOKER", "BARREL", "LOOM", "BLAST_FURNACE", "BREWING_STAND", "CAULDRON",
-                "FLETCHING_TABLE", "CARTOGRAPHY_TABLE", "LECTERN", "SMITHING_TABLE", "STONECUTTER", "GRINDSTONE"
-        )).forEach(configuredMaterial -> {
-            try {
-                Material disableBlock = Material.valueOf(configuredMaterial);
-                this.blocks_that_disable.add(disableBlock);
-            } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("optimization.methods.by-workstation", configuredMaterial);
-            }
-        });
-        // Blocks
-        this.enable_block_optimization = getBoolean("optimization.methods.by-specific-block.enable", true, """
-                        Optimize villagers that are standing on these specific block materials /s
-                        Values here need to be valid bukkit Material enums for your server version.
-                        """);
-        this.getList("optimization.methods.by-specific-block.materials", List.of(
-                "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
-        )).forEach(configuredMaterial -> {
-            try {
-                Material disableBlock = Material.valueOf(configuredMaterial);
-                this.blocks_that_disable.add(disableBlock);
-            } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("optimization.methods.by-specific-block", configuredMaterial);
-            }
-        });
+        this.auto_lang = getBoolean("general.auto-language", true,
+                "If set to true, will display messages based on client language");
+        this.cache_keep_time_seconds = getInt("general.cache-keep-time-seconds", 30,
+                "The amount of time in seconds a villager will be kept in the plugin's cache.");
     }
 
     private ConfigFile loadConfig(File ymlFile) throws Exception {

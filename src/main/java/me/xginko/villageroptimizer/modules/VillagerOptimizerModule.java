@@ -14,17 +14,18 @@ public interface VillagerOptimizerModule {
         modules.forEach(VillagerOptimizerModule::disable);
         modules.clear();
 
-        modules.add(new VillagerChunkLimit());
-        modules.add(new NametagOptimization());
         modules.add(new BlockOptimization());
-        modules.add(new WorkstationOptimization());
+        modules.add(new LevelVillagers());
+        modules.add(new NametagOptimization());
+        modules.add(new PreventUnoptimizedTrading());
         modules.add(new PreventVillagerDamage());
         modules.add(new PreventVillagerTargetting());
         modules.add(new RestockTrades());
-        modules.add(new LevelVillagers());
+        modules.add(new VillagerChunkLimit());
+        modules.add(new WorkstationOptimization());
 
-        for (VillagerOptimizerModule module : modules) {
+        modules.forEach(module -> {
             if (module.shouldEnable()) module.enable();
-        }
+        });
     }
 }

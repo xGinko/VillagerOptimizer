@@ -17,23 +17,52 @@ public class LanguageCache {
     public final List<Component> nametag_optimize_success, nametag_on_optimize_cooldown, nametag_unoptimize_success,
             block_optimize_success, block_on_optimize_cooldown, block_unoptimize_success,
             workstation_optimize_success, workstation_on_optimize_cooldown, workstation_unoptimize_success,
-            trades_restocked;
+            command_optimize_success, command_radius_limit_exceed, command_optimize_fail, command_unoptimize_success,
+            trades_restocked, optimize_for_trading, villager_leveling_up;
 
     public LanguageCache(String lang) throws Exception {
         this.lang = loadLang(new File(VillagerOptimizer.getInstance().getDataFolder() + File.separator + "lang", lang + ".yml"));
         this.miniMessage = MiniMessage.miniMessage();
 
-        this.no_permission = getTranslation("messages.no-permission", "<red>You don't have permission to use this command.");
-        this.trades_restocked = getListTranslation("messages.trade-restock.success", List.of("<green>All trades restocked!"));
-        this.nametag_optimize_success = getListTranslation("messages.nametag.optimize-success", List.of("<green>Successfully optimized villager by using a nametag."));
-        this.nametag_on_optimize_cooldown = getListTranslation("messages.nametag.optimize-on-cooldown", List.of("<gray>You need to wait %time% until you can optimize this villager again."));
-        this.nametag_unoptimize_success = getListTranslation("messages.nametag.unoptimize-success", List.of("<green>Successfully unoptimized villager by using a nametag."));
-        this.block_optimize_success = getListTranslation("messages.block.optimize-success", List.of("<green>%villagertype% villager successfully optimized using block %blocktype%."));
-        this.block_on_optimize_cooldown = getListTranslation("messages.block.optimize-on-cooldown", List.of("<gray>You need to wait %time% until you can optimize this villager again."));
-        this.block_unoptimize_success = getListTranslation("messages.block.unoptimize-success", List.of("<green>Successfully unoptimized %villagertype% villager by removing %blocktype%."));
-        this.workstation_optimize_success = getListTranslation("messages.workstation.optimize-success", List.of("<green>%villagertype% villager successfully optimized using workstation %workstation%."));
-        this.workstation_on_optimize_cooldown = getListTranslation("messages.workstation.optimize-on-cooldown", List.of("<gray>You need to wait %time% until you can optimize this villager again."));
-        this.workstation_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success", List.of("<green>Successfully unoptimized %villagertype% villager by removing workstation block %workstation%."));
+        // General
+        this.no_permission = getTranslation("messages.no-permission",
+                "<red>You don't have permission to use this command.");
+        this.trades_restocked = getListTranslation("messages.trades-restocked",
+                List.of("<green>All trades have been restocked! Next restock in %time%"));
+        this.optimize_for_trading = getListTranslation("messages.optimize-to-trade",
+                List.of("<red>You need to optimize this villager before you can trade with it."));
+        this.villager_leveling_up = getListTranslation("messages.villager-leveling-up",
+                List.of("<yellow>Villager is currently leveling up! You can use the villager again in %time%."));
+        // Nametag
+        this.nametag_optimize_success = getListTranslation("messages.nametag.optimize-success",
+                List.of("<green>Successfully optimized villager by using a nametag."));
+        this.nametag_on_optimize_cooldown = getListTranslation("messages.nametag.optimize-on-cooldown",
+                List.of("<gray>You need to wait %time% until you can optimize this villager again."));
+        this.nametag_unoptimize_success = getListTranslation("messages.nametag.unoptimize-success",
+                List.of("<green>Successfully unoptimized villager by using a nametag."));
+        // Block
+        this.block_optimize_success = getListTranslation("messages.block.optimize-success",
+                List.of("<green>%villagertype% villager successfully optimized using block %blocktype%."));
+        this.block_on_optimize_cooldown = getListTranslation("messages.block.optimize-on-cooldown",
+                List.of("<gray>You need to wait %time% until you can optimize this villager again."));
+        this.block_unoptimize_success = getListTranslation("messages.block.unoptimize-success",
+                List.of("<green>Successfully unoptimized %villagertype% villager by removing %blocktype%."));
+        // Workstation
+        this.workstation_optimize_success = getListTranslation("messages.workstation.optimize-success",
+                List.of("<green>%villagertype% villager successfully optimized using workstation %workstation%."));
+        this.workstation_on_optimize_cooldown = getListTranslation("messages.workstation.optimize-on-cooldown",
+                List.of("<gray>You need to wait %time% until you can optimize this villager again."));
+        this.workstation_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success",
+                List.of("<green>Successfully unoptimized %villagertype% villager by removing workstation block %workstation%."));
+        // Command
+        this.command_optimize_success = getListTranslation("messages.workstation.optimize-success",
+                List.of("<green>Successfully optimized %amount% villager(s) in a radius of %radius% blocks."));
+        this.command_radius_limit_exceed = getListTranslation("messages.workstation.radius-limit-exceed",
+                List.of("<red>The radius you entered exceeds the limit of %distance% blocks."));
+        this.command_optimize_fail = getListTranslation("messages.workstation.optimize-fail",
+                List.of("<gray>%amount% villagers couldn't be optimized because they have recently been optimized."));
+        this.command_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success",
+                List.of("<green>Successfully unoptimized %amount% villager(s) in a radius of %radius% blocks."));
 
         saveLang();
     }

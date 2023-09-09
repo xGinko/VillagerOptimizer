@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
-import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 
 public class VillagerManager {
 
@@ -20,8 +20,8 @@ public class VillagerManager {
         this.villagerCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(expireAfterWriteSeconds)).build();
     }
 
-    public @NotNull Collection<WrappedVillager> getAll() {
-        return this.villagerCache.asMap().values();
+    public @NotNull ConcurrentMap<UUID, WrappedVillager> cacheMap() {
+        return this.villagerCache.asMap();
     }
 
     public @Nullable WrappedVillager get(@NotNull UUID uuid) {

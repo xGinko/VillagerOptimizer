@@ -6,8 +6,10 @@ import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
+import me.xginko.villageroptimizer.utils.LogUtils;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -20,21 +22,36 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class WorkstationOptimization implements VillagerOptimizerModule, Listener {
+import java.util.HashSet;
+import java.util.List;
 
+public class WorkstationOptimization implements VillagerOptimizerModule, Listener {
+    
     private final VillagerManager villagerManager;
-    private final Config config;
+    private final HashSet<Material> workstations_that_disable = new HashSet<>(14);
     private final boolean shouldLog, shouldNotifyPlayer;
     private final long cooldown;
     private final double search_radius;
 
     protected WorkstationOptimization() {
         this.villagerManager = VillagerOptimizer.getVillagerManager();
-        this.config = VillagerOptimizer.getConfiguration();
-        this.config.addComment("optimization.methods.by-workstation.enable", """
-                When enabled, villagers near a configured radius to a workstation specific to your config\s
-                will be optimized.
-                """);
+        Config config = VillagerOptimizer.getConfiguration();
+        config.addComment("optimization.methods.by-workstation.enable", """
+                        When enabled, villagers near a configured radius to a workstation specific to your config\s
+                        will be optimized.
+                        """);
+        config.getList("optimization.methods.by-workstation.workstation-materials", List.of(
+                "COMPOSTER", "SMOKER", "BARREL", "LOOM", "BLAST_FURNACE", "BREWING_STAND", "CAULDRON",
+                "FLETCHING_TABLE", "CARTOGRAPHY_TABLE", "LECTERN", "SMITHING_TABLE", "STONECUTTER", "GRINDSTONE"
+        ), "Values here need to be valid bukkit Material enums for your server version."
+        ).forEach(configuredMaterial -> {
+            try {
+                Material disableBlock = Material.valueOf(configuredMaterial);
+                this.workstations_that_disable.add(disableBlock);
+            } catch (IllegalArgumentException e) {
+                LogUtils.materialNotRecognized("optimization.methods.by-workstation", configuredMaterial);
+            }
+        });
         this.search_radius = config.getDouble("optimization.methods.by-workstation.search-radius-in-blocks", 4.0, """
                 The radius in blocks a villager can be away from the player when he places a workstation.\s
                 The closest unoptimized villager to the player will be optimized.
@@ -43,8 +60,8 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
                 Cooldown in seconds until a villager can be optimized again using this method. \s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.
                 """) * 1000L;
-        this.shouldLog = config.getBoolean("optimization.methods.by-workstation.log", false);
         this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-workstation.notify-player", true);
+        this.shouldLog = config.getBoolean("optimization.methods.by-workstation.log", false);
     }
 
     @Override
@@ -60,16 +77,16 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
     @Override
     public boolean shouldEnable() {
-        return config.enable_workstation_optimization;
+        return VillagerOptimizer.getConfiguration().getBoolean("optimization.methods.by-workstation.enable", true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockPlace(BlockPlaceEvent event) {
         Block placed = event.getBlock();
-        if (!config.workstations_that_disable.contains(placed.getType())) return;
+        if (!workstations_that_disable.contains(placed.getType())) return;
 
         final Location workstationLoc = placed.getLocation();
-        WrappedVillager closest = null;
+        WrappedVillager closestOptimizableVillager = null;
         double closestDistance = Double.MAX_VALUE;
 
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
@@ -80,18 +97,18 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
             WrappedVillager wVillager = villagerManager.getOrAdd(villager);
             if (!wVillager.isOptimized() && entity.getLocation().distance(workstationLoc) < closestDistance) {
-                closest = wVillager;
+                closestOptimizableVillager = wVillager;
             }
         }
 
-        if (closest == null) return;
+        if (closestOptimizableVillager == null) return;
 
-        if (closest.canOptimize(cooldown)) {
-            closest.setOptimization(OptimizationType.WORKSTATION);
-            closest.saveOptimizeTime();
+        if (closestOptimizableVillager.canOptimize(cooldown)) {
+            closestOptimizableVillager.setOptimization(OptimizationType.WORKSTATION);
+            closestOptimizableVillager.saveOptimizeTime();
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                final String vilType = closest.villager().getProfession().toString().toLowerCase();
+                final String vilType = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();
                 VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(vilType).build())
@@ -101,9 +118,10 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             if (shouldLog)
                 VillagerOptimizer.getLog().info(event.getPlayer().getName() + " optimized a villager using workstation: '" + placed.getType().toString().toLowerCase() + "'");
         } else {
+            closestOptimizableVillager.villager().shakeHead();
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                final long optimizeCoolDown = closest.getOptimizeCooldownMillis(cooldown);
+                final long optimizeCoolDown = closestOptimizableVillager.getOptimizeCooldownMillis(cooldown);
                 VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(optimizeCoolDown)).build())
                 ));
@@ -114,11 +132,11 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockBreak(BlockBreakEvent event) {
         Block placed = event.getBlock();
-        if (!config.workstations_that_disable.contains(placed.getType())) return;
+        if (!workstations_that_disable.contains(placed.getType())) return;
 
         final Location workstationLoc = placed.getLocation();
-        WrappedVillager closest = null;
-        double closestDistance = Double.MAX_VALUE;
+        WrappedVillager closestOptimizedVillager = null;
+        double closestDistance = search_radius;
 
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
@@ -127,15 +145,18 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
 
             WrappedVillager wVillager = villagerManager.getOrAdd(villager);
-            if (wVillager.isOptimized() && entity.getLocation().distance(workstationLoc) < closestDistance) {
-                closest = wVillager;
+            final double distance = entity.getLocation().distance(workstationLoc);
+
+            if (wVillager.isOptimized() && distance < closestDistance) {
+                closestOptimizedVillager = wVillager;
+                closestDistance = distance;
             }
         }
 
-        if (closest != null && closest.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
+        if (closestOptimizedVillager != null && closestOptimizedVillager.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                final String vilType = closest.villager().getProfession().toString().toLowerCase();
+                final String vilType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();
                 VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(vilType).build())

@@ -28,7 +28,7 @@ public final class WrappedVillager {
      * @return True if the villager is optimized by the plugin, otherwise false.
      */
     public boolean isOptimized() {
-        return dataContainer.has(Keys.OPTIMIZATION.key());
+        return dataContainer.has(Keys.OPTIMIZATION_TYPE.key());
     }
 
     /**
@@ -44,11 +44,11 @@ public final class WrappedVillager {
      */
     public void setOptimization(OptimizationType type) {
         if (type.equals(OptimizationType.OFF) && isOptimized()) {
-            dataContainer.remove(Keys.OPTIMIZATION.key());
+            dataContainer.remove(Keys.OPTIMIZATION_TYPE.key());
             villager.setAware(true);
             villager.setAI(true);
         } else {
-            dataContainer.set(Keys.OPTIMIZATION.key(), PersistentDataType.STRING, type.name());
+            dataContainer.set(Keys.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING, type.name());
             villager.setAware(false);
         }
     }
@@ -57,7 +57,7 @@ public final class WrappedVillager {
      * @return The current OptimizationType of the villager.
      */
     public @NotNull OptimizationType getOptimizationType() {
-        return isOptimized() ? OptimizationType.valueOf(dataContainer.get(Keys.OPTIMIZATION.key(), PersistentDataType.STRING)) : OptimizationType.OFF;
+        return isOptimized() ? OptimizationType.valueOf(dataContainer.get(Keys.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING)) : OptimizationType.OFF;
     }
 
     /**
@@ -75,6 +75,10 @@ public final class WrappedVillager {
     }
 
     /**
+     * Here for convenience so the remaining millis since the last stored optimize time
+     * can be easily calculated.
+     * This enables new configured cooldowns to instantly apply instead of them being persistent.
+     *
      * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
      * @return The time left in millis until the villager can be optimized again.
      */
@@ -83,6 +87,9 @@ public final class WrappedVillager {
     }
 
     /**
+     * Here for convenience so the remaining millis since the last stored restock time
+     * can be easily calculated.
+     *
      * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
      * @return True if the villager has been loaded long enough.
      */
@@ -140,6 +147,9 @@ public final class WrappedVillager {
     }
 
     /**
+     * Here for convenience so the remaining millis since the last stored level-up time
+     * can be easily calculated.
+     *
      * @return The time of the in-game world when the entity was last leveled up.
      */
     public long getLastLevelUpTime() {

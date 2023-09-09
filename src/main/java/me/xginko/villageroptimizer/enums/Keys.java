@@ -5,7 +5,7 @@ import org.bukkit.NamespacedKey;
 
 public enum Keys {
 
-    OPTIMIZATION(VillagerOptimizer.getKey("optimization")),
+    OPTIMIZATION_TYPE(VillagerOptimizer.getKey("optimization-type")),
     LAST_OPTIMIZE(VillagerOptimizer.getKey("last-optimize")),
     LAST_LEVELUP(VillagerOptimizer.getKey("last-levelup")),
     LAST_RESTOCK(VillagerOptimizer.getKey("last-restock"));
