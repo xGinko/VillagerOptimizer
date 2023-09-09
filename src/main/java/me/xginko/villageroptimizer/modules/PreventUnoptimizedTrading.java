@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.TradeSelectEvent;
 
@@ -46,6 +47,20 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onTradeOpen(TradeSelectEvent event) {
+        if (
+                event.getInventory().getType().equals(InventoryType.MERCHANT)
+                && event.getInventory().getHolder() instanceof Villager villager
+                && !villagerManager.getOrAdd(villager).isOptimized()
+        ) {
+            event.setCancelled(true);
+            if (!notifyPlayer) return;
+            Player player = (Player) event.getWhoClicked();
+            VillagerOptimizer.getLang(player.locale()).optimize_for_trading.forEach(player::sendMessage);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    private void onInventoryClick(InventoryClickEvent event) {
         if (
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
                 && event.getInventory().getHolder() instanceof Villager villager
