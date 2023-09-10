@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.models;
 
+import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.enums.Keys;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Villager;
@@ -45,11 +46,15 @@ public final class WrappedVillager {
     public void setOptimization(OptimizationType type) {
         if (type.equals(OptimizationType.OFF) && isOptimized()) {
             dataContainer.remove(Keys.OPTIMIZATION_TYPE.key());
-            villager.setAware(true);
-            villager.setAI(true);
+            villager.getScheduler().run(VillagerOptimizer.getInstance(), enableAI -> {
+                villager.setAware(true);
+                villager.setAI(true);
+            }, null);
         } else {
             dataContainer.set(Keys.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING, type.name());
-            villager.setAware(false);
+            villager.getScheduler().run(VillagerOptimizer.getInstance(), disableAI -> {
+                villager.setAware(false);
+            }, null);
         }
     }
 

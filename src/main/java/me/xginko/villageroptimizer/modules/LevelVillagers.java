@@ -68,8 +68,8 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
                     && wVillager.calculateLevel() > villager.getVillagerLevel()
             ) {
                 villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 + (cooldown / 50L)), 120, false, false));
-                villager.setAware(true);
-                villager.getScheduler().runDelayed(plugin, reOptimize -> {
+                villager.getScheduler().run(VillagerOptimizer.getInstance(), enableAI -> villager.setAware(true), null);
+                villager.getScheduler().runDelayed(plugin, disableAI -> {
                     villager.setAware(false);
                     wVillager.saveLastLevelUp();
                 }, null, 100L);
