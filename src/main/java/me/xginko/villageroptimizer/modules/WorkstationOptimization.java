@@ -108,10 +108,10 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             closestOptimizableVillager.saveOptimizeTime();
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                final String vilType = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
+                final String villagerType = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();
                 VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(vilType).build())
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(villagerType).build())
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(workstation).build())
                 ));
             }
@@ -156,10 +156,10 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         if (closestOptimizedVillager != null && closestOptimizedVillager.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                final String vilType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
+                final String villagerType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();
                 VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(vilType).build())
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(villagerType).build())
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(workstation).build())
                 ));
             }

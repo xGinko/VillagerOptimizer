@@ -99,9 +99,11 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 counter++;
                 if (shouldNotifyPlayer) {
                     Player player = event.getPlayer();
+                    final String villagerType = wVillager.villager().getProfession().toString().toLowerCase();
+                    final String placedType = placed.getType().toString().toLowerCase();
                     VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(wVillager.villager().getProfession().toString().toLowerCase()).build())
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(placed.getType().toString().toLowerCase()).build())
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(villagerType).build())
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(placedType).build())
                     ));
                 }
                 if (shouldLog)
@@ -136,9 +138,11 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
                 if (shouldNotifyPlayer) {
                     Player player = event.getPlayer();
+                    final String villagerType = wVillager.villager().getProfession().toString().toLowerCase();
+                    final String brokenType = broken.getType().toString().toLowerCase();
                     VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(wVillager.villager().getProfession().toString().toLowerCase()).build())
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(broken.getType().toString().toLowerCase()).build())
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(villagerType).build())
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(brokenType).build())
                     ));
                 }
                 if (shouldLog)
@@ -189,10 +193,10 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 wVillager.setOptimization(OptimizationType.OFF);
                 if (shouldNotifyPlayer) {
                     Player player = event.getPlayer();
-                    final String vilType = wVillager.villager().getProfession().toString().toLowerCase();
+                    final String villagerType = wVillager.villager().getProfession().toString().toLowerCase();
                     final String blockType = entityLegs.getBlock().getType().toString().toLowerCase();
                     VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(vilType).build())
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(villagerType).build())
                             .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(blockType).build())
                     ));
                 }
