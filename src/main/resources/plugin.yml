@@ -1,5 +1,27 @@
 name: VillagerOptimizer
 version: '${project.version}'
 main: me.xginko.villageroptimizer.VillagerOptimizer
+authors: [ xGinko ]
+description: ${project.description}
+website: ${project.url}
 api-version: '1.19'
 folia-supported: true
+commands:
+  villageroptimizer:
+    usage: /villageroptimizer [ reload, version  ]
+    description: VillagerOptimizer admin commands
+  optimizevillagers:
+    usage: /optimizevillagers <blockradius>
+    description: Optmize villagers in a radius around you
+  unoptmizevillagers:
+    usage: /unoptimizevillagers <blockradius>
+    description: Unoptmize villagers in a radius around you
+permissions:
+  villageroptimizer.*:
+    description: Admin plugin permissions
+    children:
+      villageroptimizer.cmd.reload: true
+      villageroptimizer.cmd.version: true
+      villageroptimizer.cmd.optimize: true
+      villageroptimizer.cmd.unoptimize: true
+      villageroptimizer.cooldownbypass: true
