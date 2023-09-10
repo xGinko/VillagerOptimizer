@@ -157,12 +157,12 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
     private void onPlayerInteract(PlayerInteractEntityEvent event) {
         Entity interacted = event.getRightClicked();
         if (!interacted.getType().equals(EntityType.VILLAGER)) return;
-
-        WrappedVillager wVillager = villagerManager.getOrAdd((Villager) interacted);
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
 
+        WrappedVillager wVillager = villagerManager.getOrAdd((Villager) interacted);
         final Location entityLegs = interacted.getLocation();
+
         if (
                 blocks_that_disable.contains(entityLegs.getBlock().getType()) // check for blocks inside the entity's legs because of slabs and sink-in blocks
                 || blocks_that_disable.contains(entityLegs.clone().subtract(0,1,0).getBlock().getType())
