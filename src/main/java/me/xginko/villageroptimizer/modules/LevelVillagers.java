@@ -3,7 +3,12 @@ package me.xginko.villageroptimizer.modules;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.config.Config;
+import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.models.WrappedVillager;
+import me.xginko.villageroptimizer.utils.CommonUtils;
+import net.kyori.adventure.text.TextReplacementConfig;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,6 +16,9 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class LevelVillagers implements VillagerOptimizerModule, Listener {
 
@@ -55,9 +63,33 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
                 && event.getInventory().getHolder() instanceof Villager villager
         ) {
             WrappedVillager wVillager = villagerManager.getOrAdd(villager);
-            if (!wVillager.isOptimized()) return;
+            if (
+                    wVillager.isOptimized()
+                    && wVillager.canLevelUp(cooldown)
+                    && wVillager.calculateLevel() > villager.getVillagerLevel()
+            ) {
+                villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 + (cooldown / 50L)), 120, false, false));
+                final OptimizationType previousOptimization = wVillager.getOptimizationType();
+                wVillager.setOptimization(OptimizationType.OFF);
+                villager.getScheduler().runDelayed(plugin, reOptimize -> {
+                    wVillager.setOptimization(previousOptimization);
+                    wVillager.saveLastLevelUp();
+                }, null, 100L);
+            }
+        }
+    }
 
-            // logic missing
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    private void onInteract(PlayerInteractEntityEvent event) {
+        if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
+        WrappedVillager wVillager = villagerManager.getOrAdd((Villager) event.getRightClicked());
+        if (wVillager.isOptimized() && !wVillager.canLevelUp(cooldown)) {
+            event.setCancelled(true);
+            Player player = event.getPlayer();
+            String timeLeft = CommonUtils.formatTime(wVillager.getLevelCooldownMillis(cooldown));
+            VillagerOptimizer.getLang(player.locale()).villager_leveling_up.forEach(line -> player.sendMessage(line
+                    .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())
+            ));
         }
     }
 }

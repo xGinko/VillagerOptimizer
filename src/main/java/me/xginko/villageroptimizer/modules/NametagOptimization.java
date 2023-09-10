@@ -94,9 +94,9 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
                 event.setCancelled(true);
                 wVillager.villager().shakeHead();
                 if (shouldNotifyPlayer) {
-                    final long optimizeCoolDown = wVillager.getOptimizeCooldownMillis(cooldown);
+                    final String time = CommonUtils.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
                     VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(optimizeCoolDown)).build())));
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(time).build())));
                 }
             }
         } else {

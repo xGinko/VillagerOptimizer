@@ -136,7 +136,7 @@ public final class WrappedVillager {
      * @return The system time in millis when the villager was last optimized, 0L if the villager was never optimized.
      */
     public boolean canLevelUp(final long cooldown_millis) {
-        return dataContainer.has(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) && dataContainer.get(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) + cooldown_millis <= villager.getWorld().getFullTime();
+        return getLastLevelUpTime() + cooldown_millis <= villager.getWorld().getFullTime();
     }
 
     /**
@@ -154,5 +154,9 @@ public final class WrappedVillager {
      */
     public long getLastLevelUpTime() {
         return dataContainer.has(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) ? dataContainer.get(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) : 0L;
+    }
+
+    public long getLevelCooldownMillis(final long cooldown_millis) {
+        return dataContainer.has(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keys.LAST_OPTIMIZE.key(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
     }
 }
