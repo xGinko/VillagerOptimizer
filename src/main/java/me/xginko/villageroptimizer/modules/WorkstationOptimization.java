@@ -58,7 +58,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
                 The closest unoptimized villager to the player will be optimized.
                 """);
         this.cooldown = config.getInt("optimization.methods.by-workstation.optimize-cooldown-seconds", 600, """
-                Cooldown in seconds until a villager can be optimized again using this method. \s
+                Cooldown in seconds until a villager can be optimized again using this method.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.
                 """) * 1000L;
         this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-workstation.notify-player", true);
@@ -159,7 +159,9 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             }
         }
 
-        if (closestOptimizedVillager != null && closestOptimizedVillager.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
+        if (closestOptimizedVillager == null) return;
+
+        if (closestOptimizedVillager.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
             if (shouldNotifyPlayer) {
                 final String villagerType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();
