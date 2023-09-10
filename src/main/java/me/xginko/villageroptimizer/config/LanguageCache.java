@@ -18,7 +18,7 @@ public class LanguageCache {
             block_optimize_success, block_on_optimize_cooldown, block_unoptimize_success,
             workstation_optimize_success, workstation_on_optimize_cooldown, workstation_unoptimize_success,
             command_optimize_success, command_radius_limit_exceed, command_optimize_fail, command_unoptimize_success,
-            trades_restocked, optimize_for_trading, villager_leveling_up;
+            command_specify_radius, command_radius_invalid, trades_restocked, optimize_for_trading, villager_leveling_up;
 
     public LanguageCache(String lang) throws Exception {
         this.lang = loadLang(new File(VillagerOptimizer.getInstance().getDataFolder() + File.separator + "lang", lang + ".yml"));
@@ -55,14 +55,18 @@ public class LanguageCache {
         this.workstation_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success",
                 List.of("<green>Successfully unoptimized %villagertype% villager by removing workstation block %workstation%."));
         // Command
-        this.command_optimize_success = getListTranslation("messages.workstation.optimize-success",
+        this.command_optimize_success = getListTranslation("messages.command.optimize-success",
                 List.of("<green>Successfully optimized %amount% villager(s) in a radius of %radius% blocks."));
-        this.command_radius_limit_exceed = getListTranslation("messages.workstation.radius-limit-exceed",
+        this.command_radius_limit_exceed = getListTranslation("messages.command.radius-limit-exceed",
                 List.of("<red>The radius you entered exceeds the limit of %distance% blocks."));
-        this.command_optimize_fail = getListTranslation("messages.workstation.optimize-fail",
+        this.command_optimize_fail = getListTranslation("messages.command.optimize-fail",
                 List.of("<gray>%amount% villagers couldn't be optimized because they have recently been optimized."));
-        this.command_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success",
+        this.command_unoptimize_success = getListTranslation("messages.command.unoptimize-success",
                 List.of("<green>Successfully unoptimized %amount% villager(s) in a radius of %radius% blocks."));
+        this.command_specify_radius = getListTranslation("messages.command.specify-radius",
+                List.of("<red>Please specify a radius."));
+        this.command_radius_invalid = getListTranslation("messages.command.radius-invalid",
+                List.of("<red>The radius you entered is not a valid number. Try again."));
 
         saveLang();
     }

@@ -10,12 +10,19 @@ commands:
   villageroptimizer:
     usage: /villageroptimizer [ reload, version ]
     description: VillagerOptimizer admin commands
+    aliases:
+      - voptimizer
+      - vo
   optimizevillagers:
     usage: /optimizevillagers <blockradius>
     description: Optmize villagers in a radius around you
+    aliases:
+      - optvils
   unoptmizevillagers:
     usage: /unoptimizevillagers <blockradius>
     description: Unoptmize villagers in a radius around you
+    aliases:
+      - unoptvils
 permissions:
   villageroptimizer.ignore:
     description: Players with this permission won't be able to use the plugin features

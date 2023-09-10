@@ -1,6 +1,7 @@
 package me.xginko.villageroptimizer;
 
 import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
@@ -37,6 +38,8 @@ public final class VillagerOptimizer extends JavaPlugin {
         reloadLang();
         logger.info("Loading Config");
         reloadConfiguration();
+        logger.info("Registering Commands");
+        VillagerOptimizerCommand.reloadCommands();
         logger.info("Done.");
     }
 
@@ -59,6 +62,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void reloadPlugin() {
         reloadLang();
         reloadConfiguration();
+        VillagerOptimizerCommand.reloadCommands();
     }
 
     private void reloadConfiguration() {

@@ -36,3 +36,7 @@ messages:
       - "<red>The radius you entered exceeds the limit of %distance% blocks."
     unoptimize-success:
       - "<green>Successfully unoptimized %amount% villager(s) in a radius of %radius% blocks."
+    specify-radius:
+      - "<red>Please specify a radius."
+    radius-invalid:
+      - "<red>The radius you entered is not a valid number. Try again."
