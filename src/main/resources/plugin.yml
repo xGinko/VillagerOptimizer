@@ -8,7 +8,7 @@ api-version: '1.19'
 folia-supported: true
 commands:
   villageroptimizer:
-    usage: /villageroptimizer [ reload, version  ]
+    usage: /villageroptimizer [ reload, version ]
     description: VillagerOptimizer admin commands
   optimizevillagers:
     usage: /optimizevillagers <blockradius>
@@ -17,11 +17,61 @@ commands:
     usage: /unoptimizevillagers <blockradius>
     description: Unoptmize villagers in a radius around you
 permissions:
+  villageroptimizer.playerdefaults:
+    description: default permissions for players
+    default: true
+    children:
+      villageroptimizer.cmd.optimize: true
+      villageroptimizer.cmd.unoptimize: true
+      villageroptimizer.optimize.*: true
   villageroptimizer.*:
     description: Admin plugin permissions
+    children:
+      villageroptimizer.cmd.*: true
+      villageroptimizer.bypass.*: true
+      villageroptimizer.optimize.*: true
+  villageroptimizer.optimize.*:
+    description: Optimization type permissions
+    children:
+      villageroptimizer.optimize.nametag: true
+      villageroptimizer.optimize.block: true
+      villageroptimizer.optimize.workstation: true
+  villageroptimizer.optimize.nametag:
+    description: Optimize/Unoptimize villagers using nametags
+  villageroptimizer.optimize.block:
+    description: Optimize/Unoptimize villagers using specific blocks
+  villageroptimizer.optimize.workstation:
+    description: Optimize/Unoptimize villagers using workstations
+  villageroptimizer.cmd.*:
+    description: All command permissions
     children:
       villageroptimizer.cmd.reload: true
       villageroptimizer.cmd.version: true
       villageroptimizer.cmd.optimize: true
       villageroptimizer.cmd.unoptimize: true
-      villageroptimizer.cooldownbypass: true
+  villageroptimizer.cmd.reload:
+    description: Reload the plugin configuration
+  villageroptimizer.cmd.version:
+    description: Show the plugin version
+  villageroptimizer.cmd.optimize:
+    description: Optimize villagers in a radius
+  villageroptimizer.cmd.unoptimize:
+    description: Unoptimize villagers in a radius
+  villageroptimizer.bypass.*:
+    description: All bypass permissions
+    children:
+      villageroptimizer.bypass.restockcooldown: true
+      villageroptimizer.bypass.nametagcooldown: true
+      villageroptimizer.bypass.blockcooldown: true
+      villageroptimizer.bypass.workstationcooldown: true
+      villageroptimizer.bypass.commandcooldown: true
+  villageroptimizer.bypass.restockcooldown:
+    description: Bypass permission for optimized trade restock cooldown
+  villageroptimizer.bypass.nametagcooldown:
+    description: Bypass permission for nametag optimization cooldown
+  villageroptimizer.bypass.blockcooldown:
+    description: Bypass permission for block optimization cooldown
+  villageroptimizer.bypass.workstationcooldown:
+    description: Bypass permission for workstation optimization cooldown
+  villageroptimizer.bypass.commandcooldown:
+    description: Bypass permission for command optimization cooldown
