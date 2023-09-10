@@ -90,7 +90,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
         final Location workstationLoc = placed.getLocation();
         WrappedVillager closestOptimizableVillager = null;
-        double closestDistance = Double.MAX_VALUE;
+        double closestDistance = search_radius;
 
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
@@ -99,8 +99,11 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
 
             WrappedVillager wVillager = villagerManager.getOrAdd(villager);
-            if (!wVillager.isOptimized() && entity.getLocation().distance(workstationLoc) < closestDistance) {
+            final double distance = entity.getLocation().distance(workstationLoc);
+
+            if (!wVillager.isOptimized() && distance < closestDistance) {
                 closestOptimizableVillager = wVillager;
+                closestDistance = distance;
             }
         }
 

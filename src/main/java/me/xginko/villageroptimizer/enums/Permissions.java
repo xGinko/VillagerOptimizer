@@ -1,22 +1,11 @@
 package me.xginko.villageroptimizer.enums;
 
 public class Permissions {
-    public enum Misc {
-        IGNORED("villageroptimizer.ignore");
-        private final String key;
-        Misc(String key) {
-            this.key = key;
-        }
-        public String get() {
-            return key;
-        }
-    }
     public enum Commands {
         VERSION("villageroptimizer.cmd.version"),
         RELOAD("villageroptimizer.cmd.reload"),
         OPTIMIZE_RADIUS("villageroptimizer.cmd.optimize"),
         UNOPTIMIZE_RADIUS("villageroptimizer.cmd.unoptimize");
-
         private final String key;
         Commands(String key) {
             this.key = key;
@@ -29,7 +18,6 @@ public class Permissions {
         NAMETAG("villageroptimizer.optimize.nametag"),
         BLOCK("villageroptimizer.optimize.block"),
         WORKSTATION("villageroptimizer.optimize.workstation");
-
         private final String key;
         Optimize(String key) {
             this.key = key;
@@ -45,7 +33,6 @@ public class Permissions {
         BLOCK_COOLDOWN("villageroptimizer.bypass.blockcooldown"),
         WORKSTATION_COOLDOWN("villageroptimizer.bypass.workstationcooldown"),
         COMMAND_COOLDOWN("villageroptimizer.bypass.commandcooldown");
-
         private final String key;
         Bypass(String key) {
             this.key = key;
