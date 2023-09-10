@@ -33,7 +33,7 @@ public class VersionSubCmd extends SubCommand {
                     Component.newline()
                     .append(Component.text(pluginMeta.getName()+" "+pluginMeta.getVersion()).color(NamedTextColor.BLUE).decorate(TextDecoration.BOLD)
                     .append(Component.text(" by ").color(NamedTextColor.GRAY))
-                    .append(Component.text(pluginMeta.getAuthors().get(0)).color(NamedTextColor.DARK_AQUA))
+                    .append(Component.text(pluginMeta.getAuthors().get(0)).color(NamedTextColor.WHITE))
                     .clickEvent(ClickEvent.openUrl(pluginMeta.getWebsite())))
                     .append(Component.newline())
             );

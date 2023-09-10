@@ -19,17 +19,17 @@ public class ReloadSubCmd extends SubCommand {
     }
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer reload").color(NamedTextColor.GOLD);
+        return Component.text("/villageroptimizer reload").color(NamedTextColor.BLUE);
     }
 
     @Override
     public void perform(CommandSender sender, String[] args) {
         if (sender.hasPermission(Permissions.Commands.RELOAD.get())) {
-            sender.sendMessage(Component.text("Reloading VillagerOptimizer...").color(NamedTextColor.WHITE));
+            sender.sendMessage(Component.text("Reloading VillagerOptimizer...").color(NamedTextColor.BLUE));
             VillagerOptimizer plugin = VillagerOptimizer.getInstance();
             plugin.getServer().getAsyncScheduler().runNow(plugin, reloadPlugin -> {
                 plugin.reloadPlugin();
-                sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.GREEN));
+                sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.AQUA));
             });
         } else {
             sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
