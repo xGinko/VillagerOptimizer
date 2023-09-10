@@ -26,10 +26,10 @@ public interface VillagerOptimizerCommand extends CommandExecutor {
 
         VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         CommandMap commandMap = plugin.getServer().getCommandMap();
-        for (VillagerOptimizerCommand command : commands) {
+        commands.forEach(command -> {
             plugin.getCommand(command.label()).unregister(commandMap);
             plugin.getCommand(command.label()).setExecutor(command);
-        }
+        });
     }
 
     @Override

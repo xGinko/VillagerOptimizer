@@ -17,15 +17,13 @@ import java.util.List;
 
 public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerCommand {
 
-    private final List<SubCommand> subCommands = new ArrayList<>(7);
-    private final List<String> tabCompleter = new ArrayList<>(7);
+    private final List<SubCommand> subCommands = new ArrayList<>(2);
+    private final List<String> tabCompleter = new ArrayList<>(2);
 
     public VillagerOptimizerCmd() {
         subCommands.add(new ReloadSubCmd());
         subCommands.add(new VersionSubCmd());
-        for (SubCommand subcommand : subCommands) {
-            tabCompleter.add(subcommand.getLabel());
-        }
+        subCommands.forEach(subCommand -> tabCompleter.add(subCommand.getLabel()));
     }
 
     @Override
@@ -61,13 +59,8 @@ public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerComm
         sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
         sender.sendMessage(Component.text("VillagerOptimizer Commands").color(NamedTextColor.BLUE));
         sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
-        for (SubCommand subCommand : subCommands) {
-            sender.sendMessage(
-                    subCommand.getSyntax()
-                    .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
-                    .append(subCommand.getDescription())
-            );
-        }
+        subCommands.forEach(subCommand -> sender.sendMessage(
+                subCommand.getSyntax().append(Component.text(" - ").color(NamedTextColor.DARK_GRAY)).append(subCommand.getDescription())));
         sender.sendMessage(
                 Component.text("/optimizevillagers <message>").color(NamedTextColor.BLUE)
                 .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
