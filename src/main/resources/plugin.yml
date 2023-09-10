@@ -17,15 +17,21 @@ commands:
     usage: /unoptimizevillagers <blockradius>
     description: Unoptmize villagers in a radius around you
 permissions:
+  villageroptimizer.ignore:
+    description: Players with this permission won't be able to use the plugin features
+    children:
+      villageroptimizer.optimize.nametag: false
+      villageroptimizer.optimize.block: false
+      villageroptimizer.optimize.workstation: false
   villageroptimizer.playerdefaults:
-    description: default permissions for players
+    description: Default permissions for players
     default: true
     children:
       villageroptimizer.cmd.optimize: true
       villageroptimizer.cmd.unoptimize: true
       villageroptimizer.optimize.*: true
   villageroptimizer.*:
-    description: Admin plugin permissions
+    description: All plugin permissions
     children:
       villageroptimizer.cmd.*: true
       villageroptimizer.bypass.*: true
@@ -60,11 +66,14 @@ permissions:
   villageroptimizer.bypass.*:
     description: All bypass permissions
     children:
+      villageroptimizer.bypass.tradeprevention: true
       villageroptimizer.bypass.restockcooldown: true
       villageroptimizer.bypass.nametagcooldown: true
       villageroptimizer.bypass.blockcooldown: true
       villageroptimizer.bypass.workstationcooldown: true
       villageroptimizer.bypass.commandcooldown: true
+  villageroptimizer.bypass.tradeprevention:
+    description: Bypass unoptimized trading prevention if enabled
   villageroptimizer.bypass.restockcooldown:
     description: Bypass permission for optimized trade restock cooldown
   villageroptimizer.bypass.nametagcooldown:

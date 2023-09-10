@@ -4,6 +4,7 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import me.xginko.villageroptimizer.utils.LogUtils;
@@ -84,6 +85,8 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
     private void onBlockPlace(BlockPlaceEvent event) {
         Block placed = event.getBlock();
         if (!blocks_that_disable.contains(placed.getType())) return;
+        Player player = event.getPlayer();
+        if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
 
         int counter = 0;
         for (Entity entity : placed.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,1,0.5)) {
@@ -93,12 +96,11 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
             if (wVillager.isOptimized()) continue;
             if (counter >= maxVillagers) return;
 
-            if (wVillager.canOptimize(cooldown)) {
+            if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.BLOCK_COOLDOWN.get())) {
                 wVillager.setOptimization(OptimizationType.BLOCK);
                 wVillager.saveOptimizeTime();
                 counter++;
                 if (shouldNotifyPlayer) {
-                    Player player = event.getPlayer();
                     final String villagerType = wVillager.villager().getProfession().toString().toLowerCase();
                     final String placedType = placed.getType().toString().toLowerCase();
                     VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
@@ -111,7 +113,6 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
             } else {
                 wVillager.villager().shakeHead();
                 if (shouldNotifyPlayer) {
-                    Player player = event.getPlayer();
                     final String timeLeft = CommonUtils.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
                     VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                             .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())));
@@ -124,6 +125,8 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
     private void onBlockBreak(BlockBreakEvent event) {
         Block broken = event.getBlock();
         if (!blocks_that_disable.contains(broken.getType())) return;
+        Player player = event.getPlayer();
+        if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
 
         int counter = 0;
         for (Entity entity : broken.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,1,0.5)) {
@@ -137,7 +140,6 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 wVillager.setOptimization(OptimizationType.OFF);
 
                 if (shouldNotifyPlayer) {
-                    Player player = event.getPlayer();
                     final String villagerType = wVillager.villager().getProfession().toString().toLowerCase();
                     final String brokenType = broken.getType().toString().toLowerCase();
                     VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
@@ -157,18 +159,20 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         if (!interacted.getType().equals(EntityType.VILLAGER)) return;
 
         WrappedVillager wVillager = villagerManager.getOrAdd((Villager) interacted);
-        final Location entityLegs = interacted.getLocation();
+        Player player = event.getPlayer();
+        if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
 
+        final Location entityLegs = interacted.getLocation();
         if (
                 blocks_that_disable.contains(entityLegs.getBlock().getType()) // check for blocks inside the entity's legs because of slabs and sink-in blocks
                 || blocks_that_disable.contains(entityLegs.clone().subtract(0,1,0).getBlock().getType())
         ) {
             if (wVillager.isOptimized()) return;
-            if (wVillager.canOptimize(cooldown)) {
+
+            if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.BLOCK_COOLDOWN.get())) {
                 wVillager.setOptimization(OptimizationType.BLOCK);
                 wVillager.saveOptimizeTime();
                 if (shouldNotifyPlayer) {
-                    Player player = event.getPlayer();
                     final String vilType = wVillager.villager().getProfession().toString().toLowerCase();
                     final String blockType = entityLegs.getBlock().getType().toString().toLowerCase();
                     VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
@@ -181,7 +185,6 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
             } else {
                 wVillager.villager().shakeHead();
                 if (shouldNotifyPlayer) {
-                    Player player = event.getPlayer();
                     final String timeLeft = CommonUtils.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
                     VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                             .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build()))
@@ -192,7 +195,6 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
             if (wVillager.getOptimizationType().equals(OptimizationType.BLOCK)) {
                 wVillager.setOptimization(OptimizationType.OFF);
                 if (shouldNotifyPlayer) {
-                    Player player = event.getPlayer();
                     final String villagerType = wVillager.villager().getProfession().toString().toLowerCase();
                     final String blockType = entityLegs.getBlock().getType().toString().toLowerCase();
                     VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line

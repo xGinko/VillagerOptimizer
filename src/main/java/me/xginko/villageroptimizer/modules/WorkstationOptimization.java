@@ -4,6 +4,7 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import me.xginko.villageroptimizer.utils.LogUtils;
@@ -84,6 +85,8 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
     private void onBlockPlace(BlockPlaceEvent event) {
         Block placed = event.getBlock();
         if (!workstations_that_disable.contains(placed.getType())) return;
+        Player player = event.getPlayer();
+        if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
 
         final Location workstationLoc = placed.getLocation();
         WrappedVillager closestOptimizableVillager = null;
@@ -103,11 +106,10 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
         if (closestOptimizableVillager == null) return;
 
-        if (closestOptimizableVillager.canOptimize(cooldown)) {
+        if (closestOptimizableVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.WORKSTATION_COOLDOWN.get())) {
             closestOptimizableVillager.setOptimization(OptimizationType.WORKSTATION);
             closestOptimizableVillager.saveOptimizeTime();
             if (shouldNotifyPlayer) {
-                Player player = event.getPlayer();
                 final String villagerType = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();
                 VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
@@ -120,7 +122,6 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         } else {
             closestOptimizableVillager.villager().shakeHead();
             if (shouldNotifyPlayer) {
-                Player player = event.getPlayer();
                 final String timeLeft = CommonUtils.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown));
                 VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())
@@ -133,6 +134,8 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
     private void onBlockBreak(BlockBreakEvent event) {
         Block placed = event.getBlock();
         if (!workstations_that_disable.contains(placed.getType())) return;
+        Player player = event.getPlayer();
+        if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
 
         final Location workstationLoc = placed.getLocation();
         WrappedVillager closestOptimizedVillager = null;
@@ -155,7 +158,6 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
         if (closestOptimizedVillager != null && closestOptimizedVillager.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
             if (shouldNotifyPlayer) {
-                Player player = event.getPlayer();
                 final String villagerType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();
                 VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line

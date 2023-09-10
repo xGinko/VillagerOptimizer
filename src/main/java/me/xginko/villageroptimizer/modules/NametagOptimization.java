@@ -5,6 +5,7 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.Component;
@@ -68,16 +69,18 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onPlayerNameEntity(PlayerNameEntityEvent event) {
         if (!event.getEntity().getType().equals(EntityType.VILLAGER)) return;
+        Player player = event.getPlayer();
+        if (!player.hasPermission(Permissions.Optimize.NAMETAG.get())) return;
         Component name = event.getName();
         if (name == null) return;
 
         final String nameTag = PlainTextComponentSerializer.plainText().serialize(name);
         WrappedVillager wVillager = villagerManager.getOrAdd((Villager) event.getEntity());
-        Player player = event.getPlayer();
 
         if (nametags.contains(nameTag.toLowerCase())) {
             if (wVillager.isOptimized()) return;
-            if (wVillager.canOptimize(cooldown)) {
+
+            if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
                 wVillager.setOptimization(OptimizationType.NAMETAG);
                 wVillager.saveOptimizeTime();
                 if (!consumeNametag) {

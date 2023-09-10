@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer.modules;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.config.Config;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -56,12 +57,13 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
 
         WrappedVillager wVillager = villagerManager.getOrAdd((Villager) event.getRightClicked());
+        if (!wVillager.isOptimized()) return;
+        Player player = event.getPlayer();
 
-        if (wVillager.isOptimized() && wVillager.canRestock(restock_delay_millis)) {
+        if (wVillager.canRestock(restock_delay_millis) || player.hasPermission(Permissions.Bypass.RESTOCK_COOLDOWN.get())) {
             wVillager.restock();
             wVillager.saveRestockTime();
             if (notifyPlayer) {
-                Player player = event.getPlayer();
                 final String timeLeft = CommonUtils.formatTime(wVillager.getRestockCooldownMillis(restock_delay_millis));
                 VillagerOptimizer.getLang(player.locale()).trades_restocked.forEach(line -> player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build()))
