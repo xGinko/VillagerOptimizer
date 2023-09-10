@@ -4,6 +4,7 @@ import me.xginko.villageroptimizer.commands.SubCommand;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.ReloadSubCmd;
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.VersionSubCmd;
+import me.xginko.villageroptimizer.enums.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -55,7 +56,7 @@ public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerComm
     }
 
     private void sendCommandOverview(CommandSender sender) {
-        if (!sender.hasPermission("anarchyexploitfixes.cmd.*")) return;
+        if (!sender.hasPermission(Permissions.Commands.RELOAD.get()) && !sender.hasPermission(Permissions.Commands.VERSION.get())) return;
         sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
         sender.sendMessage(Component.text("VillagerOptimizer Commands").color(NamedTextColor.BLUE));
         sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
