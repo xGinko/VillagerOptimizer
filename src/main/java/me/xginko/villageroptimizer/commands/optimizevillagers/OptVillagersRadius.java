@@ -24,6 +24,11 @@ import java.util.List;
 
 public class OptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
 
+    /*
+    * TODO: Radius limit, Cooldown, Compatibility with other types
+    *
+    * */
+
     @Override
     public String label() {
         return "optimizevillagers";
@@ -50,9 +55,10 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
 
             try {
                 int specifiedRadius = Integer.parseInt(args[0]) / 2;
+
+                VillagerManager villagerManager = VillagerOptimizer.getVillagerManager();
                 int successCount = 0;
                 int failCount = 0;
-                VillagerManager villagerManager = VillagerOptimizer.getVillagerManager();
 
                 for (Entity entity : player.getNearbyEntities(specifiedRadius, specifiedRadius, specifiedRadius)) {
                     if (!entity.getType().equals(EntityType.VILLAGER)) continue;
@@ -66,6 +72,8 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                         wVillager.setOptimization(OptimizationType.COMMAND);
                         wVillager.saveOptimizeTime();
                         successCount++;
+                    } else {
+                        failCount++;
                     }
                 }
 
@@ -74,6 +82,10 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                 VillagerOptimizer.getLang(player.locale()).command_optimize_success.forEach(line -> player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%amount%").replacement(success).build())
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%radius%").replacement(radius).build())
+                ));
+                final String alreadyOptimized = Integer.toString(failCount);
+                VillagerOptimizer.getLang(player.locale()).command_optimize_fail.forEach(line -> player.sendMessage(line
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%amount%").replacement(alreadyOptimized).build())
                 ));
             } catch (NumberFormatException e) {
                 VillagerOptimizer.getLang(player.locale()).command_radius_invalid.forEach(player::sendMessage);
