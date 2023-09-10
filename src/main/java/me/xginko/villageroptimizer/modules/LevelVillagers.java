@@ -75,7 +75,6 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
                     }, null, 100L);
                 }
             } else {
-                wVillager.villager().shakeHead();
                 if (shouldNotify) {
                     Player player = (Player) event.getPlayer();
                     final String timeLeft = CommonUtils.formatTime(wVillager.getLevelCooldownMillis(cooldown));
