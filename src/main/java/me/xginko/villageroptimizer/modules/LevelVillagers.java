@@ -3,7 +3,6 @@ package me.xginko.villageroptimizer.modules;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.models.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -69,10 +68,9 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
                     && wVillager.calculateLevel() > villager.getVillagerLevel()
             ) {
                 villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 + (cooldown / 50L)), 120, false, false));
-                final OptimizationType previousOptimization = wVillager.getOptimizationType();
-                wVillager.setOptimization(OptimizationType.OFF);
+                villager.setAware(true);
                 villager.getScheduler().runDelayed(plugin, reOptimize -> {
-                    wVillager.setOptimization(previousOptimization);
+                    villager.setAware(false);
                     wVillager.saveLastLevelUp();
                 }, null, 100L);
             }
@@ -82,11 +80,14 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onInteract(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
+
         WrappedVillager wVillager = villagerManager.getOrAdd((Villager) event.getRightClicked());
+
         if (wVillager.isOptimized() && !wVillager.canLevelUp(cooldown)) {
             event.setCancelled(true);
+            wVillager.villager().shakeHead();
             Player player = event.getPlayer();
-            String timeLeft = CommonUtils.formatTime(wVillager.getLevelCooldownMillis(cooldown));
+            final String timeLeft = CommonUtils.formatTime(wVillager.getLevelCooldownMillis(cooldown));
             VillagerOptimizer.getLang(player.locale()).villager_leveling_up.forEach(line -> player.sendMessage(line
                     .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())
             ));

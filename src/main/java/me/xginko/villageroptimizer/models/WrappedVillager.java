@@ -118,6 +118,10 @@ public final class WrappedVillager {
         return dataContainer.has(Keys.LAST_RESTOCK.key(), PersistentDataType.LONG) ? dataContainer.get(Keys.LAST_RESTOCK.key(), PersistentDataType.LONG) : 0L;
     }
 
+    public long getRestockCooldownMillis(final long cooldown_millis) {
+        return dataContainer.has(Keys.LAST_RESTOCK.key(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keys.LAST_RESTOCK.key(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
+    }
+
     /**
      * @return The level between 1-5 calculated from the villagers experience.
      */
@@ -157,6 +161,6 @@ public final class WrappedVillager {
     }
 
     public long getLevelCooldownMillis(final long cooldown_millis) {
-        return dataContainer.has(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keys.LAST_OPTIMIZE.key(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
+        return dataContainer.has(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
     }
 }

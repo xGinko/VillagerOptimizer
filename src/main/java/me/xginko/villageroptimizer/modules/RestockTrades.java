@@ -62,8 +62,9 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
             wVillager.saveRestockTime();
             if (notifyPlayer) {
                 Player player = event.getPlayer();
+                final String timeLeft = CommonUtils.formatTime(wVillager.getRestockCooldownMillis(restock_delay_millis));
                 VillagerOptimizer.getLang(player.locale()).trades_restocked.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(restock_delay_millis)).build()))
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build()))
                 );
             }
             if (shouldLog)

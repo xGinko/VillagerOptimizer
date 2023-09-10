@@ -110,9 +110,9 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 wVillager.villager().shakeHead();
                 if (shouldNotifyPlayer) {
                     Player player = event.getPlayer();
-                    final long optimizeCoolDown = wVillager.getOptimizeCooldownMillis(cooldown);
+                    final String timeLeft = CommonUtils.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
                     VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(optimizeCoolDown)).build())));
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())));
                 }
             }
         }
@@ -178,9 +178,9 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 wVillager.villager().shakeHead();
                 if (shouldNotifyPlayer) {
                     Player player = event.getPlayer();
-                    final long optimizeCoolDown = wVillager.getOptimizeCooldownMillis(cooldown);
+                    final String timeLeft = CommonUtils.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
                     VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(optimizeCoolDown)).build()))
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build()))
                     );
                 }
             }

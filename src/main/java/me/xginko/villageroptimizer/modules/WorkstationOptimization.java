@@ -121,9 +121,9 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             closestOptimizableVillager.villager().shakeHead();
             if (shouldNotifyPlayer) {
                 Player player = event.getPlayer();
-                final long optimizeCoolDown = closestOptimizableVillager.getOptimizeCooldownMillis(cooldown);
+                final String timeLeft = CommonUtils.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown));
                 VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(CommonUtils.formatTime(optimizeCoolDown)).build())
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())
                 ));
             }
         }
