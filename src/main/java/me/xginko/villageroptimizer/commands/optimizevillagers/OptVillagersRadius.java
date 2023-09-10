@@ -83,10 +83,12 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%amount%").replacement(success).build())
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%radius%").replacement(radius).build())
                 ));
-                final String alreadyOptimized = Integer.toString(failCount);
-                VillagerOptimizer.getLang(player.locale()).command_optimize_fail.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%amount%").replacement(alreadyOptimized).build())
-                ));
+                if (failCount > 0) {
+                    final String alreadyOptimized = Integer.toString(failCount);
+                    VillagerOptimizer.getLang(player.locale()).command_optimize_fail.forEach(line -> player.sendMessage(line
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%amount%").replacement(alreadyOptimized).build())
+                    ));
+                }
             } catch (NumberFormatException e) {
                 VillagerOptimizer.getLang(player.locale()).command_radius_invalid.forEach(player::sendMessage);
             }
