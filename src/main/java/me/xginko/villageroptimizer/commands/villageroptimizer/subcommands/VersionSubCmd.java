@@ -22,19 +22,23 @@ public class VersionSubCmd extends SubCommand {
     }
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer version").color(NamedTextColor.GOLD);
+        return Component.text("/villageroptimizer version").color(NamedTextColor.BLUE);
     }
 
     @Override
     public void perform(CommandSender sender, String[] args) {
         if (sender.hasPermission(Permissions.Commands.VERSION.get())) {
-            PluginMeta pluginMeta = VillagerOptimizer.getInstance().getPluginMeta();
+            final PluginMeta pluginMeta = VillagerOptimizer.getInstance().getPluginMeta();
             sender.sendMessage(
                     Component.newline()
-                    .append(Component.text(pluginMeta.getName()+" "+pluginMeta.getVersion()).color(NamedTextColor.BLUE).decorate(TextDecoration.BOLD)
-                    .append(Component.text(" by ").color(NamedTextColor.GRAY))
-                    .append(Component.text(pluginMeta.getAuthors().get(0)).color(NamedTextColor.WHITE))
-                    .clickEvent(ClickEvent.openUrl(pluginMeta.getWebsite())))
+                    .append(Component.text(pluginMeta.getName()+" "+pluginMeta.getVersion())
+                            .color(NamedTextColor.BLUE).decorate(TextDecoration.BOLD)
+                            .clickEvent(ClickEvent.openUrl(pluginMeta.getWebsite())))
+                    .append(Component.text(" by ")
+                            .color(NamedTextColor.GRAY))
+                    .append(Component.text(pluginMeta.getAuthors().get(0))
+                            .color(NamedTextColor.WHITE)
+                            .clickEvent(ClickEvent.openUrl("https://github.com/xGinko")))
                     .append(Component.newline())
             );
         } else {

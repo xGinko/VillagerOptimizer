@@ -63,12 +63,12 @@ public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerComm
         subCommands.forEach(subCommand -> sender.sendMessage(
                 subCommand.getSyntax().append(Component.text(" - ").color(NamedTextColor.DARK_GRAY)).append(subCommand.getDescription())));
         sender.sendMessage(
-                Component.text("/optimizevillagers <message>").color(NamedTextColor.BLUE)
+                Component.text("/optimizevillagers <blockradius>").color(NamedTextColor.BLUE)
                 .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text("Optimize villagers in a radius").color(NamedTextColor.GRAY))
         );
         sender.sendMessage(
-                Component.text("/unoptmizevillagers").color(NamedTextColor.BLUE)
+                Component.text("/unoptmizevillagers <blockradius>").color(NamedTextColor.BLUE)
                 .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text("Unoptimize villagers in a radius").color(NamedTextColor.GRAY))
         );

@@ -3,20 +3,39 @@ package me.xginko.villageroptimizer.modules;
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.config.Config;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class PreventVillagerDamage implements VillagerOptimizerModule, Listener {
 
     private final VillagerManager villagerManager;
+    private final boolean block, player, mob, other, push;
 
     protected PreventVillagerDamage() {
+        shouldEnable();
         this.villagerManager = VillagerOptimizer.getVillagerManager();
+        Config config = VillagerOptimizer.getConfiguration();
+        config.addComment("optimization.behavior.prevent-damage.enable",
+                "Configure what kind of damage you want to cancel for optimized villagers here.");
+        this.block = config.getBoolean("optimization.behavior.prevent-damage.block", false,
+                "Prevents damage from blocks like lava, tnt, respawn anchors, etc.");
+        this.player = config.getBoolean("optimization.behavior.prevent-damage.player", false,
+                "Prevents damage from getting hit by players.");
+        this.mob = config.getBoolean("optimization.behavior.prevent-damage.mob", true,
+                "Prevents damage from hostile mobs.");
+        this.other = config.getBoolean("optimization.behavior.prevent-damage.other", true,
+                "Prevents damage from all other entities.");
+        this.push = config.getBoolean("optimization.behavior.prevent-damage.prevent-push-from-attack", true,
+                "Prevents optimized villagers from getting pushed by an attacking entity");
     }
 
     @Override
@@ -32,13 +51,37 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization.behavior.optimized-villagers-dont-take-damage", true);
+        return VillagerOptimizer.getConfiguration().getBoolean("optimization.behavior.prevent-damage.enable", true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onDamageReceive(EntityDamageEvent event) {
+    private void onDamageReceive(EntityDamageByEntityEvent event) {
         if (
-                !event.getEntityType().equals(EntityType.VILLAGER)
+                event.getEntityType().equals(EntityType.VILLAGER)
+                && villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()
+        ) {
+            Entity damager = event.getDamager();
+            if (damager.getType().equals(EntityType.PLAYER)) {
+                if (player) event.setCancelled(true);
+                return;
+            }
+
+            if (damager instanceof Mob) {
+                if (mob) event.setCancelled(true);
+                return;
+            }
+
+            if (other) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private void onDamageReceive(EntityDamageByBlockEvent event) {
+        if (
+                block
+                && event.getEntityType().equals(EntityType.VILLAGER)
                 && villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {
             event.setCancelled(true);
@@ -48,7 +91,8 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onPushByEntityAttack(EntityPushedByEntityAttackEvent event) {
         if (
-                !event.getEntityType().equals(EntityType.VILLAGER)
+                push
+                && event.getEntityType().equals(EntityType.VILLAGER)
                 && villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {
             event.setCancelled(true);

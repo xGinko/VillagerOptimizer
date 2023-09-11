@@ -35,7 +35,8 @@ public class PreventVillagerTargetting implements VillagerOptimizerModule, Liste
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization.behavior.optimized-villagers-dont-get-targeted", true);
+        return VillagerOptimizer.getConfiguration().getBoolean("optimization.behavior.prevent-targeting.enable", true,
+                "Prevents hostile entities from targeting optimized villagers.");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

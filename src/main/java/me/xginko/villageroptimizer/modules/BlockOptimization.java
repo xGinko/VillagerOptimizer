@@ -37,6 +37,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
     private final long cooldown;
 
     protected BlockOptimization() {
+        shouldEnable();
         this.villagerManager = VillagerOptimizer.getVillagerManager();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("optimization.methods.by-specific-block.enable", """
@@ -61,7 +62,8 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 """) * 1000L;
         this.maxVillagers = config.getInt("optimization.methods.by-specific-block.max-villagers-per-block", 3,
                 "How many villagers can be optimized at once by placing a block under them.");
-        this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-specific-block.notify-player", true);
+        this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-specific-block.notify-player", true,
+                "Sends players a message when they successfully optimized a villager.");
         this.shouldLog = config.getBoolean("optimization.methods.by-specific-block.log", false);
     }
 

@@ -50,6 +50,13 @@ public class Config {
         config.addDefault("config-version", 1.00);
         createTitledSection("General", "general");
         createTitledSection("Optimization", "optimization");
+        config.addDefault("optimization.villager-chunk-limit.enable", false);
+        config.addDefault("optimization.prevent-trading-with-unoptimized.enable", false);
+        config.addDefault("optimization.methods.by-nametag.enable", true);
+        config.addDefault("optimization.behavior.villager-leveling.enable", true);
+        config.addDefault("optimization.behavior.trade-restocking.enable", true);
+        config.addDefault("optimization.behavior.prevent-targeting.enable", true);
+        config.addDefault("optimization.behavior.prevent-damage.enable", true);
     }
 
     public void createTitledSection(String title, String path) {

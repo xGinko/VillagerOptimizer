@@ -36,10 +36,11 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         this.plugin = VillagerOptimizer.getInstance();
         this.villagerManager = VillagerOptimizer.getVillagerManager();
         Config config = VillagerOptimizer.getConfiguration();
-        this.maxVillagersPerChunk = config.getInt("villager-chunk-limit.max-villagers-per-chunk", 25);
-        this.logIsEnabled = config.getBoolean("villager-chunk-limit.log-removals", false);
-        this.checkPeriod = config.getInt("villager-chunk-limit.check-period-in-ticks", 600, "check all chunks every x ticks.");
-        config.getList("villager-chunk-limit.removal-priority", List.of(
+        this.maxVillagersPerChunk = config.getInt("optimization.villager-chunk-limit.max-villagers-per-chunk", 25);
+        this.logIsEnabled = config.getBoolean("optimization.villager-chunk-limit.log-removals", false);
+        this.checkPeriod = config.getInt("optimization.villager-chunk-limit.check-period-in-ticks", 600,
+                "Check all loaded chunks every X ticks. 1 second = 20 ticks");
+        config.getList("optimization.villager-chunk-limit.removal-priority", List.of(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
                 "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN"
         ),
@@ -50,7 +51,8 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 Villager.Profession profession = Villager.Profession.valueOf(configuredProfession);
                 this.removalPriority.add(profession);
             } catch (IllegalArgumentException e) {
-                LogUtils.moduleLog(Level.WARNING, "villager-chunk-limit", "Villager profession '"+configuredProfession+"' not recognized. Make sure you're using the correct profession enums.");
+                LogUtils.moduleLog(Level.WARNING, "optimization.villager-chunk-limit",
+                        "Villager profession '"+configuredProfession+"' not recognized. Make sure you're using the correct profession enums.");
             }
         });
     }
@@ -63,7 +65,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("villager-chunk-limit.enable", false);
+        return VillagerOptimizer.getConfiguration().getBoolean("optimization.villager-chunk-limit.enable", false);
     }
 
     @Override
@@ -116,7 +118,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         for (int i = 0; i < amount_over_the_limit; i++) {
             Villager villager = villagers_in_chunk.get(i);
             villager.remove();
-            if (logIsEnabled) LogUtils.moduleLog(Level.INFO, "villager-chunk-limit",
+            if (logIsEnabled) LogUtils.moduleLog(Level.INFO, "optimization.villager-chunk-limit",
                     "Removed villager of profession type '"+villager.getProfession()+"' at "+villager.getLocation());
         }
     }

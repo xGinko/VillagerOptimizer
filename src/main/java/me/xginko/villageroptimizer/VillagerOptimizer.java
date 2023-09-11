@@ -10,7 +10,6 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -38,25 +37,25 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void onEnable() {
         instance = this;
         logger = getLogger();
-        ConsoleCommandSender console = getServer().getConsoleSender();
-        console.sendMessage(Component.text(
+        getServer().getConsoleSender().sendMessage(Component.text(
                 """
                 \s
-                 _    __ _  __ __                           ____          __   _             _                 \s
-                | |  / /(_)/ // /____ _ ____ _ ___   _____ / __ \\ ____   / /_ (_)____ ___   (_)____  ___   _____
-                | | / // // // // __ `// __ `// _ \\ / ___// / / // __ \\ / __// // __ `__ \\ / //_  / / _ \\ / ___/
-                | |/ // // // // /_/ // /_/ //  __// /   / /_/ // /_/ // /_ / // / / / / // /  / /_/  __// /   \s
-                |___//_//_//_/ \\__,_/ \\__, / \\___//_/    \\____// .___/ \\__//_//_/ /_/ /_//_/  /___/\\___//_/    \s
-                                     /____/                   /_/               by xGinko                       \s
-                """
+                ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+                ┃     _    __ _  __ __                           ____          __   _             _                          ┃\s
+                ┃    | |  / /(_)/ // /____ _ ____ _ ___   _____ / __ \\ ____   / /_ (_)____ ___   (_)____  ___   _____        ┃\s
+                ┃    | | / // // // // __ `// __ `// _ \\ / ___// / / // __ \\ / __// // __ `__ \\ / //_  / / _ \\ / ___/        ┃\s
+                ┃    | |/ // // // // /_/ // /_/ //  __// /   / /_/ // /_/ // /_ / // / / / / // /  / /_/  __// /            ┃\s
+                ┃    |___//_//_//_/ \\__,_/ \\__, / \\___//_/    \\____// .___/ \\__//_//_/ /_/ /_//_/  /___/\\___//_/             ┃\s
+                ┃                         /____/                   /_/               by xGinko                               ┃\s
+                ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"""
         ).color(TextColor.color(102,255,230)).decorate(TextDecoration.BOLD));
-        console.sendMessage(Component.text("Loading Translations...").color(TextColor.color(102,255,230)));
+        logger.info("Loading Translations...");
         reloadLang();
-        console.sendMessage(Component.text("Loading Config...").color(TextColor.color(102,255,230)));
+        logger.info("Loading Config...");
         reloadConfiguration();
-        console.sendMessage(Component.text("Registering Commands...").color(TextColor.color(102,255,230)));
+        logger.info("Registering Commands...");
         VillagerOptimizerCommand.reloadCommands();
-        console.sendMessage(Component.text("Done.").color(TextColor.color(102,255,230)));
+        logger.info("Done.");
     }
 
     public static VillagerOptimizer getInstance()  {

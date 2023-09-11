@@ -34,7 +34,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (sender.hasPermission(Permissions.Commands.UNOPTIMIZE_RADIUS.get())) {
             if (!(sender instanceof Player player)) {
-                sender.sendMessage(Component.text("This command can only be executed as a player.")
+                sender.sendMessage(Component.text("This command can only be executed by a player.")
                         .color(NamedTextColor.RED).decorate(TextDecoration.BOLD));
                 return true;
             }
