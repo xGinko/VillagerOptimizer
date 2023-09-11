@@ -57,7 +57,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
             }
         });
         this.cooldown = config.getInt("optimization-methods.block-optimization.optimize-cooldown-seconds", 600, """
-                Cooldown in seconds until a villager can be optimized again by using this method. \s
+                Cooldown in seconds until a villager can be optimized again by using specific blocks. \s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.
                 """) * 1000L;
         this.maxVillagers = config.getInt("optimization-methods.block-optimization.max-villagers-per-block", 3,

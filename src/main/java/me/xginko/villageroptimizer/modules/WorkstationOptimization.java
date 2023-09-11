@@ -57,7 +57,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
                 The radius in blocks a villager can be away from the player when he places a workstation.\s
                 The closest unoptimized villager to the player will be optimized.""") / 2;
         this.cooldown = config.getInt("optimization-methods.workstation-optimization.optimize-cooldown-seconds", 600, """
-                Cooldown in seconds until a villager can be optimized again using this method.\s
+                Cooldown in seconds until a villager can be optimized again using a workstation.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
         this.shouldNotifyPlayer = config.getBoolean("optimization-methods.workstation-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
