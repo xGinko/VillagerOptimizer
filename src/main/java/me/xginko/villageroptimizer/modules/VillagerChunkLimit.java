@@ -36,6 +36,10 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         this.plugin = VillagerOptimizer.getInstance();
         this.villagerManager = VillagerOptimizer.getVillagerManager();
         Config config = VillagerOptimizer.getConfiguration();
+        config.addComment("villager-chunk-limit.enable", """
+                Checks chunks for too many villagers and removes excess villagers based on priority.\s
+                Naturally, optimized villagers will be picked last since they don't affect performance\s
+                as much as unoptimized villagers.""");
         this.maxVillagersPerChunk = config.getInt("villager-chunk-limit.max-villagers-per-chunk", 25);
         this.logIsEnabled = config.getBoolean("villager-chunk-limit.log-removals", false);
         this.checkPeriod = config.getInt("villager-chunk-limit.check-period-in-ticks", 600,
