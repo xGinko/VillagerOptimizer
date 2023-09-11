@@ -29,13 +29,13 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
         this.plugin = VillagerOptimizer.getInstance();
         this.villagerManager = VillagerOptimizer.getVillagerManager();
         Config config = VillagerOptimizer.getConfiguration();
-        config.addComment("optimization.behavior.villager-leveling.enable", """
+        config.addComment("gameplay.villager-leveling.enable", """
                 This is needed to allow optimized villagers to level up.\s
                 Temporarily enables the villagers AI to allow it to level up and then disables it again.""");
-        this.cooldown = config.getInt("optimization.behavior.villager-leveling.level-check-cooldown-seconds", 5, """
+        this.cooldown = config.getInt("gameplay.villager-leveling.level-check-cooldown-seconds", 5, """
                 Cooldown in seconds until the level of a villager will be checked and updated again.\s
                 Recommended to leave as is.""") * 1000L;
-        this.shouldNotify = config.getBoolean("optimization.behavior.villager-leveling.notify-player", true,
+        this.shouldNotify = config.getBoolean("gameplay.villager-leveling.notify-player", true,
                 "Tell players to wait when a villager is leveling up.");
     }
 
@@ -52,7 +52,7 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization.behavior.villager-leveling.enable", true);
+        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.villager-leveling.enable", true);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

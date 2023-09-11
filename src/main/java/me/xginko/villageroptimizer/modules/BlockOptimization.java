@@ -40,12 +40,12 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         shouldEnable();
         this.villagerManager = VillagerOptimizer.getVillagerManager();
         Config config = VillagerOptimizer.getConfiguration();
-        config.addComment("optimization.methods.by-specific-block.enable", """
+        config.addComment("optimization-methods.block-optimization.enable", """
                 When enabled, villagers standing on the configured specific blocks will become optimized once a\s
                 player interacts with them. If the block is broken or moved, the villager will become unoptimized\s
                 again once a player interacts with the villager afterwards.
                 """);
-        config.getList("optimization.methods.by-specific-block.materials", List.of(
+        config.getList("optimization-methods.block-optimization.materials", List.of(
                 "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
         ), "Values here need to be valid bukkit Material enums for your server version."
         ).forEach(configuredMaterial -> {
@@ -53,18 +53,18 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 Material disableBlock = Material.valueOf(configuredMaterial);
                 this.blocks_that_disable.add(disableBlock);
             } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("optimization.methods.by-specific-block", configuredMaterial);
+                LogUtils.materialNotRecognized("optimization-methods.block-optimization", configuredMaterial);
             }
         });
-        this.cooldown = config.getInt("optimization.methods.by-specific-block.optimize-cooldown-seconds", 600, """
+        this.cooldown = config.getInt("optimization-methods.block-optimization.optimize-cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again by using this method. \s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.
                 """) * 1000L;
-        this.maxVillagers = config.getInt("optimization.methods.by-specific-block.max-villagers-per-block", 3,
+        this.maxVillagers = config.getInt("optimization-methods.block-optimization.max-villagers-per-block", 3,
                 "How many villagers can be optimized at once by placing a block under them.");
-        this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-specific-block.notify-player", true,
+        this.shouldNotifyPlayer = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
-        this.shouldLog = config.getBoolean("optimization.methods.by-specific-block.log", false);
+        this.shouldLog = config.getBoolean("optimization-methods.block-optimization.log", false);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization.methods.by-specific-block.enable", true);
+        return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.block-optimization.enable", false);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

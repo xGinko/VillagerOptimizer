@@ -24,17 +24,17 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
         shouldEnable();
         this.villagerManager = VillagerOptimizer.getVillagerManager();
         Config config = VillagerOptimizer.getConfiguration();
-        config.addComment("optimization.behavior.prevent-damage.enable",
+        config.addComment("gameplay.prevent-damage.enable",
                 "Configure what kind of damage you want to cancel for optimized villagers here.");
-        this.block = config.getBoolean("optimization.behavior.prevent-damage.block", false,
+        this.block = config.getBoolean("gameplay.prevent-damage.block", false,
                 "Prevents damage from blocks like lava, tnt, respawn anchors, etc.");
-        this.player = config.getBoolean("optimization.behavior.prevent-damage.player", false,
+        this.player = config.getBoolean("gameplay.prevent-damage.player", false,
                 "Prevents damage from getting hit by players.");
-        this.mob = config.getBoolean("optimization.behavior.prevent-damage.mob", true,
+        this.mob = config.getBoolean("gameplay.prevent-damage.mob", true,
                 "Prevents damage from hostile mobs.");
-        this.other = config.getBoolean("optimization.behavior.prevent-damage.other", true,
+        this.other = config.getBoolean("gameplay.prevent-damage.other", true,
                 "Prevents damage from all other entities.");
-        this.push = config.getBoolean("optimization.behavior.prevent-damage.prevent-push-from-attack", true,
+        this.push = config.getBoolean("gameplay.prevent-damage.prevent-push-from-attack", true,
                 "Prevents optimized villagers from getting pushed by an attacking entity");
     }
 
@@ -51,7 +51,7 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization.behavior.prevent-damage.enable", true);
+        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.prevent-damage.enable", true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

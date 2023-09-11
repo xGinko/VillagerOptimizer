@@ -26,14 +26,14 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
         shouldEnable();
         this.villagerManager = VillagerOptimizer.getVillagerManager();
         Config config = VillagerOptimizer.getConfiguration();
-        config.addComment("optimization.behavior.trade-restocking.enable", """
+        config.addComment("gameplay.trade-restocking.enable", """
                 This is for automatic restocking of trades for optimized villagers. Optimized Villagers\s
                 Don't have enough AI to do trade restocks themselves, so this needs to always be enabled.""");
-        this.restock_delay_millis = config.getInt("optimization.behavior.trade-restocking.delay-in-ticks", 1000,
+        this.restock_delay_millis = config.getInt("gameplay.trade-restocking.delay-in-ticks", 1000,
                 "1 second = 20 ticks. There are 24.000 ticks in a single minecraft day.") * 50L;
-        this.notifyPlayer = config.getBoolean("optimization.behavior.trade-restocking.notify-player", true,
+        this.notifyPlayer = config.getBoolean("gameplay.trade-restocking.notify-player", true,
                 "Sends the player a message when the trades were restocked on a clicked villager.");
-        this.shouldLog = config.getBoolean("optimization.behavior.trade-restocking.log", false);
+        this.shouldLog = config.getBoolean("gameplay.trade-restocking.log", false);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization.behavior.trade-restocking.enable", true);
+        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.trade-restocking.enable", true);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

@@ -17,6 +17,7 @@ public interface VillagerOptimizerModule {
         modules.add(new BlockOptimization());
         modules.add(new LevelVillagers());
         modules.add(new NametagOptimization());
+        modules.add(new NoBabyVillagers());
         modules.add(new PreventUnoptimizedTrading());
         modules.add(new PreventVillagerDamage());
         modules.add(new PreventVillagerTargetting());

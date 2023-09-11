@@ -38,10 +38,10 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         shouldEnable();
         this.villagerManager = VillagerOptimizer.getVillagerManager();
         Config config = VillagerOptimizer.getConfiguration();
-        config.addComment("optimization.methods.by-workstation.enable", """
+        config.addComment("optimization-methods.workstation-optimization.enable", """
                         When enabled, villagers near a configured radius to a workstation specific to your config\s
                         will be optimized.""");
-        config.getList("optimization.methods.by-workstation.workstation-materials", List.of(
+        config.getList("optimization-methods.workstation-optimization.workstation-materials", List.of(
                 "COMPOSTER", "SMOKER", "BARREL", "LOOM", "BLAST_FURNACE", "BREWING_STAND", "CAULDRON",
                 "FLETCHING_TABLE", "CARTOGRAPHY_TABLE", "LECTERN", "SMITHING_TABLE", "STONECUTTER", "GRINDSTONE"
         ), "Values here need to be valid bukkit Material enums for your server version."
@@ -50,18 +50,18 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
                 Material disableBlock = Material.valueOf(configuredMaterial);
                 this.workstations_that_disable.add(disableBlock);
             } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("optimization.methods.by-workstation", configuredMaterial);
+                LogUtils.materialNotRecognized("optimization-methods.workstation-optimization", configuredMaterial);
             }
         });
-        this.search_radius = config.getDouble("optimization.methods.by-workstation.search-radius-in-blocks", 2.0, """
+        this.search_radius = config.getDouble("optimization-methods.workstation-optimization.search-radius-in-blocks", 2.0, """
                 The radius in blocks a villager can be away from the player when he places a workstation.\s
                 The closest unoptimized villager to the player will be optimized.""") / 2;
-        this.cooldown = config.getInt("optimization.methods.by-workstation.optimize-cooldown-seconds", 600, """
+        this.cooldown = config.getInt("optimization-methods.workstation-optimization.optimize-cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using this method.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
-        this.shouldNotifyPlayer = config.getBoolean("optimization.methods.by-workstation.notify-player", true,
+        this.shouldNotifyPlayer = config.getBoolean("optimization-methods.workstation-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
-        this.shouldLog = config.getBoolean("optimization.methods.by-workstation.log", false);
+        this.shouldLog = config.getBoolean("optimization-methods.workstation-optimization.log", false);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization.methods.by-workstation.enable", true);
+        return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.workstation-optimization.enable", false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
