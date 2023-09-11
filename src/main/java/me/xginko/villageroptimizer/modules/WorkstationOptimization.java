@@ -53,9 +53,9 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
                 LogUtils.materialNotRecognized("optimization.methods.by-workstation", configuredMaterial);
             }
         });
-        this.search_radius = config.getDouble("optimization.methods.by-workstation.search-radius-in-blocks", 4.0, """
+        this.search_radius = config.getDouble("optimization.methods.by-workstation.search-radius-in-blocks", 2.0, """
                 The radius in blocks a villager can be away from the player when he places a workstation.\s
-                The closest unoptimized villager to the player will be optimized.""");
+                The closest unoptimized villager to the player will be optimized.""") / 2;
         this.cooldown = config.getInt("optimization.methods.by-workstation.optimize-cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using this method.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
@@ -89,7 +89,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
         final Location workstationLoc = placed.getLocation();
         WrappedVillager closestOptimizableVillager = null;
-        double closestDistance = search_radius;
+        double closestDistance = Double.MAX_VALUE;
 
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
@@ -141,7 +141,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
         final Location workstationLoc = placed.getLocation();
         WrappedVillager closestOptimizedVillager = null;
-        double closestDistance = search_radius;
+        double closestDistance = Double.MAX_VALUE;
 
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
