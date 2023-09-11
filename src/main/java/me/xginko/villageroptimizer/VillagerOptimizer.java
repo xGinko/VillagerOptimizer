@@ -43,31 +43,33 @@ public final class VillagerOptimizer extends JavaPlugin {
         instance = this;
         logger = getLogger();
         ConsoleCommandSender console = getServer().getConsoleSender();
-        console.sendMessage(Component.text("╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮").style(plugin_style));
-        console.sendMessage(Component.text("│                                                                                                                │").style(plugin_style));
-        console.sendMessage(Component.text("│                                                                                                                │").style(plugin_style));
-        console.sendMessage(Component.text("│         _    __ _  __ __                           ____          __   _             _                          │").style(plugin_style));
-        console.sendMessage(Component.text("│        | |  / /(_)/ // /____ _ ____ _ ___   _____ / __ \\ ____   / /_ (_)____ ___   (_)____  ___   _____        │").style(plugin_style));
-        console.sendMessage(Component.text("│        | | / // // // // __ `// __ `// _ \\ / ___// / / // __ \\ / __// // __ `__ \\ / //_  / / _ \\ / ___/        │").style(plugin_style));
-        console.sendMessage(Component.text("│        | |/ // // // // /_/ // /_/ //  __// /   / /_/ // /_/ // /_ / // / / / / // /  / /_/  __// /            │").style(plugin_style));
-        console.sendMessage(Component.text("│        |___//_//_//_/ \\__,_/ \\__, / \\___//_/    \\____// .___/ \\__//_//_/ /_/ /_//_/  /___/\\___//_/             │").style(plugin_style));
-        console.sendMessage(Component.text("│                             /____/                   /_/                                by xGinko              │").style(plugin_style));
-        console.sendMessage(Component.text("│                                                                                                                │").style(plugin_style));
-        console.sendMessage(Component.text("│                                                                                                                │").style(plugin_style));
-        console.sendMessage(Component.text("│                                        ").style(plugin_style)
-                .append(Component.text(" ➤  Loading Translations...").style(plugin_style)).append(Component.text("                                             │")).decorate(TextDecoration.BOLD));
+        console.sendMessage(Component.text("╭────────────────────────────────────────────────────────────╮").style(plugin_style));
+        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
+        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
+        console.sendMessage(Component.text("│             _   __ _  __ __                                │").style(plugin_style));
+        console.sendMessage(Component.text("│            | | / /(_)/ // /___ _ ___ _ ___  ____           │").style(plugin_style));
+        console.sendMessage(Component.text("│            | |/ // // // // _ `// _ `// -_)/ __/           │").style(plugin_style));
+        console.sendMessage(Component.text("│            |___//_//_//_/ \\_,_/ \\_, / \\__//_/              │").style(plugin_style));
+        console.sendMessage(Component.text("│          ____        __   _    /___/_                      │").style(plugin_style));
+        console.sendMessage(Component.text("│         / __ \\ ___  / /_ (_)__ _   (_)___ ___  ____        │").style(plugin_style));
+        console.sendMessage(Component.text("│        / /_/ // _ \\/ __// //  ' \\ / //_ // -_)/ __/        │").style(plugin_style));
+        console.sendMessage(Component.text("│        \\____// .__/\\__//_//_/_/_//_/ /__/\\__//_/           │").style(plugin_style));
+        console.sendMessage(Component.text("│             /_/         by xGinko                          │").style(plugin_style));
+        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
+        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
+        console.sendMessage(Component.text("│        ").style(plugin_style).append(Component.text("https://github.com/xGinko/VillagerOptimizer").color(NamedTextColor.GRAY)).append(Component.text("         │").style(plugin_style)));
+        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
+        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
+        console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Loading Translations...").style(plugin_style)).append(Component.text("                   │")).decorate(TextDecoration.BOLD));
         reloadLang(true);
-        console.sendMessage(Component.text("│                                        ").style(plugin_style)
-                .append(Component.text(" ➤  Loading Config...").style(plugin_style)).append(Component.text("                                                   │")).decorate(TextDecoration.BOLD));
+        console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Loading Config...").style(plugin_style)).append(Component.text("                         │")).decorate(TextDecoration.BOLD));
         reloadConfiguration();
-        console.sendMessage(Component.text("│                                        ").style(plugin_style)
-                .append(Component.text(" ➤  Registering Commands...").style(plugin_style)).append(Component.text("                                             │").style(plugin_style)));
+        console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Registering Commands...").style(plugin_style)).append(Component.text("                   │").style(plugin_style)));
         VillagerOptimizerCommand.reloadCommands();
-        console.sendMessage(Component.text("│                                        ").style(plugin_style)
-                .append(Component.text(" ✓  Done.").color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD)).append(Component.text("                                                               │").style(plugin_style)));
-        console.sendMessage(Component.text("│                                                                                                                │").style(plugin_style));
-        console.sendMessage(Component.text("│                                                                                                                │").style(plugin_style));
-        console.sendMessage(Component.text("╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯").style(plugin_style));
+        console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ✓  Done.").color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD)).append(Component.text("                                     │").style(plugin_style)));
+        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
+        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
+        console.sendMessage(Component.text("╰────────────────────────────────────────────────────────────╯").style(plugin_style));
     }
 
     public static VillagerOptimizer getInstance()  {
@@ -112,9 +114,9 @@ public final class VillagerOptimizer extends JavaPlugin {
             Files.createDirectories(langDirectory.toPath());
             for (String fileName : getDefaultLanguageFiles()) {
                 String localeString = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
-                if (fancy) { console.sendMessage(Component.text("│                                         ").style(plugin_style)
+                if (fancy) { console.sendMessage(Component.text("│                       ").style(plugin_style)
                             .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
-                            .append(Component.text("                                                              │").style(plugin_style)));
+                            .append(Component.text("                            │").style(plugin_style)));
                 } else { logger.info(String.format("Found language file for %s", localeString)); }
                 LanguageCache langCache = new LanguageCache(localeString);
                 languageCacheMap.put(localeString, langCache);
