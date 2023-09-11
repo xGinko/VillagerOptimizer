@@ -114,10 +114,11 @@ public final class VillagerOptimizer extends JavaPlugin {
             Files.createDirectories(langDirectory.toPath());
             for (String fileName : getDefaultLanguageFiles()) {
                 String localeString = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
-                if (fancy) { console.sendMessage(Component.text("│                       ").style(plugin_style)
-                            .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
-                            .append(Component.text("                            │").style(plugin_style)));
-                } else { logger.info(String.format("Found language file for %s", localeString)); }
+                if (fancy) console.sendMessage(
+                        Component.text("│                       ").style(plugin_style)
+                        .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
+                        .append(Component.text("                            │").style(plugin_style)));
+                else logger.info(String.format("Found language file for %s", localeString));
                 LanguageCache langCache = new LanguageCache(localeString);
                 languageCacheMap.put(localeString, langCache);
             }
