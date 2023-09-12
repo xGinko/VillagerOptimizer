@@ -18,6 +18,10 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class RestockTrades implements VillagerOptimizerModule, Listener {
 
+    /*
+     * TODO: Disable notify message for cooldown bypassers
+     * */
+
     private final VillagerManager villagerManager;
     private final long restock_delay_millis;
     private final boolean shouldLog, notifyPlayer;

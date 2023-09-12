@@ -23,13 +23,17 @@ import java.util.logging.Level;
 
 public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
+    /*
+    * TODO: expand villager chunk limit with settings for optimized and optimzed.
+    * */
+
     private final VillagerOptimizer plugin;
     private final VillagerManager villagerManager;
     private ScheduledTask scheduledTask;
     private final List<Villager.Profession> removalPriority = new ArrayList<>(16);
-    private final int maxVillagersPerChunk;
+    private final int global_max_villagers_per_chunk, max_unoptimized_per_chunk, max_optimized_per_chunk;
     private final boolean logIsEnabled;
-    private final long checkPeriod;
+    private final long check_period;
 
     protected VillagerChunkLimit() {
         shouldEnable();
@@ -40,10 +44,17 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 Checks chunks for too many villagers and removes excess villagers based on priority.\s
                 Naturally, optimized villagers will be picked last since they don't affect performance\s
                 as much as unoptimized villagers.""");
-        this.maxVillagersPerChunk = config.getInt("villager-chunk-limit.max-villagers-per-chunk", 25);
-        this.logIsEnabled = config.getBoolean("villager-chunk-limit.log-removals", false);
-        this.checkPeriod = config.getInt("villager-chunk-limit.check-period-in-ticks", 600,
+        this.global_max_villagers_per_chunk = config.getInt("villager-chunk-limit.global-max-villagers-per-chunk", 50, """
+                The total amount of villagers, no matter if optimized or unoptimized per chunk.\s
+                You want this number to be minimum as high as the sum of optimized and unoptimized\s
+                per chunk if you don't want to risk deleting the wrong villagers.""");
+        this.max_unoptimized_per_chunk = config.getInt("villager-chunk-limit.max-unoptimized-per-chunk", 30,
+                "The maximum amount of unoptimized villagers per chunk.");
+        this.max_optimized_per_chunk = config.getInt("villager-chunk-limit.max-optimized-per-chunk", 20,
+                "The maximum amount of optimized villagers per chunk.");
+        this.check_period = config.getInt("villager-chunk-limit.check-period-in-ticks", 600,
                 "Check all loaded chunks every X ticks. 1 second = 20 ticks");
+        this.logIsEnabled = config.getBoolean("villager-chunk-limit.log-removals", false);
         config.getList("villager-chunk-limit.removal-priority", List.of(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
                 "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN"
@@ -64,7 +75,13 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
     @Override
     public void enable() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        this.scheduledTask = plugin.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, task -> run(), checkPeriod, checkPeriod);
+        this.scheduledTask = plugin.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, periodic_chunk_check -> {
+            plugin.getServer().getWorlds().forEach(world -> {
+                for (Chunk chunk : world.getLoadedChunks()) {
+                    plugin.getServer().getRegionScheduler().run(plugin, world, chunk.getX(), chunk.getZ(), check_chunk -> checkVillagersInChunk(chunk));
+                }
+            });
+        }, check_period, check_period);
     }
 
     @Override
@@ -94,14 +111,6 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         }
     }
 
-    private void run() {
-        plugin.getServer().getWorlds().forEach(world -> {
-            for (Chunk chunk : world.getLoadedChunks()) {
-                plugin.getServer().getRegionScheduler().run(plugin, world, chunk.getX(), chunk.getZ(), task -> checkVillagersInChunk(chunk));
-            }
-        });
-    }
-
     private void checkVillagersInChunk(Chunk chunk) {
         // Create a list with all villagers in that chunk
         List<Villager> villagers_in_chunk = new ArrayList<>();
@@ -112,7 +121,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         }
 
         // Check if there are more villagers in that chunk than allowed
-        int amount_over_the_limit = villagers_in_chunk.size() - maxVillagersPerChunk;
+        int amount_over_the_limit = villagers_in_chunk.size() - global_max_villagers_per_chunk;
         if (amount_over_the_limit <= 0) return;
 
         // Sort villager list by profession priority

@@ -30,6 +30,10 @@ import java.util.List;
 
 public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
+    /*
+     * TODO: Think of better logic than just checking under the villagers feet for block
+     * */
+
     private final VillagerManager villagerManager;
     private final HashSet<Material> blocks_that_disable = new HashSet<>(4);
     private final boolean shouldLog, shouldNotifyPlayer;
@@ -43,8 +47,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         config.addComment("optimization-methods.block-optimization.enable", """
                 When enabled, villagers standing on the configured specific blocks will become optimized once a\s
                 player interacts with them. If the block is broken or moved, the villager will become unoptimized\s
-                again once a player interacts with the villager afterwards.
-                """);
+                again once a player interacts with the villager afterwards.""");
         config.getList("optimization-methods.block-optimization.materials", List.of(
                 "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
         ), "Values here need to be valid bukkit Material enums for your server version."
@@ -53,13 +56,12 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 Material disableBlock = Material.valueOf(configuredMaterial);
                 this.blocks_that_disable.add(disableBlock);
             } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("optimization-methods.block-optimization", configuredMaterial);
+                LogUtils.materialNotRecognized("block-optimization", configuredMaterial);
             }
         });
         this.cooldown = config.getInt("optimization-methods.block-optimization.optimize-cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again by using specific blocks. \s
-                Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.
-                """) * 1000L;
+                Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
         this.maxVillagers = config.getInt("optimization-methods.block-optimization.max-villagers-per-block", 3,
                 "How many villagers can be optimized at once by placing a block under them.");
         this.shouldNotifyPlayer = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
@@ -92,11 +94,12 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
         int counter = 0;
         for (Entity entity : placed.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,1,0.5)) {
+            if (counter >= maxVillagers) return;
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
 
             WrappedVillager wVillager = villagerManager.getOrAdd((Villager) entity);
-            if (wVillager.isOptimized()) continue;
-            if (counter >= maxVillagers) return;
+            final OptimizationType type = wVillager.getOptimizationType();
+            if (!type.equals(OptimizationType.OFF) && !type.equals(OptimizationType.COMMAND)) continue;
 
             if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.BLOCK_COOLDOWN.get())) {
                 wVillager.setOptimization(OptimizationType.BLOCK);

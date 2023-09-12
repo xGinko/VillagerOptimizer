@@ -27,7 +27,10 @@ import java.util.HashSet;
 import java.util.List;
 
 public class WorkstationOptimization implements VillagerOptimizerModule, Listener {
-    
+    /*
+     * TODO: Make placed workstation villager profession related.
+     * */
+
     private final VillagerManager villagerManager;
     private final HashSet<Material> workstations_that_disable = new HashSet<>(14);
     private final boolean shouldLog, shouldNotifyPlayer;
@@ -50,7 +53,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
                 Material disableBlock = Material.valueOf(configuredMaterial);
                 this.workstations_that_disable.add(disableBlock);
             } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("optimization-methods.workstation-optimization", configuredMaterial);
+                LogUtils.materialNotRecognized("workstation-optimization", configuredMaterial);
             }
         });
         this.search_radius = config.getDouble("optimization-methods.workstation-optimization.search-radius-in-blocks", 2.0, """
@@ -100,9 +103,12 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             WrappedVillager wVillager = villagerManager.getOrAdd(villager);
             final double distance = entity.getLocation().distance(workstationLoc);
 
-            if (!wVillager.isOptimized() && distance < closestDistance) {
-                closestOptimizableVillager = wVillager;
-                closestDistance = distance;
+            if (distance < closestDistance) {
+                final OptimizationType type = wVillager.getOptimizationType();
+                if (type.equals(OptimizationType.OFF) || type.equals(OptimizationType.COMMAND)) {
+                    closestOptimizableVillager = wVillager;
+                    closestDistance = distance;
+                }
             }
         }
 
@@ -150,15 +156,17 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             WrappedVillager wVillager = villagerManager.getOrAdd(villager);
             final double distance = entity.getLocation().distance(workstationLoc);
 
-            if (wVillager.isOptimized() && distance < closestDistance) {
-                closestOptimizedVillager = wVillager;
-                closestDistance = distance;
+            if (distance < closestDistance) {
+                final OptimizationType type = wVillager.getOptimizationType();
+                if (type.equals(OptimizationType.WORKSTATION) || type.equals(OptimizationType.COMMAND)) {
+                    closestOptimizedVillager = wVillager;
+                    closestDistance = distance;
+                }
             }
         }
 
-        if (closestOptimizedVillager == null) return;
-
-        if (closestOptimizedVillager.getOptimizationType().equals(OptimizationType.WORKSTATION)) {
+        if (closestOptimizedVillager != null) {
+            closestOptimizedVillager.setOptimization(OptimizationType.OFF);
             if (shouldNotifyPlayer) {
                 final String villagerType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();
