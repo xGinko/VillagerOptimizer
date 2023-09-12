@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 public final class VillagerOptimizer extends JavaPlugin {
 
     private static VillagerOptimizer instance;
-    private static HashMap<String, LanguageCache> languageCacheMap;
     private static CachedVillagers cachedVillagers;
+    private static HashMap<String, LanguageCache> languageCacheMap;
     private static Config config;
     private static Logger logger;
 

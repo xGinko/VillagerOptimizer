@@ -24,7 +24,7 @@ import java.util.logging.Level;
 public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
     /*
-    * TODO: expand villager chunk limit with settings for optimized and optimzed.
+    * TODO: expand villager chunk limit with settings for optimized and unoptimized.
     * */
 
     private final VillagerOptimizer plugin;
