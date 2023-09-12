@@ -1,8 +1,7 @@
-package me.xginko.villageroptimizer.cache;
+package me.xginko.villageroptimizer;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import me.xginko.villageroptimizer.models.WrappedVillager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
@@ -12,11 +11,11 @@ import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 
-public class VillagerManager {
+public final class CachedVillagers {
 
-    private final Cache<UUID, WrappedVillager> villagerCache;
+    private final @NotNull Cache<UUID, WrappedVillager> villagerCache;
 
-    public VillagerManager(long expireAfterWriteSeconds) {
+    CachedVillagers(long expireAfterWriteSeconds) {
         this.villagerCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(expireAfterWriteSeconds)).build();
     }
 

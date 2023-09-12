@@ -1,11 +1,11 @@
 package me.xginko.villageroptimizer.modules;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.CachedVillagers;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
-import me.xginko.villageroptimizer.models.WrappedVillager;
+import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import me.xginko.villageroptimizer.utils.LogUtils;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -31,7 +31,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
      * TODO: Make placed workstation villager profession related.
      * */
 
-    private final VillagerManager villagerManager;
+    private final CachedVillagers cachedVillagers;
     private final HashSet<Material> workstations_that_disable = new HashSet<>(14);
     private final boolean shouldLog, shouldNotifyPlayer;
     private final long cooldown;
@@ -39,7 +39,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
     protected WorkstationOptimization() {
         shouldEnable();
-        this.villagerManager = VillagerOptimizer.getVillagerManager();
+        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("optimization-methods.workstation-optimization.enable", """
                         When enabled, villagers near a configured radius to a workstation specific to your config\s
@@ -100,7 +100,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             final Villager.Profession profession = villager.getProfession();
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
 
-            WrappedVillager wVillager = villagerManager.getOrAdd(villager);
+            WrappedVillager wVillager = cachedVillagers.getOrAdd(villager);
             final double distance = entity.getLocation().distance(workstationLoc);
 
             if (distance < closestDistance) {
@@ -153,7 +153,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
             Villager villager = (Villager) entity;
 
-            WrappedVillager wVillager = villagerManager.getOrAdd(villager);
+            WrappedVillager wVillager = cachedVillagers.getOrAdd(villager);
             final double distance = entity.getLocation().distance(workstationLoc);
 
             if (distance < closestDistance) {

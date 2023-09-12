@@ -3,9 +3,9 @@ package me.xginko.villageroptimizer.modules;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.CachedVillagers;
 import me.xginko.villageroptimizer.enums.Permissions;
-import me.xginko.villageroptimizer.models.WrappedVillager;
+import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import me.xginko.villageroptimizer.utils.LogUtils;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -34,7 +34,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
      * TODO: Think of better logic than just checking under the villagers feet for block
      * */
 
-    private final VillagerManager villagerManager;
+    private final CachedVillagers cachedVillagers;
     private final HashSet<Material> blocks_that_disable = new HashSet<>(4);
     private final boolean shouldLog, shouldNotifyPlayer;
     private final int maxVillagers;
@@ -42,7 +42,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
     protected BlockOptimization() {
         shouldEnable();
-        this.villagerManager = VillagerOptimizer.getVillagerManager();
+        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("optimization-methods.block-optimization.enable", """
                 When enabled, villagers standing on the configured specific blocks will become optimized once a\s
@@ -97,7 +97,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
             if (counter >= maxVillagers) return;
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
 
-            WrappedVillager wVillager = villagerManager.getOrAdd((Villager) entity);
+            WrappedVillager wVillager = cachedVillagers.getOrAdd((Villager) entity);
             final OptimizationType type = wVillager.getOptimizationType();
             if (!type.equals(OptimizationType.OFF) && !type.equals(OptimizationType.COMMAND)) continue;
 
@@ -137,7 +137,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         for (Entity entity : broken.getRelative(BlockFace.UP).getLocation().getNearbyEntities(0.5,1,0.5)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
 
-            WrappedVillager wVillager = villagerManager.getOrAdd((Villager) entity);
+            WrappedVillager wVillager = cachedVillagers.getOrAdd((Villager) entity);
 
             if (wVillager.getOptimizationType().equals(OptimizationType.BLOCK)) {
                 if (counter >= maxVillagers) return;
@@ -165,7 +165,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
 
-        WrappedVillager wVillager = villagerManager.getOrAdd((Villager) interacted);
+        WrappedVillager wVillager = cachedVillagers.getOrAdd((Villager) interacted);
         final Location entityLegs = interacted.getLocation();
 
         if (

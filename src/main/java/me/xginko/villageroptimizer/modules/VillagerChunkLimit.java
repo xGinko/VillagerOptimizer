@@ -2,7 +2,7 @@ package me.xginko.villageroptimizer.modules;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.CachedVillagers;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.utils.LogUtils;
 import org.bukkit.Chunk;
@@ -28,7 +28,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
     * */
 
     private final VillagerOptimizer plugin;
-    private final VillagerManager villagerManager;
+    private final CachedVillagers cachedVillagers;
     private ScheduledTask scheduledTask;
     private final List<Villager.Profession> removalPriority = new ArrayList<>(16);
     private final int global_max_villagers_per_chunk, max_unoptimized_per_chunk, max_optimized_per_chunk;
@@ -38,7 +38,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
     protected VillagerChunkLimit() {
         shouldEnable();
         this.plugin = VillagerOptimizer.getInstance();
-        this.villagerManager = VillagerOptimizer.getVillagerManager();
+        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("villager-chunk-limit.enable", """
                 Checks chunks for too many villagers and removes excess villagers based on priority.\s
@@ -138,6 +138,6 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
     private int getProfessionPriority(Villager villager) {
         final Villager.Profession profession = villager.getProfession();
-        return removalPriority.contains(profession) && !villagerManager.getOrAdd(villager).isOptimized() ? removalPriority.indexOf(profession) : Integer.MAX_VALUE;
+        return removalPriority.contains(profession) && !cachedVillagers.getOrAdd(villager).isOptimized() ? removalPriority.indexOf(profession) : Integer.MAX_VALUE;
     }
 }

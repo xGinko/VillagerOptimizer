@@ -1,6 +1,5 @@
-package me.xginko.villageroptimizer.models;
+package me.xginko.villageroptimizer;
 
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.enums.Keys;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Villager;
@@ -13,7 +12,7 @@ public final class WrappedVillager {
     private final @NotNull Villager villager;
     private final @NotNull PersistentDataContainer dataContainer;
 
-    public WrappedVillager(@NotNull Villager villager) {
+    WrappedVillager(@NotNull Villager villager) {
         this.villager = villager;
         this.dataContainer = this.villager.getPersistentDataContainer();
     }

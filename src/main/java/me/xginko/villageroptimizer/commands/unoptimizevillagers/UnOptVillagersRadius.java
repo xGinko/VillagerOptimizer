@@ -1,11 +1,11 @@
 package me.xginko.villageroptimizer.commands.unoptimizevillagers;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.CachedVillagers;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
-import me.xginko.villageroptimizer.models.WrappedVillager;
+import me.xginko.villageroptimizer.WrappedVillager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -47,7 +47,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand {
             try {
                 int specifiedRadius = Integer.parseInt(args[0]) / 2;
 
-                VillagerManager villagerManager = VillagerOptimizer.getVillagerManager();
+                CachedVillagers cachedVillagers = VillagerOptimizer.getCachedVillagers();
                 int successCount = 0;
 
                 for (Entity entity : player.getNearbyEntities(specifiedRadius, specifiedRadius, specifiedRadius)) {
@@ -56,7 +56,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand {
                     Villager.Profession profession = villager.getProfession();
                     if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
 
-                    WrappedVillager wVillager = villagerManager.getOrAdd(villager);
+                    WrappedVillager wVillager = cachedVillagers.getOrAdd(villager);
 
                     if (wVillager.isOptimized()) {
                         wVillager.setOptimization(OptimizationType.OFF);

@@ -1,6 +1,5 @@
 package me.xginko.villageroptimizer;
 
-import me.xginko.villageroptimizer.cache.VillagerManager;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
@@ -32,7 +31,7 @@ public final class VillagerOptimizer extends JavaPlugin {
 
     private static VillagerOptimizer instance;
     private static HashMap<String, LanguageCache> languageCacheMap;
-    private static VillagerManager villagerManager;
+    private static CachedVillagers cachedVillagers;
     private static Config config;
     private static Logger logger;
 
@@ -75,8 +74,8 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static VillagerOptimizer getInstance()  {
         return instance;
     }
-    public static VillagerManager getVillagerManager() {
-        return villagerManager;
+    public static CachedVillagers getCachedVillagers() {
+        return cachedVillagers;
     }
     public static Config getConfiguration() {
         return config;
@@ -97,7 +96,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     private void reloadConfiguration() {
         try {
             config = new Config();
-            villagerManager = new VillagerManager(config.cache_keep_time_seconds);
+            cachedVillagers = new CachedVillagers(config.cache_keep_time_seconds);
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();
         } catch (Exception e) {

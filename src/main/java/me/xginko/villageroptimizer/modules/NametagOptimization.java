@@ -2,11 +2,11 @@ package me.xginko.villageroptimizer.modules;
 
 import io.papermc.paper.event.player.PlayerNameEntityEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.CachedVillagers;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
-import me.xginko.villageroptimizer.models.WrappedVillager;
+import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -26,14 +26,14 @@ import java.util.List;
 
 public class NametagOptimization implements VillagerOptimizerModule, Listener {
 
-    private final VillagerManager villagerManager;
+    private final CachedVillagers cachedVillagers;
     private final HashSet<String> nametags = new HashSet<>(4);
     private final boolean shouldLog, shouldNotifyPlayer, consumeNametag;
     private final long cooldown;
 
     protected NametagOptimization() {
         shouldEnable();
-        this.villagerManager = VillagerOptimizer.getVillagerManager();
+        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("optimization-methods.nametag-optimization.enable", """
                 Enable optimization by naming villagers to one of the names configured below.\s
@@ -75,7 +75,7 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
         if (name == null) return;
 
         final String nameTag = PlainTextComponentSerializer.plainText().serialize(name);
-        WrappedVillager wVillager = villagerManager.getOrAdd((Villager) event.getEntity());
+        WrappedVillager wVillager = cachedVillagers.getOrAdd((Villager) event.getEntity());
 
         if (nametags.contains(nameTag.toLowerCase())) {
             if (wVillager.isOptimized()) return;

@@ -1,9 +1,9 @@
 package me.xginko.villageroptimizer.modules;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.CachedVillagers;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.models.WrappedVillager;
+import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.entity.Player;
@@ -20,14 +20,14 @@ import org.bukkit.potion.PotionEffectType;
 public class LevelVillagers implements VillagerOptimizerModule, Listener {
 
     private final VillagerOptimizer plugin;
-    private final VillagerManager villagerManager;
+    private final CachedVillagers cachedVillagers;
     private final boolean shouldNotify;
     private final long cooldown;
 
     public LevelVillagers() {
         shouldEnable();
         this.plugin = VillagerOptimizer.getInstance();
-        this.villagerManager = VillagerOptimizer.getVillagerManager();
+        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("gameplay.villager-leveling.enable", """
                 This is needed to allow optimized villagers to level up.\s
@@ -61,13 +61,15 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
                 && event.getInventory().getHolder() instanceof Villager villager
         ) {
-            WrappedVillager wVillager = villagerManager.getOrAdd(villager);
+            WrappedVillager wVillager = cachedVillagers.getOrAdd(villager);
             if (!wVillager.isOptimized()) return;
 
             if (wVillager.canLevelUp(cooldown)) {
                 if (wVillager.calculateLevel() > villager.getVillagerLevel()) {
-                    villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 + (cooldown / 50L)), 120, false, false));
-                    villager.getScheduler().run(plugin, enableAI -> villager.setAware(true), null);
+                    villager.getScheduler().run(plugin, enableAI -> {
+                        villager.setAware(true);
+                        villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (20 + (cooldown / 50L)), 120, false, false));
+                    }, null);
                     villager.getScheduler().runDelayed(plugin, disableAI -> {
                         villager.setAware(false);
                         wVillager.saveLastLevelUp();

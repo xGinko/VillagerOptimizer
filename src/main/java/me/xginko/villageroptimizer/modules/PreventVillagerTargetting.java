@@ -2,7 +2,7 @@ package me.xginko.villageroptimizer.modules;
 
 import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.cache.VillagerManager;
+import me.xginko.villageroptimizer.CachedVillagers;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
@@ -16,10 +16,10 @@ import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 
 public class PreventVillagerTargetting implements VillagerOptimizerModule, Listener {
 
-    private final VillagerManager villagerManager;
+    private final CachedVillagers cachedVillagers;
 
     protected PreventVillagerTargetting() {
-        this.villagerManager = VillagerOptimizer.getVillagerManager();
+        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class PreventVillagerTargetting implements VillagerOptimizerModule, Liste
         if (
                 target != null
                 && target.getType().equals(EntityType.VILLAGER)
-                && villagerManager.getOrAdd((Villager) target).isOptimized()
+                && cachedVillagers.getOrAdd((Villager) target).isOptimized()
         ) {
             event.setCancelled(true);
         }
@@ -58,7 +58,7 @@ public class PreventVillagerTargetting implements VillagerOptimizerModule, Liste
         if (
                 target != null
                 && target.getType().equals(EntityType.VILLAGER)
-                && villagerManager.getOrAdd((Villager) target).isOptimized()
+                && cachedVillagers.getOrAdd((Villager) target).isOptimized()
         ) {
             event.setCancelled(true);
         }
@@ -69,7 +69,7 @@ public class PreventVillagerTargetting implements VillagerOptimizerModule, Liste
         if (
                 event.getEntityType().equals(EntityType.VILLAGER)
                 && event.getDamager() instanceof Mob attacker
-                && villagerManager.getOrAdd((Villager) event.getEntity()).isOptimized()
+                && cachedVillagers.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {
             attacker.setTarget(null);
         }
