@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.modules;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.CachedVillagers;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.utils.CommonUtils;
@@ -20,14 +20,14 @@ import org.bukkit.potion.PotionEffectType;
 public class LevelVillagers implements VillagerOptimizerModule, Listener {
 
     private final VillagerOptimizer plugin;
-    private final CachedVillagers cachedVillagers;
+    private final VillagerCache villagerCache;
     private final boolean shouldNotify;
     private final long cooldown;
 
     public LevelVillagers() {
         shouldEnable();
         this.plugin = VillagerOptimizer.getInstance();
-        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
+        this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("gameplay.villager-leveling.enable", """
                 This is needed to allow optimized villagers to level up.\s
@@ -61,7 +61,7 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
                 && event.getInventory().getHolder() instanceof Villager villager
         ) {
-            WrappedVillager wVillager = cachedVillagers.getOrAdd(villager);
+            WrappedVillager wVillager = villagerCache.getOrAdd(villager);
             if (!wVillager.isOptimized()) return;
 
             if (wVillager.canLevelUp(cooldown)) {

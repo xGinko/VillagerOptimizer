@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.modules;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.CachedVillagers;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
@@ -31,7 +31,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
      * TODO: Make placed workstation villager profession related.
      * */
 
-    private final CachedVillagers cachedVillagers;
+    private final VillagerCache villagerCache;
     private final HashSet<Material> workstations_that_disable = new HashSet<>(14);
     private final boolean shouldLog, shouldNotifyPlayer;
     private final long cooldown;
@@ -39,7 +39,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
 
     protected WorkstationOptimization() {
         shouldEnable();
-        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
+        this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("optimization-methods.workstation-optimization.enable", """
                         When enabled, villagers near a configured radius to a workstation specific to your config\s
@@ -100,12 +100,12 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             final Villager.Profession profession = villager.getProfession();
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
 
-            WrappedVillager wVillager = cachedVillagers.getOrAdd(villager);
+            WrappedVillager wVillager = villagerCache.getOrAdd(villager);
             final double distance = entity.getLocation().distance(workstationLoc);
 
             if (distance < closestDistance) {
                 final OptimizationType type = wVillager.getOptimizationType();
-                if (type.equals(OptimizationType.OFF) || type.equals(OptimizationType.COMMAND)) {
+                if (type.equals(OptimizationType.NONE) || type.equals(OptimizationType.COMMAND)) {
                     closestOptimizableVillager = wVillager;
                     closestDistance = distance;
                 }
@@ -153,7 +153,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
             Villager villager = (Villager) entity;
 
-            WrappedVillager wVillager = cachedVillagers.getOrAdd(villager);
+            WrappedVillager wVillager = villagerCache.getOrAdd(villager);
             final double distance = entity.getLocation().distance(workstationLoc);
 
             if (distance < closestDistance) {
@@ -166,7 +166,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
         }
 
         if (closestOptimizedVillager != null) {
-            closestOptimizedVillager.setOptimization(OptimizationType.OFF);
+            closestOptimizedVillager.setOptimization(OptimizationType.NONE);
             if (shouldNotifyPlayer) {
                 final String villagerType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();

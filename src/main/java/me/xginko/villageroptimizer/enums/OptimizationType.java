@@ -6,6 +6,6 @@ public enum OptimizationType {
     NAMETAG,
     WORKSTATION,
     BLOCK,
-    OFF
+    NONE
 
 }

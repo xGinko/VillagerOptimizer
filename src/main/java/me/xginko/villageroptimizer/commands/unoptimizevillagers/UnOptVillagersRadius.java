@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.commands.unoptimizevillagers;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.CachedVillagers;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
@@ -12,22 +12,34 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class UnOptVillagersRadius implements VillagerOptimizerCommand {
+import java.util.Collections;
+import java.util.List;
+
+public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
 
     /*
      * TODO: Radius limit, Cooldown, Compatibility with other types
      *
      * */
 
+    private final List<String> tabCompletes = List.of("5", "10", "25", "50");
+
     @Override
     public String label() {
         return "unoptimizevillagers";
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        return args.length == 1 ? tabCompletes : Collections.emptyList();
     }
 
     @Override
@@ -47,7 +59,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand {
             try {
                 int specifiedRadius = Integer.parseInt(args[0]) / 2;
 
-                CachedVillagers cachedVillagers = VillagerOptimizer.getCachedVillagers();
+                VillagerCache villagerCache = VillagerOptimizer.getCache();
                 int successCount = 0;
 
                 for (Entity entity : player.getNearbyEntities(specifiedRadius, specifiedRadius, specifiedRadius)) {
@@ -56,10 +68,10 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand {
                     Villager.Profession profession = villager.getProfession();
                     if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
 
-                    WrappedVillager wVillager = cachedVillagers.getOrAdd(villager);
+                    WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
                     if (wVillager.isOptimized()) {
-                        wVillager.setOptimization(OptimizationType.OFF);
+                        wVillager.setOptimization(OptimizationType.NONE);
                         successCount++;
                     }
                 }

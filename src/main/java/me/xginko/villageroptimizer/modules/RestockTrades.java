@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.modules;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.CachedVillagers;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.WrappedVillager;
@@ -22,13 +22,13 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
      * TODO: Disable notify message for cooldown bypassers
      * */
 
-    private final CachedVillagers cachedVillagers;
+    private final VillagerCache villagerCache;
     private final long restock_delay_millis;
     private final boolean shouldLog, notifyPlayer;
 
     protected RestockTrades() {
         shouldEnable();
-        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
+        this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("gameplay.trade-restocking.enable", """
                 This is for automatic restocking of trades for optimized villagers. Optimized Villagers\s
@@ -60,7 +60,7 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
     private void onInteract(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
 
-        WrappedVillager wVillager = cachedVillagers.getOrAdd((Villager) event.getRightClicked());
+        WrappedVillager wVillager = villagerCache.getOrAdd((Villager) event.getRightClicked());
         if (!wVillager.isOptimized()) return;
         Player player = event.getPlayer();
 

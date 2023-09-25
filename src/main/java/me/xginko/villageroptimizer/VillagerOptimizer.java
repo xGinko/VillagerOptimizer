@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 public final class VillagerOptimizer extends JavaPlugin {
 
     private static VillagerOptimizer instance;
-    private static CachedVillagers cachedVillagers;
+    private static VillagerCache villagerCache;
     private static HashMap<String, LanguageCache> languageCacheMap;
     private static Config config;
     private static Logger logger;
@@ -74,17 +74,17 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static VillagerOptimizer getInstance()  {
         return instance;
     }
-    public static CachedVillagers getCachedVillagers() {
-        return cachedVillagers;
+    public static NamespacedKey getKey(String key) {
+        return new NamespacedKey(instance, key);
     }
     public static Config getConfiguration() {
         return config;
     }
-    public static NamespacedKey getKey(String key) {
-        return new NamespacedKey(instance, key);
+    public static VillagerCache getCache() {
+        return villagerCache;
     }
-    public static LanguageCache getLang(String lang) {
-        return config.auto_lang ? languageCacheMap.getOrDefault(lang.replace("-", "_"), languageCacheMap.get(config.default_lang.toString().toLowerCase())) : languageCacheMap.get(config.default_lang.toString().toLowerCase());
+    public static Logger getLog() {
+        return logger;
     }
     public static LanguageCache getLang(Locale locale) {
         return getLang(locale.toString().toLowerCase());
@@ -92,8 +92,8 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static LanguageCache getLang(CommandSender commandSender) {
         return commandSender instanceof Player player ? getLang(player.locale()) : getLang(config.default_lang);
     }
-    public static Logger getLog() {
-        return logger;
+    public static LanguageCache getLang(String lang) {
+        return config.auto_lang ? languageCacheMap.getOrDefault(lang.replace("-", "_"), languageCacheMap.get(config.default_lang.toString().toLowerCase())) : languageCacheMap.get(config.default_lang.toString().toLowerCase());
     }
 
     public void reloadPlugin() {
@@ -105,11 +105,11 @@ public final class VillagerOptimizer extends JavaPlugin {
     private void reloadConfiguration() {
         try {
             config = new Config();
-            cachedVillagers = new CachedVillagers(config.cache_keep_time_seconds);
+            villagerCache = new VillagerCache(config.cache_keep_time_seconds);
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();
         } catch (Exception e) {
-            logger.severe("Error while loading config! - " + e.getLocalizedMessage());
+            logger.severe("Error loading config! - " + e.getLocalizedMessage());
             e.printStackTrace();
         }
     }

@@ -11,11 +11,11 @@ import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 
-public final class CachedVillagers {
+public final class VillagerCache {
 
     private final @NotNull Cache<UUID, WrappedVillager> villagerCache;
 
-    CachedVillagers(long expireAfterWriteSeconds) {
+    VillagerCache(long expireAfterWriteSeconds) {
         this.villagerCache = Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(expireAfterWriteSeconds)).build();
     }
 

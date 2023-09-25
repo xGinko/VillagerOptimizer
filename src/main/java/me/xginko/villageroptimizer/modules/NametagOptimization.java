@@ -2,7 +2,7 @@ package me.xginko.villageroptimizer.modules;
 
 import io.papermc.paper.event.player.PlayerNameEntityEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.CachedVillagers;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
@@ -26,14 +26,14 @@ import java.util.List;
 
 public class NametagOptimization implements VillagerOptimizerModule, Listener {
 
-    private final CachedVillagers cachedVillagers;
+    private final VillagerCache villagerCache;
     private final HashSet<String> nametags = new HashSet<>(4);
     private final boolean shouldLog, shouldNotifyPlayer, consumeNametag;
     private final long cooldown;
 
     protected NametagOptimization() {
         shouldEnable();
-        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
+        this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("optimization-methods.nametag-optimization.enable", """
                 Enable optimization by naming villagers to one of the names configured below.\s
@@ -75,7 +75,7 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
         if (name == null) return;
 
         final String nameTag = PlainTextComponentSerializer.plainText().serialize(name);
-        WrappedVillager wVillager = cachedVillagers.getOrAdd((Villager) event.getEntity());
+        WrappedVillager wVillager = villagerCache.getOrAdd((Villager) event.getEntity());
 
         if (nametags.contains(nameTag.toLowerCase())) {
             if (wVillager.isOptimized()) return;
@@ -104,7 +104,7 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
             }
         } else {
             if (wVillager.getOptimizationType().equals(OptimizationType.NAMETAG)) {
-                wVillager.setOptimization(OptimizationType.OFF);
+                wVillager.setOptimization(OptimizationType.NONE);
                 if (shouldNotifyPlayer)
                     VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
                 if (shouldLog)

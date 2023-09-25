@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.modules;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.CachedVillagers;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.Permissions;
 import org.bukkit.entity.Player;
@@ -16,12 +16,12 @@ import org.bukkit.event.inventory.TradeSelectEvent;
 
 public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Listener {
 
-    private final CachedVillagers cachedVillagers;
+    private final VillagerCache villagerCache;
     private final boolean notifyPlayer;
 
     protected PreventUnoptimizedTrading() {
         shouldEnable();
-        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
+        this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("gameplay.prevent-trading-with-unoptimized.enable", """
                 Will prevent players from selecting and using trades of unoptimized villagers.\s
@@ -54,7 +54,7 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
         if (
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
                 && event.getInventory().getHolder() instanceof Villager villager
-                && !cachedVillagers.getOrAdd(villager).isOptimized()
+                && !villagerCache.getOrAdd(villager).isOptimized()
         ) {
             event.setCancelled(true);
             if (notifyPlayer)
@@ -69,7 +69,7 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
         if (
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
                 && event.getInventory().getHolder() instanceof Villager villager
-                && !cachedVillagers.getOrAdd(villager).isOptimized()
+                && !villagerCache.getOrAdd(villager).isOptimized()
         ) {
             event.setCancelled(true);
             if (notifyPlayer)

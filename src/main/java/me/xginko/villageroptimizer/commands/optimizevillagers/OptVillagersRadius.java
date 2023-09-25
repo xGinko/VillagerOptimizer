@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.commands.optimizevillagers;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.CachedVillagers;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
@@ -20,6 +20,7 @@ import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 public class OptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
@@ -29,6 +30,8 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
     *
     * */
 
+    private final List<String> tabCompletes = List.of("5", "10", "25", "50");
+
     @Override
     public String label() {
         return "optimizevillagers";
@@ -36,7 +39,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return List.of("5", "10", "25", "50");
+        return args.length == 1 ? tabCompletes : Collections.emptyList();
     }
 
     @Override
@@ -56,7 +59,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
             try {
                 int specifiedRadius = Integer.parseInt(args[0]) / 2;
 
-                CachedVillagers cachedVillagers = VillagerOptimizer.getCachedVillagers();
+                VillagerCache villagerCache = VillagerOptimizer.getCache();
                 int successCount = 0;
                 int failCount = 0;
 
@@ -66,7 +69,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                     Villager.Profession profession = villager.getProfession();
                     if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
 
-                    WrappedVillager wVillager = cachedVillagers.getOrAdd(villager);
+                    WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
                     if (!wVillager.isOptimized()) {
                         wVillager.setOptimization(OptimizationType.COMMAND);

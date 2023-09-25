@@ -43,7 +43,7 @@ public final class WrappedVillager {
      * @param type OptimizationType the villager should be set to.
      */
     public void setOptimization(OptimizationType type) {
-        if (type.equals(OptimizationType.OFF) && isOptimized()) {
+        if (type.equals(OptimizationType.NONE) && isOptimized()) {
             dataContainer.remove(Keys.OPTIMIZATION_TYPE.key());
             villager.getScheduler().run(VillagerOptimizer.getInstance(), enableAI -> {
                 villager.setAware(true);
@@ -61,7 +61,7 @@ public final class WrappedVillager {
      * @return The current OptimizationType of the villager.
      */
     public @NotNull OptimizationType getOptimizationType() {
-        return isOptimized() ? OptimizationType.valueOf(dataContainer.get(Keys.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING)) : OptimizationType.OFF;
+        return isOptimized() ? OptimizationType.valueOf(dataContainer.get(Keys.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING)) : OptimizationType.NONE;
     }
 
     /**

@@ -2,7 +2,7 @@ package me.xginko.villageroptimizer.modules;
 
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.CachedVillagers;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -17,12 +17,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class PreventVillagerDamage implements VillagerOptimizerModule, Listener {
 
-    private final CachedVillagers cachedVillagers;
+    private final VillagerCache villagerCache;
     private final boolean block, player, mob, other, push;
 
     protected PreventVillagerDamage() {
         shouldEnable();
-        this.cachedVillagers = VillagerOptimizer.getCachedVillagers();
+        this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("gameplay.prevent-damage.enable",
                 "Configure what kind of damage you want to cancel for optimized villagers here.");
@@ -58,7 +58,7 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
     private void onDamageReceive(EntityDamageByEntityEvent event) {
         if (
                 event.getEntityType().equals(EntityType.VILLAGER)
-                && cachedVillagers.getOrAdd((Villager) event.getEntity()).isOptimized()
+                && villagerCache.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {
             Entity damager = event.getDamager();
             if (damager.getType().equals(EntityType.PLAYER)) {
@@ -82,7 +82,7 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
         if (
                 block
                 && event.getEntityType().equals(EntityType.VILLAGER)
-                && cachedVillagers.getOrAdd((Villager) event.getEntity()).isOptimized()
+                && villagerCache.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {
             event.setCancelled(true);
         }
@@ -93,7 +93,7 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
         if (
                 push
                 && event.getEntityType().equals(EntityType.VILLAGER)
-                && cachedVillagers.getOrAdd((Villager) event.getEntity()).isOptimized()
+                && villagerCache.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {
             event.setCancelled(true);
         }
