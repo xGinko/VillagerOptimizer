@@ -11,6 +11,7 @@
 
     <name>VillagerOptimizer</name>
     <description>Combat heavy villager lag by letting players optimize their trading halls.</description>
+    <url>https://github.com/xGinko/VillagerOptimizer</url>
 
     <properties>
         <java.version>17</java.version>
