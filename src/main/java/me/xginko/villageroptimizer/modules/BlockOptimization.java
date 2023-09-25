@@ -32,6 +32,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
 
     /*
      * TODO: Think of better logic than just checking under the villagers feet for block
+     *          -> use workstation optimization logic
      * */
 
     private final CachedVillagers cachedVillagers;

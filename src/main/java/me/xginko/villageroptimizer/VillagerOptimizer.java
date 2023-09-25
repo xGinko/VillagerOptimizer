@@ -83,6 +83,15 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static NamespacedKey getKey(String key) {
         return new NamespacedKey(instance, key);
     }
+    public static LanguageCache getLang(String lang) {
+        return config.auto_lang ? languageCacheMap.getOrDefault(lang.replace("-", "_"), languageCacheMap.get(config.default_lang.toString().toLowerCase())) : languageCacheMap.get(config.default_lang.toString().toLowerCase());
+    }
+    public static LanguageCache getLang(Locale locale) {
+        return getLang(locale.toString().toLowerCase());
+    }
+    public static LanguageCache getLang(CommandSender commandSender) {
+        return commandSender instanceof Player player ? getLang(player.locale()) : getLang(config.default_lang);
+    }
     public static Logger getLog() {
         return logger;
     }
@@ -105,7 +114,7 @@ public final class VillagerOptimizer extends JavaPlugin {
         }
     }
 
-    private void reloadLang(boolean fancy) {
+    private void reloadLang(boolean startup) {
         languageCacheMap = new HashMap<>();
         ConsoleCommandSender console = getServer().getConsoleSender();
         try {
@@ -113,7 +122,7 @@ public final class VillagerOptimizer extends JavaPlugin {
             Files.createDirectories(langDirectory.toPath());
             for (String fileName : getDefaultLanguageFiles()) {
                 String localeString = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
-                if (fancy) console.sendMessage(
+                if (startup) console.sendMessage(
                         Component.text("│                       ").style(plugin_style)
                         .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
                         .append(Component.text("                            │").style(plugin_style)));
@@ -126,24 +135,32 @@ public final class VillagerOptimizer extends JavaPlugin {
                 Matcher langMatcher = langPattern.matcher(langFile.getName());
                 if (langMatcher.find()) {
                     String localeString = langMatcher.group(1).toLowerCase();
-                    if(!languageCacheMap.containsKey(localeString)) { // make sure it wasn't a default file that we already loaded
-                        logger.info(String.format("Found language file for %s", localeString));
+                    if (!languageCacheMap.containsKey(localeString)) { // make sure it wasn't a default file that we already loaded
+                        if (startup) console.sendMessage(
+                                Component.text("│                       ").style(plugin_style)
+                                .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
+                                .append(Component.text("                            │").style(plugin_style)));
+                        else logger.info(String.format("Found language file for %s", localeString));
                         LanguageCache langCache = new LanguageCache(localeString);
                         languageCacheMap.put(localeString, langCache);
                     }
                 }
             }
         } catch (Exception e) {
+            if (startup) console.sendMessage(
+                    Component.text("│                      ").style(plugin_style)
+                    .append(Component.text("LANG ERROR").color(NamedTextColor.RED).decorate(TextDecoration.BOLD))
+                    .append(Component.text("                            │").style(plugin_style)));
+            else logger.severe("Error loading language files! Language files will not reload to avoid errors, make sure to correct this before restarting the server!");
             e.printStackTrace();
-            logger.severe("Error loading language files! Language files will not reload to avoid errors, make sure to correct this before restarting the server!");
         }
     }
 
     private Set<String> getDefaultLanguageFiles() {
         Set<String> languageFiles = new HashSet<>();
         try (JarFile jarFile = new JarFile(this.getFile())) {
-            jarFile.entries().asIterator().forEachRemaining(jarEntry -> {
-                final String path = jarEntry.getName();
+            jarFile.entries().asIterator().forEachRemaining(jarFileEntry -> {
+                final String path = jarFileEntry.getName();
                 if (path.startsWith("lang/") && path.endsWith(".yml"))
                     languageFiles.add(path);
             });
@@ -152,26 +169,5 @@ public final class VillagerOptimizer extends JavaPlugin {
             e.printStackTrace();
         }
         return languageFiles;
-    }
-
-    public static LanguageCache getLang(String lang) {
-        lang = lang.replace("-", "_");
-        if (config.auto_lang) {
-            return languageCacheMap.getOrDefault(lang, languageCacheMap.get(config.default_lang.toString().toLowerCase()));
-        } else {
-            return languageCacheMap.get(config.default_lang.toString().toLowerCase());
-        }
-    }
-
-    public static LanguageCache getLang(Locale locale) {
-        return getLang(locale.toString().toLowerCase());
-    }
-
-    public static LanguageCache getLang(CommandSender commandSender) {
-        if (commandSender instanceof Player player) {
-            return getLang(player.locale());
-        } else {
-            return getLang(config.default_lang);
-        }
     }
 }

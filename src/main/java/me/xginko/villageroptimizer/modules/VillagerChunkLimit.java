@@ -77,9 +77,8 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.scheduledTask = plugin.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, periodic_chunk_check -> {
             plugin.getServer().getWorlds().forEach(world -> {
-                for (Chunk chunk : world.getLoadedChunks()) {
+                for (Chunk chunk : world.getLoadedChunks())
                     plugin.getServer().getRegionScheduler().run(plugin, world, chunk.getX(), chunk.getZ(), check_chunk -> checkVillagersInChunk(chunk));
-                }
             });
         }, check_period, check_period);
     }

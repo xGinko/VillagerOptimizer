@@ -66,6 +66,10 @@ public class Config {
         config.addDefault(path, null);
     }
 
+    public ConfigFile master() {
+        return config;
+    }
+
     public boolean getBoolean(String path, boolean def, String comment) {
         config.addDefault(path, def, comment);
         return config.getBoolean(path, def);
@@ -132,9 +136,5 @@ public class Config {
 
     public void addComment(String path, String comment) {
         config.addComment(path, comment);
-    }
-
-    public void addComments(String path, String... comments) {
-        config.addComments(path, comments);
     }
 }
