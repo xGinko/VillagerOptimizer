@@ -1,9 +1,10 @@
-package me.xginko.villageroptimizer.modules;
+package me.xginko.villageroptimizer.modules.extras;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,7 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
     private final VillagerCache villagerCache;
     private final boolean notifyPlayer;
 
-    protected PreventUnoptimizedTrading() {
+    public PreventUnoptimizedTrading() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();

@@ -25,14 +25,14 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashSet;
 import java.util.List;
 
-public class NametagOptimization implements VillagerOptimizerModule, Listener {
+public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
     private final HashSet<String> nametags = new HashSet<>(4);
     private final boolean shouldLog, shouldNotifyPlayer, consumeNametag;
     private final long cooldown;
 
-    public NametagOptimization() {
+    public OptimizeByNametag() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();

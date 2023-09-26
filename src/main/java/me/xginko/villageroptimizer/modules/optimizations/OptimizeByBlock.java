@@ -27,7 +27,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import java.util.HashSet;
 import java.util.List;
 
-public class BlockOptimization implements VillagerOptimizerModule, Listener {
+public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
     private final HashSet<Material> blocks_that_disable = new HashSet<>(4);
@@ -35,7 +35,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
     private final long cooldown;
     private final double search_radius;
 
-    public BlockOptimization() {
+    public OptimizeByBlock() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
@@ -61,7 +61,7 @@ public class BlockOptimization implements VillagerOptimizerModule, Listener {
                 The radius in blocks a villager can be away from the player when he places an optimize block.\s
                 The closest unoptimized villager to the player will be optimized.""") / 2;
         this.shouldNotifyPlayer = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
-                "Sends players a message when they successfully optimized a villager.");
+                "Sends players a message when they successfully optimized or unoptimized a villager.");
         this.shouldLog = config.getBoolean("optimization-methods.block-optimization.log", false);
     }
 

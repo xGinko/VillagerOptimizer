@@ -1,9 +1,10 @@
-package me.xginko.villageroptimizer.modules;
+package me.xginko.villageroptimizer.modules.extras;
 
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
+import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
@@ -20,7 +21,7 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
     private final VillagerCache villagerCache;
     private final boolean block, player, mob, other, push;
 
-    protected PreventVillagerDamage() {
+    public PreventVillagerDamage() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();

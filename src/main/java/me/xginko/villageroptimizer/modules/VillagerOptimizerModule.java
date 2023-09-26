@@ -1,8 +1,14 @@
 package me.xginko.villageroptimizer.modules;
 
-import me.xginko.villageroptimizer.modules.optimizations.BlockOptimization;
-import me.xginko.villageroptimizer.modules.optimizations.NametagOptimization;
-import me.xginko.villageroptimizer.modules.optimizations.WorkstationOptimization;
+import me.xginko.villageroptimizer.modules.extras.PreventUnoptimizedTrading;
+import me.xginko.villageroptimizer.modules.extras.PreventVillagerDamage;
+import me.xginko.villageroptimizer.modules.extras.PreventVillagerTargetting;
+import me.xginko.villageroptimizer.modules.extras.MakeVillagersSpawnAdult;
+import me.xginko.villageroptimizer.modules.fallback_mechanics.LevelVillagers;
+import me.xginko.villageroptimizer.modules.fallback_mechanics.RestockTrades;
+import me.xginko.villageroptimizer.modules.optimizations.OptimizeByBlock;
+import me.xginko.villageroptimizer.modules.optimizations.OptimizeByNametag;
+import me.xginko.villageroptimizer.modules.optimizations.OptimizeByWorkstation;
 
 import java.util.HashSet;
 
@@ -18,17 +24,19 @@ public interface VillagerOptimizerModule {
         modules.forEach(VillagerOptimizerModule::disable);
         modules.clear();
 
-        modules.add(new NametagOptimization());
-        modules.add(new BlockOptimization());
-        modules.add(new WorkstationOptimization());
+        modules.add(new VillagerChunkLimit());
 
+        modules.add(new OptimizeByNametag());
+        modules.add(new OptimizeByBlock());
+        modules.add(new OptimizeByWorkstation());
+
+        modules.add(new RestockTrades());
         modules.add(new LevelVillagers());
+
+        modules.add(new MakeVillagersSpawnAdult());
         modules.add(new PreventUnoptimizedTrading());
         modules.add(new PreventVillagerDamage());
         modules.add(new PreventVillagerTargetting());
-        modules.add(new RestockTrades());
-        modules.add(new VillagerChunkLimit());
-        modules.add(new VillagersSpawnAdult());
 
         modules.forEach(module -> {
             if (module.shouldEnable()) module.enable();

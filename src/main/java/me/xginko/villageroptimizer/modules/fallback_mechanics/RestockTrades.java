@@ -1,10 +1,11 @@
-package me.xginko.villageroptimizer.modules;
+package me.xginko.villageroptimizer.modules.fallback_mechanics;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.entity.EntityType;
@@ -26,7 +27,7 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
     private final long restock_delay_millis;
     private final boolean shouldLog, notifyPlayer;
 
-    protected RestockTrades() {
+    public RestockTrades() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();

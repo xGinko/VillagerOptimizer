@@ -1,8 +1,9 @@
-package me.xginko.villageroptimizer.modules;
+package me.xginko.villageroptimizer.modules.extras;
 
 import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
@@ -18,7 +19,7 @@ public class PreventVillagerTargetting implements VillagerOptimizerModule, Liste
 
     private final VillagerCache villagerCache;
 
-    protected PreventVillagerTargetting() {
+    public PreventVillagerTargetting() {
         this.villagerCache = VillagerOptimizer.getCache();
     }
 

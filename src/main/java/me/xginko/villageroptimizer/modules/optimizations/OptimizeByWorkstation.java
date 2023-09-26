@@ -27,7 +27,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import java.util.HashSet;
 import java.util.List;
 
-public class WorkstationOptimization implements VillagerOptimizerModule, Listener {
+public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener {
     /*
      * TODO: Make placed workstation villager profession related.
      * */
@@ -38,7 +38,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
     private final long cooldown;
     private final double search_radius;
 
-    public WorkstationOptimization() {
+    public OptimizeByWorkstation() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();

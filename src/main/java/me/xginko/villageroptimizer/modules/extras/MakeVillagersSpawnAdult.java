@@ -1,6 +1,7 @@
-package me.xginko.villageroptimizer.modules;
+package me.xginko.villageroptimizer.modules.extras;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -9,9 +10,9 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-public class VillagersSpawnAdult implements VillagerOptimizerModule, Listener {
+public class MakeVillagersSpawnAdult implements VillagerOptimizerModule, Listener {
 
-    protected VillagersSpawnAdult() {}
+    public MakeVillagersSpawnAdult() {}
 
     @Override
     public void enable() {
