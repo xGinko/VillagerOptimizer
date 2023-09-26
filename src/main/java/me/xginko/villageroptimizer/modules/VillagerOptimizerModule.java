@@ -1,5 +1,9 @@
 package me.xginko.villageroptimizer.modules;
 
+import me.xginko.villageroptimizer.modules.optimizations.BlockOptimization;
+import me.xginko.villageroptimizer.modules.optimizations.NametagOptimization;
+import me.xginko.villageroptimizer.modules.optimizations.WorkstationOptimization;
+
 import java.util.HashSet;
 
 public interface VillagerOptimizerModule {
@@ -14,16 +18,17 @@ public interface VillagerOptimizerModule {
         modules.forEach(VillagerOptimizerModule::disable);
         modules.clear();
 
-        modules.add(new BlockOptimization());
-        modules.add(new LevelVillagers());
         modules.add(new NametagOptimization());
+        modules.add(new BlockOptimization());
+        modules.add(new WorkstationOptimization());
+
+        modules.add(new LevelVillagers());
         modules.add(new PreventUnoptimizedTrading());
         modules.add(new PreventVillagerDamage());
         modules.add(new PreventVillagerTargetting());
         modules.add(new RestockTrades());
         modules.add(new VillagerChunkLimit());
         modules.add(new VillagersSpawnAdult());
-        modules.add(new WorkstationOptimization());
 
         modules.forEach(module -> {
             if (module.shouldEnable()) module.enable();

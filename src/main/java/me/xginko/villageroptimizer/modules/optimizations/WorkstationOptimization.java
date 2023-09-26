@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.modules;
+package me.xginko.villageroptimizer.modules.optimizations;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
@@ -6,6 +6,7 @@ import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import me.xginko.villageroptimizer.utils.LogUtils;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -37,7 +38,7 @@ public class WorkstationOptimization implements VillagerOptimizerModule, Listene
     private final long cooldown;
     private final double search_radius;
 
-    protected WorkstationOptimization() {
+    public WorkstationOptimization() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();

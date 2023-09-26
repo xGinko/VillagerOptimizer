@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.modules;
+package me.xginko.villageroptimizer.modules.optimizations;
 
 import io.papermc.paper.event.player.PlayerNameEntityEvent;
 import me.xginko.villageroptimizer.VillagerOptimizer;
@@ -7,6 +7,7 @@ import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -31,7 +32,7 @@ public class NametagOptimization implements VillagerOptimizerModule, Listener {
     private final boolean shouldLog, shouldNotifyPlayer, consumeNametag;
     private final long cooldown;
 
-    protected NametagOptimization() {
+    public NametagOptimization() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
