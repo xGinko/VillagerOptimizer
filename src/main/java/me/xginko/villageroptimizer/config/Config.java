@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer.config;
 import io.github.thatsmusic99.configurationmaster.api.ConfigFile;
 import io.github.thatsmusic99.configurationmaster.api.ConfigSection;
 import me.xginko.villageroptimizer.VillagerOptimizer;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
@@ -11,8 +12,8 @@ import java.util.Map;
 
 public class Config {
 
-    private final ConfigFile config;
-    public final Locale default_lang;
+    private final @NotNull ConfigFile config;
+    public final @NotNull Locale default_lang;
     public final boolean auto_lang;
     public final long cache_keep_time_seconds;
 
@@ -61,80 +62,80 @@ public class Config {
         config.addDefault("gameplay.prevent-damage.enable", true);
     }
 
-    public void createTitledSection(String title, String path) {
+    public void createTitledSection(@NotNull String title, @NotNull String path) {
         config.addSection(title);
         config.addDefault(path, null);
     }
 
-    public ConfigFile master() {
+    public @NotNull ConfigFile master() {
         return config;
     }
 
-    public boolean getBoolean(String path, boolean def, String comment) {
+    public boolean getBoolean(@NotNull String path, boolean def, @NotNull String comment) {
         config.addDefault(path, def, comment);
         return config.getBoolean(path, def);
     }
 
-    public boolean getBoolean(String path, boolean def) {
+    public boolean getBoolean(@NotNull String path, boolean def) {
         config.addDefault(path, def);
         return config.getBoolean(path, def);
     }
 
-    public String getString(String path, String def, String comment) {
+    public @NotNull String getString(@NotNull String path, @NotNull String def, @NotNull String comment) {
         config.addDefault(path, def, comment);
         return config.getString(path, def);
     }
 
-    public String getString(String path, String def) {
+    public @NotNull String getString(@NotNull String path, @NotNull String def) {
         config.addDefault(path, def);
         return config.getString(path, def);
     }
 
-    public double getDouble(String path, Double def, String comment) {
+    public double getDouble(@NotNull String path, @NotNull Double def, @NotNull String comment) {
         config.addDefault(path, def, comment);
         return config.getDouble(path, def);
     }
 
-    public double getDouble(String path, Double def) {
+    public double getDouble(@NotNull String path, @NotNull Double def) {
         config.addDefault(path, def);
         return config.getDouble(path, def);
     }
 
-    public int getInt(String path, int def, String comment) {
+    public int getInt(@NotNull String path, int def, @NotNull String comment) {
         config.addDefault(path, def, comment);
         return config.getInteger(path, def);
     }
 
-    public int getInt(String path, int def) {
+    public int getInt(@NotNull String path, int def) {
         config.addDefault(path, def);
         return config.getInteger(path, def);
     }
 
-    public List<String> getList(String path, List<String> def, String comment) {
+    public @NotNull List<String> getList(@NotNull String path, @NotNull List<String> def, @NotNull String comment) {
         config.addDefault(path, def, comment);
         return config.getStringList(path);
     }
 
-    public List<String> getList(String path, List<String> def) {
+    public @NotNull List<String> getList(@NotNull String path, @NotNull List<String> def) {
         config.addDefault(path, def);
         return config.getStringList(path);
     }
 
-    public ConfigSection getConfigSection(String path, Map<String, Object> defaultKeyValue) {
+    public @NotNull ConfigSection getConfigSection(@NotNull String path, @NotNull Map<String, Object> defaultKeyValue) {
         config.addDefault(path, null);
         config.makeSectionLenient(path);
         defaultKeyValue.forEach((string, object) -> config.addExample(path+"."+string, object));
         return config.getConfigSection(path);
     }
 
-    public ConfigSection getConfigSection(String path, Map<String, Object> defaultKeyValue, String comment) {
+    public @NotNull ConfigSection getConfigSection(@NotNull String path, @NotNull Map<String, Object> defaultKeyValue, @NotNull String comment) {
         config.addDefault(path, null, comment);
         config.makeSectionLenient(path);
         defaultKeyValue.forEach((string, object) -> config.addExample(path+"."+string, object));
         return config.getConfigSection(path);
     }
 
-    public void addComment(String path, String comment) {
+    public void addComment(@NotNull String path, @NotNull String comment) {
         config.addComment(path, comment);
     }
 }

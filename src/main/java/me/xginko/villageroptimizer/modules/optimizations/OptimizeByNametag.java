@@ -84,7 +84,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
             if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
                 wVillager.setOptimization(OptimizationType.NAMETAG);
                 wVillager.saveOptimizeTime();
-                if (!consumeNametag) {
+                if (!consumeNametag) { // This needs a better alternative
                     ItemStack mainHand = player.getInventory().getItemInMainHand();
                     ItemStack offHand = player.getInventory().getItemInOffHand();
                     if (mainHand.getType().equals(Material.NAME_TAG)) mainHand.add();

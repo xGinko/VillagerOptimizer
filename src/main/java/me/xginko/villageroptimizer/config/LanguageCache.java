@@ -4,17 +4,18 @@ import io.github.thatsmusic99.configurationmaster.api.ConfigFile;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
 
 public class LanguageCache {
 
-    private final ConfigFile lang;
-    private final MiniMessage miniMessage;
+    private final @NotNull ConfigFile lang;
+    private final @NotNull MiniMessage miniMessage;
 
-    public final Component no_permission;
-    public final List<Component> nametag_optimize_success, nametag_on_optimize_cooldown, nametag_unoptimize_success,
+    public final @NotNull Component no_permission;
+    public final @NotNull List<Component> nametag_optimize_success, nametag_on_optimize_cooldown, nametag_unoptimize_success,
             block_optimize_success, block_on_optimize_cooldown, block_unoptimize_success,
             workstation_optimize_success, workstation_on_optimize_cooldown, workstation_unoptimize_success,
             command_optimize_success, command_radius_limit_exceed, command_optimize_fail, command_unoptimize_success,
@@ -89,22 +90,22 @@ public class LanguageCache {
         }
     }
 
-    public Component getTranslation(String path, String defaultTranslation) {
+    public @NotNull Component getTranslation(@NotNull String path, @NotNull String defaultTranslation) {
         lang.addDefault(path, defaultTranslation);
         return miniMessage.deserialize(lang.getString(path, defaultTranslation));
     }
 
-    public Component getTranslation(String path, String defaultTranslation, String comment) {
+    public @NotNull Component getTranslation(@NotNull String path, @NotNull String defaultTranslation, @NotNull String comment) {
         lang.addDefault(path, defaultTranslation, comment);
         return miniMessage.deserialize(lang.getString(path, defaultTranslation));
     }
 
-    public List<Component> getListTranslation(String path, List<String> defaultTranslation) {
+    public @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation) {
         lang.addDefault(path, defaultTranslation);
         return lang.getStringList(path).stream().map(miniMessage::deserialize).toList();
     }
 
-    public List<Component> getListTranslation(String path, List<String> defaultTranslation, String comment) {
+    public @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation, @NotNull String comment) {
         lang.addDefault(path, defaultTranslation, comment);
         return lang.getStringList(path).stream().map(miniMessage::deserialize).toList();
     }
