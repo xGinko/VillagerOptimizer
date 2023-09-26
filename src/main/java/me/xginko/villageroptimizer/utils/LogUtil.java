@@ -4,7 +4,7 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 
 import java.util.logging.Level;
 
-public class LogUtils {
+public class LogUtil {
 
     public static void moduleLog(Level logLevel, String path, String logMessage) {
         VillagerOptimizer.getLog().log(logLevel, "(" + path + ") " + logMessage);

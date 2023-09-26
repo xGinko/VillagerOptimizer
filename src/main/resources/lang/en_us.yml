@@ -15,14 +15,14 @@ messages:
       - "<green>Successfully unoptimized villager by using a nametag."
   block:
     optimize-success:
-      - "<green>%villagertype% villager successfully optimized using block %blocktype%."
+      - "<green>%vil_profession% villager successfully optimized using block %blocktype%."
     optimize-on-cooldown:
       - "<gray>You need to wait %time% until you can optimize this villager again."
     unoptimize-success:
-      - "<green>Successfully unoptimized %villagertype% villager by removing %blocktype%."
+      - "<green>Successfully unoptimized %vil_profession% villager by removing %blocktype%."
   workstation:
     optimize-success:
-      - "<green>%villagertype% villager successfully optimized using workstation block %blocktype%."
+      - "<green>%vil_profession% villager successfully optimized using workstation block %blocktype%."
     optimize-on-cooldown:
       - "<gray>You need to wait %time% until you can optimize this villager again."
     unoptimize-success:

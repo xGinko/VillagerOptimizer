@@ -8,7 +8,7 @@ import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.CommonUtils;
+import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -98,7 +98,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 event.setCancelled(true);
                 wVillager.villager().shakeHead();
                 if (shouldNotifyPlayer) {
-                    final String time = CommonUtils.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
+                    final String time = CommonUtil.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
                     VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                             .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(time).build())));
                 }

@@ -1,14 +1,14 @@
 package me.xginko.villageroptimizer.modules.optimizations;
 
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
-import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.CommonUtils;
-import me.xginko.villageroptimizer.utils.LogUtils;
+import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.LogUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,9 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 
 public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener {
-    /*
-     * TODO: Make placed workstation villager profession related.
-     * */
 
     private final VillagerCache villagerCache;
     private final HashSet<Material> workstations_that_disable = new HashSet<>(14);
@@ -54,7 +51,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 Material disableBlock = Material.valueOf(configuredMaterial);
                 this.workstations_that_disable.add(disableBlock);
             } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("workstation-optimization", configuredMaterial);
+                LogUtil.materialNotRecognized("workstation-optimization", configuredMaterial);
             }
         });
         this.search_radius = config.getDouble("optimization-methods.workstation-optimization.search-radius-in-blocks", 2.0, """
@@ -87,19 +84,22 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockPlace(BlockPlaceEvent event) {
         Block placed = event.getBlock();
-        if (!workstations_that_disable.contains(placed.getType())) return;
+        final Material placedType = placed.getType();
+        if (!workstations_that_disable.contains(placedType)) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
+        Villager.Profession workstationProfession = getWorkstationProfession(placedType);
+        if (workstationProfession.equals(Villager.Profession.NONE)) return;
 
         final Location workstationLoc = placed.getLocation();
         WrappedVillager closestOptimizableVillager = null;
         double closestDistance = Double.MAX_VALUE;
 
+
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
             Villager villager = (Villager) entity;
-            final Villager.Profession profession = villager.getProfession();
-            if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
+            if (!villager.getProfession().equals(workstationProfession)) continue;
 
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
             final double distance = entity.getLocation().distance(workstationLoc);
@@ -122,16 +122,16 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 final String villagerType = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
                 final String workstation = placed.getType().toString().toLowerCase();
                 VillagerOptimizer.getLang(player.locale()).workstation_optimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(villagerType).build())
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(villagerType).build())
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(workstation).build())
                 ));
             }
             if (shouldLog)
-                VillagerOptimizer.getLog().info(event.getPlayer().getName() + " optimized a villager using workstation: '" + placed.getType().toString().toLowerCase() + "'");
+                VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using workstation: '" + placed.getType().toString().toLowerCase() + "'");
         } else {
             closestOptimizableVillager.villager().shakeHead();
             if (shouldNotifyPlayer) {
-                final String timeLeft = CommonUtils.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown));
+                final String timeLeft = CommonUtil.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown));
                 VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())
                 ));
@@ -142,9 +142,12 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockBreak(BlockBreakEvent event) {
         Block placed = event.getBlock();
-        if (!workstations_that_disable.contains(placed.getType())) return;
+        final Material brokenType = placed.getType();
+        if (!workstations_that_disable.contains(brokenType)) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
+        Villager.Profession workstationProfession = getWorkstationProfession(brokenType);
+        if (workstationProfession.equals(Villager.Profession.NONE)) return;
 
         final Location workstationLoc = placed.getLocation();
         WrappedVillager closestOptimizedVillager = null;
@@ -153,6 +156,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
             Villager villager = (Villager) entity;
+            if (!villager.getProfession().equals(workstationProfession)) continue;
 
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
             final double distance = entity.getLocation().distance(workstationLoc);
@@ -160,24 +164,44 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
             if (distance < closestDistance) {
                 final OptimizationType type = wVillager.getOptimizationType();
                 if (type.equals(OptimizationType.WORKSTATION) || type.equals(OptimizationType.COMMAND)) {
+
                     closestOptimizedVillager = wVillager;
                     closestDistance = distance;
                 }
             }
         }
 
-        if (closestOptimizedVillager != null) {
-            closestOptimizedVillager.setOptimization(OptimizationType.NONE);
-            if (shouldNotifyPlayer) {
-                final String villagerType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
-                final String workstation = placed.getType().toString().toLowerCase();
-                VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(villagerType).build())
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(workstation).build())
-                ));
-            }
-            if (shouldLog)
-                VillagerOptimizer.getLog().info(event.getPlayer().getName() + " unoptimized a villager by breaking workstation: '" + placed.getType().toString().toLowerCase() + "'");
+        if (closestOptimizedVillager == null) return;
+
+        closestOptimizedVillager.setOptimization(OptimizationType.NONE);
+        if (shouldNotifyPlayer) {
+            final String villagerType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
+            final String workstation = placed.getType().toString().toLowerCase();
+            VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
+                    .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(villagerType).build())
+                    .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(workstation).build())
+            ));
         }
+        if (shouldLog)
+            VillagerOptimizer.getLog().info(player.getName() + " unoptimized a villager by breaking workstation: '" + placed.getType().toString().toLowerCase() + "'");
+    }
+
+    private Villager.Profession getWorkstationProfession(Material workstation) {
+        return switch (workstation) {
+            case BARREL -> Villager.Profession.FISHERMAN;
+            case CARTOGRAPHY_TABLE -> Villager.Profession.CARTOGRAPHER;
+            case SMOKER -> Villager.Profession.BUTCHER;
+            case SMITHING_TABLE -> Villager.Profession.TOOLSMITH;
+            case GRINDSTONE -> Villager.Profession.WEAPONSMITH;
+            case BLAST_FURNACE -> Villager.Profession.ARMORER;
+            case CAULDRON -> Villager.Profession.LEATHERWORKER;
+            case BREWING_STAND -> Villager.Profession.CLERIC;
+            case COMPOSTER -> Villager.Profession.FARMER;
+            case FLETCHING_TABLE -> Villager.Profession.FLETCHER;
+            case LOOM -> Villager.Profession.SHEPHERD;
+            case LECTERN -> Villager.Profession.LIBRARIAN;
+            case STONECUTTER -> Villager.Profession.MASON;
+            default -> Villager.Profession.NONE;
+        };
     }
 }

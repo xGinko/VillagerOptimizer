@@ -4,7 +4,7 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.utils.LogUtils;
+import me.xginko.villageroptimizer.utils.LogUtil;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -66,7 +66,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 Villager.Profession profession = Villager.Profession.valueOf(configuredProfession);
                 this.removalPriority.add(profession);
             } catch (IllegalArgumentException e) {
-                LogUtils.moduleLog(Level.WARNING, "villager-chunk-limit",
+                LogUtil.moduleLog(Level.WARNING, "villager-chunk-limit",
                         "Villager profession '"+configuredProfession+"' not recognized. Make sure you're using the correct profession enums.");
             }
         });
@@ -130,7 +130,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         for (int i = 0; i < amount_over_the_limit; i++) {
             Villager villager = villagers_in_chunk.get(i);
             villager.remove();
-            if (logIsEnabled) LogUtils.moduleLog(Level.INFO, "villager-chunk-limit",
+            if (logIsEnabled) LogUtil.moduleLog(Level.INFO, "villager-chunk-limit",
                     "Removed villager of profession type '"+villager.getProfession()+"' at "+villager.getLocation());
         }
     }

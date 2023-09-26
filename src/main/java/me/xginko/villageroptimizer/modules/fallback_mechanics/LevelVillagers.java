@@ -5,7 +5,7 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.CommonUtils;
+import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -79,7 +79,7 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
             } else {
                 if (shouldNotify) {
                     Player player = (Player) event.getPlayer();
-                    final String timeLeft = CommonUtils.formatTime(wVillager.getLevelCooldownMillis(cooldown));
+                    final String timeLeft = CommonUtil.formatTime(wVillager.getLevelCooldownMillis(cooldown));
                     VillagerOptimizer.getLang(player.locale()).villager_leveling_up.forEach(line -> player.sendMessage(line
                             .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())
                     ));

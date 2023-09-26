@@ -7,8 +7,8 @@ import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.CommonUtils;
-import me.xginko.villageroptimizer.utils.LogUtils;
+import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.LogUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -51,7 +51,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                 Material disableBlock = Material.valueOf(configuredMaterial);
                 this.blocks_that_disable.add(disableBlock);
             } catch (IllegalArgumentException e) {
-                LogUtils.materialNotRecognized("block-optimization", configuredMaterial);
+                LogUtil.materialNotRecognized("block-optimization", configuredMaterial);
             }
         });
         this.cooldown = config.getInt("optimization-methods.block-optimization.optimize-cooldown-seconds", 600, """
@@ -81,7 +81,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.block-optimization.enable", false);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockPlace(BlockPlaceEvent event) {
         Block placed = event.getBlock();
         if (!blocks_that_disable.contains(placed.getType())) return;
@@ -119,7 +119,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                 final String villagerType = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
                 final String placedType = placed.getType().toString().toLowerCase();
                 VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(villagerType).build())
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(villagerType).build())
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(placedType).build())
                 ));
             }
@@ -128,14 +128,14 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         } else {
             closestOptimizableVillager.villager().shakeHead();
             if (shouldNotifyPlayer) {
-                final String timeLeft = CommonUtils.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown));
+                final String timeLeft = CommonUtil.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown));
                 VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())));
             }
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockBreak(BlockBreakEvent event) {
         Block broken = event.getBlock();
         if (!blocks_that_disable.contains(broken.getType())) return;
@@ -169,11 +169,11 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             final String villagerType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
             final String brokenType = broken.getType().toString().toLowerCase();
             VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
-                    .replaceText(TextReplacementConfig.builder().matchLiteral("%villagertype%").replacement(villagerType).build())
+                    .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(villagerType).build())
                     .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(brokenType).build())
             ));
         }
         if (shouldLog)
-            VillagerOptimizer.getLog().info("Villager unoptimized because no longer standing on optimization block at "+closestOptimizedVillager.villager().getLocation());
+            VillagerOptimizer.getLog().info("Villager unoptimized because nearby optimization block broken at: "+closestOptimizedVillager.villager().getLocation());
     }
 }
