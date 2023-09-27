@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.modules.fallback_mechanics;
+package me.xginko.villageroptimizer.modules.mechanics;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;

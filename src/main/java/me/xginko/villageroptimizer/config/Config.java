@@ -28,6 +28,7 @@ public class Config {
                 "If set to true, will display messages based on client language");
         this.cache_keep_time_seconds = getInt("general.cache-keep-time-seconds", 30,
                 "The amount of time in seconds a villager will be kept in the plugin's cache.");
+        this.addComment("", "");
     }
 
     private ConfigFile loadConfig(File ymlFile) throws Exception {
@@ -51,6 +52,11 @@ public class Config {
         config.addDefault("config-version", 1.00);
         createTitledSection("General", "general");
         createTitledSection("Optimization Methods", "optimization-methods");
+        addComment("optimization-methods", """
+                BE AWARE:\s
+                It is recommended to choose preferably one (no more than 2) of the below methods, as this can\s
+                get confusing and depending on your config exploitable otherwise.
+                """);
         config.addDefault("optimization-methods.nametag-optimization.enable", true);
         createTitledSection("Villager Chunk Limit", "villager-chunk-limit");
         createTitledSection("Gameplay", "gameplay");

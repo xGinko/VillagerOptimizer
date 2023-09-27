@@ -40,3 +40,5 @@ messages:
       - "<red>Please specify a radius."
     radius-invalid:
       - "<red>The radius you entered is not a valid number. Try again."
+    no-villagers-nearby:
+      - "<gray>Couldn't find any employed villagers within a radius of %radius%."

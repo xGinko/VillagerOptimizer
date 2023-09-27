@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer.commands.optimizevillagers;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
+import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.WrappedVillager;
@@ -25,12 +26,17 @@ import java.util.List;
 
 public class OptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
 
-    /*
-    * TODO: Radius limit, Cooldown, Compatibility with other types
-    *
-    * */
-
     private final List<String> tabCompletes = List.of("5", "10", "25", "50");
+    private final long cooldown;
+    private final int maxRadius;
+
+    public OptVillagersRadius() {
+        Config config = VillagerOptimizer.getConfiguration();
+        this.maxRadius = config.getInt("optimization-methods.command.optimizevillagers.max-block-radius", 100);
+        this.cooldown = config.getInt("optimization-methods.command.optimizevillagers.cooldown-seconds", 600, """
+                Cooldown in seconds until a villager can be optimized again using the command.\s
+                Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
+    }
 
     @Override
     public String label() {
@@ -44,20 +50,28 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (sender.hasPermission(Permissions.Commands.OPTIMIZE_RADIUS.get())) {
-            if (!(sender instanceof Player player)) {
-                sender.sendMessage(Component.text("This command can only be executed by a player.")
-                        .color(NamedTextColor.RED).decorate(TextDecoration.BOLD));
-                return true;
-            }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("This command can only be executed by a player.")
+                    .color(NamedTextColor.RED).decorate(TextDecoration.BOLD));
+            return true;
+        }
 
+        if (sender.hasPermission(Permissions.Commands.OPTIMIZE_RADIUS.get())) {
             if (args.length != 1) {
                 VillagerOptimizer.getLang(player.locale()).command_specify_radius.forEach(player::sendMessage);
                 return true;
             }
 
             try {
-                int specifiedRadius = Integer.parseInt(args[0]) / 2;
+                int specifiedRadius = Integer.parseInt(args[0]);
+
+                if (specifiedRadius > maxRadius) {
+                    final String maxRadiusStr = Integer.toString(maxRadius);
+                    VillagerOptimizer.getLang(player.locale()).command_radius_limit_exceed.forEach(line -> player.sendMessage(line
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%distance%").replacement(maxRadiusStr).build())
+                    ));
+                    return true;
+                }
 
                 VillagerCache villagerCache = VillagerOptimizer.getCache();
                 int successCount = 0;
@@ -71,13 +85,21 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
 
                     WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
-                    if (!wVillager.isOptimized()) {
+                    if (wVillager.canOptimize(cooldown)) {
                         wVillager.setOptimization(OptimizationType.COMMAND);
                         wVillager.saveOptimizeTime();
                         successCount++;
                     } else {
                         failCount++;
                     }
+                }
+
+                if (successCount <= 0 && failCount <= 0) {
+                    final String radius = Integer.toString(specifiedRadius);
+                    VillagerOptimizer.getLang(player.locale()).command_no_villagers_nearby.forEach(line -> player.sendMessage(line
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%radius%").replacement(radius).build())
+                    ));
+                    return true;
                 }
 
                 if (successCount > 0) {
@@ -100,6 +122,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
         } else {
             sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
         }
+
         return true;
     }
 }

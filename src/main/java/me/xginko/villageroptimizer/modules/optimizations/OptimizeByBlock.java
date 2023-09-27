@@ -103,12 +103,9 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
             final double distance = entity.getLocation().distance(blockLoc);
 
-            if (distance < closestDistance) {
-                final OptimizationType type = wVillager.getOptimizationType();
-                if (type.equals(OptimizationType.NONE) || type.equals(OptimizationType.COMMAND)) {
-                    closestOptimizableVillager = wVillager;
-                    closestDistance = distance;
-                }
+            if (distance < closestDistance && wVillager.canOptimize(cooldown)) {
+                closestOptimizableVillager = wVillager;
+                closestDistance = distance;
             }
         }
 
@@ -156,12 +153,9 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
             final double distance = entity.getLocation().distance(blockLoc);
 
-            if (distance < closestDistance) {
-                final OptimizationType type = wVillager.getOptimizationType();
-                if (type.equals(OptimizationType.WORKSTATION) || type.equals(OptimizationType.COMMAND)) {
-                    closestOptimizedVillager = wVillager;
-                    closestDistance = distance;
-                }
+            if (distance < closestDistance && wVillager.isOptimized()) {
+                closestOptimizedVillager = wVillager;
+                closestDistance = distance;
             }
         }
 

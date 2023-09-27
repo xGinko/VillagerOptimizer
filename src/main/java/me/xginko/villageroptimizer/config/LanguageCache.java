@@ -19,7 +19,8 @@ public class LanguageCache {
             block_optimize_success, block_on_optimize_cooldown, block_unoptimize_success,
             workstation_optimize_success, workstation_on_optimize_cooldown, workstation_unoptimize_success,
             command_optimize_success, command_radius_limit_exceed, command_optimize_fail, command_unoptimize_success,
-            command_specify_radius, command_radius_invalid, trades_restocked, optimize_for_trading, villager_leveling_up;
+            command_specify_radius, command_radius_invalid, command_no_villagers_nearby,
+            trades_restocked, optimize_for_trading, villager_leveling_up;
 
     public LanguageCache(String lang) throws Exception {
         this.lang = loadLang(new File(VillagerOptimizer.getInstance().getDataFolder() + File.separator + "lang", lang + ".yml"));
@@ -68,6 +69,8 @@ public class LanguageCache {
                 List.of("<red>Please specify a radius."));
         this.command_radius_invalid = getListTranslation("messages.command.radius-invalid",
                 List.of("<red>The radius you entered is not a valid number. Try again."));
+        this.command_no_villagers_nearby = getListTranslation("messages.command.no-villagers-nearby",
+                List.of("<gray>Couldn't find any employed villagers within a radius of %radius%."));
 
         saveLang();
     }

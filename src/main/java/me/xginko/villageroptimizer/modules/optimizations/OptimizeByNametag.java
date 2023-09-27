@@ -91,8 +91,6 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
             if (nametags.contains(nameTag.toLowerCase())) {
-                if (wVillager.isOptimized()) return;
-
                 if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
                     wVillager.setOptimization(OptimizationType.NAMETAG);
                     wVillager.saveOptimizeTime();
@@ -111,7 +109,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                     }
                 }
             } else {
-                if (wVillager.getOptimizationType().equals(OptimizationType.NAMETAG)) {
+                if (wVillager.isOptimized()) {
                     wVillager.setOptimization(OptimizationType.NONE);
                     if (shouldNotifyPlayer)
                         VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
