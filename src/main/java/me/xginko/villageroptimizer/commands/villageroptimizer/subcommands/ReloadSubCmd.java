@@ -9,27 +9,30 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
 public class ReloadSubCmd extends SubCommand {
+
     @Override
     public String getLabel() {
         return "reload";
     }
+
     @Override
     public TextComponent getDescription() {
         return Component.text("Reload the plugin configuration.").color(NamedTextColor.GRAY);
     }
+
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer reload").color(NamedTextColor.BLUE);
+        return Component.text("/villageroptimizer reload").color(VillagerOptimizer.plugin_style.color());
     }
 
     @Override
     public void perform(CommandSender sender, String[] args) {
         if (sender.hasPermission(Permissions.Commands.RELOAD.get())) {
-            sender.sendMessage(Component.text("Reloading VillagerOptimizer...").color(NamedTextColor.BLUE));
+            sender.sendMessage(Component.text("Reloading VillagerOptimizer...").color(NamedTextColor.WHITE));
             VillagerOptimizer plugin = VillagerOptimizer.getInstance();
             plugin.getServer().getAsyncScheduler().runNow(plugin, reloadPlugin -> {
                 plugin.reloadPlugin();
-                sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.AQUA));
+                sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.GREEN));
             });
         } else {
             sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);

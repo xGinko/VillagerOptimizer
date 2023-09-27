@@ -35,7 +35,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     private static Config config;
     private static Logger logger;
 
-    private final static Style plugin_style = Style.style(TextColor.color(102,255,230), TextDecoration.BOLD);
+    public final static Style plugin_style = Style.style(TextColor.color(102,255,230), TextDecoration.BOLD);
 
     @Override
     public void onEnable() {
@@ -59,9 +59,9 @@ public final class VillagerOptimizer extends JavaPlugin {
         console.sendMessage(Component.text("│        ").style(plugin_style).append(Component.text("https://github.com/xGinko/VillagerOptimizer").color(NamedTextColor.GRAY)).append(Component.text("         │").style(plugin_style)));
         console.sendMessage(Component.text("│                                                            │").style(plugin_style));
         console.sendMessage(Component.text("│                                                            │").style(plugin_style));
-        console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Loading Translations...").style(plugin_style)).append(Component.text("                   │")).decorate(TextDecoration.BOLD));
+        console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Loading Translations...").style(plugin_style)).append(Component.text("                   │").style(plugin_style)));
         reloadLang(true);
-        console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Loading Config...").style(plugin_style)).append(Component.text("                         │")).decorate(TextDecoration.BOLD));
+        console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Loading Config...").style(plugin_style)).append(Component.text("                         │").style(plugin_style)));
         reloadConfiguration();
         console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Registering Commands...").style(plugin_style)).append(Component.text("                   │").style(plugin_style)));
         VillagerOptimizerCommand.reloadCommands();

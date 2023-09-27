@@ -40,9 +40,8 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("optimization-methods.block-optimization.enable", """
-                When enabled, villagers standing on the configured specific blocks will become optimized once a\s
-                player interacts with them. If the block is broken or moved, the villager will become unoptimized\s
-                again once a player interacts with the villager afterwards.""");
+                When enabled, the closest villager standing near a configured block being placed will be optimized.\s
+                If a configured block is broken nearby, the closest villager will become unoptimized again.""");
         config.getList("optimization-methods.block-optimization.materials", List.of(
                 "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
         ), "Values here need to be valid bukkit Material enums for your server version."
@@ -116,10 +115,10 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             closestOptimizableVillager.setOptimization(OptimizationType.BLOCK);
             closestOptimizableVillager.saveOptimizeTime();
             if (shouldNotifyPlayer) {
-                final String villagerType = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
+                final String vilProfession = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
                 final String placedType = placed.getType().toString().toLowerCase();
                 VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(villagerType).build())
+                        .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(vilProfession).build())
                         .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(placedType).build())
                 ));
             }
@@ -166,10 +165,10 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
         closestOptimizedVillager.setOptimization(OptimizationType.NONE);
         if (shouldNotifyPlayer) {
-            final String villagerType = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
+            final String vilProfession = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
             final String brokenType = broken.getType().toString().toLowerCase();
             VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
-                    .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(villagerType).build())
+                    .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(vilProfession).build())
                     .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(brokenType).build())
             ));
         }
