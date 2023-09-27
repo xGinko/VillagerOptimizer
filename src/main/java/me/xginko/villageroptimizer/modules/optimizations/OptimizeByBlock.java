@@ -31,9 +31,9 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
     private final HashSet<Material> blocks_that_disable = new HashSet<>(4);
-    private final boolean shouldLog, shouldNotifyPlayer;
     private final long cooldown;
     private final double search_radius;
+    private final boolean onlyWhileSneaking, shouldLog, shouldNotifyPlayer;
 
     public OptimizeByBlock() {
         shouldEnable();
@@ -59,6 +59,8 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         this.search_radius = config.getDouble("optimization-methods.block-optimization.search-radius-in-blocks", 2.0, """
                 The radius in blocks a villager can be away from the player when he places an optimize block.\s
                 The closest unoptimized villager to the player will be optimized.""") / 2;
+        this.onlyWhileSneaking = config.getBoolean("optimization-methods.block-optimization.only-when-sneaking", true,
+                "Only optimize/unoptimize by workstation when player is sneaking during place or break.");
         this.shouldNotifyPlayer = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized or unoptimized a villager.");
         this.shouldLog = config.getBoolean("optimization-methods.block-optimization.log", false);
@@ -86,6 +88,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (!blocks_that_disable.contains(placed.getType())) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
+        if (onlyWhileSneaking && !player.isSneaking()) return;
 
         final Location blockLoc = placed.getLocation();
         WrappedVillager closestOptimizableVillager = null;
@@ -140,6 +143,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (!blocks_that_disable.contains(broken.getType())) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
+        if (onlyWhileSneaking && !player.isSneaking()) return;
 
         final Location blockLoc = broken.getLocation();
         WrappedVillager closestOptimizedVillager = null;

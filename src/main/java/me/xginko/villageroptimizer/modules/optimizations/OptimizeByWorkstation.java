@@ -28,7 +28,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
     private final VillagerCache villagerCache;
     private final long cooldown;
     private final double search_radius;
-    private final boolean shouldLog, shouldNotifyPlayer;
+    private final boolean onlyWhileSneaking, shouldLog, shouldNotifyPlayer;
 
     public OptimizeByWorkstation() {
         shouldEnable();
@@ -43,6 +43,8 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         this.cooldown = config.getInt("optimization-methods.workstation-optimization.optimize-cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using a workstation.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
+        this.onlyWhileSneaking = config.getBoolean("optimization-methods.workstation-optimization.only-when-sneaking", true,
+                "Only optimize/unoptimize by workstation when player is sneaking during place or break");
         this.shouldNotifyPlayer = config.getBoolean("optimization-methods.workstation-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
         this.shouldLog = config.getBoolean("optimization-methods.workstation-optimization.log", false);
@@ -71,6 +73,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (workstationProfession.equals(Villager.Profession.NONE)) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
+        if (onlyWhileSneaking && !player.isSneaking()) return;
 
         final Location workstationLoc = placed.getLocation();
         WrappedVillager closestOptimizableVillager = null;
@@ -126,6 +129,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (workstationProfession.equals(Villager.Profession.NONE)) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
+        if (onlyWhileSneaking && !player.isSneaking()) return;
 
         final Location workstationLoc = broken.getLocation();
         WrappedVillager closestOptimizedVillager = null;
