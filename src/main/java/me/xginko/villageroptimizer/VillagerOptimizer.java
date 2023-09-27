@@ -99,13 +99,13 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void reloadPlugin() {
         reloadLang(false);
         reloadConfiguration();
-        VillagerOptimizerCommand.reloadCommands();
     }
 
     private void reloadConfiguration() {
         try {
             config = new Config();
             villagerCache = new VillagerCache(config.cache_keep_time_seconds);
+            VillagerOptimizerCommand.reloadCommands();
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();
         } catch (Exception e) {
