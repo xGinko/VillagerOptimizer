@@ -120,7 +120,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         }
 
         // Check if there are more unoptimized villagers in that chunk than allowed
-        int unoptimized_vils_too_many = unoptimized_villagers.size() - max_unoptimized_per_chunk;
+        final int unoptimized_vils_too_many = unoptimized_villagers.size() - max_unoptimized_per_chunk;
         if (unoptimized_vils_too_many > 0) {
             // Sort villagers by profession priority
             unoptimized_villagers.sort(Comparator.comparingInt(this::getProfessionPriority));
@@ -134,7 +134,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         }
 
         // Check if there are more optimized villagers in that chunk than allowed
-        int optimized_vils_too_many = optimized_villagers.size() - max_optimized_per_chunk;
+        final int optimized_vils_too_many = optimized_villagers.size() - max_optimized_per_chunk;
         if (optimized_vils_too_many > 0) {
             // Sort villagers by profession priority
             optimized_villagers.sort(Comparator.comparingInt(this::getProfessionPriority));
