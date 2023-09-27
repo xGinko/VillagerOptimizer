@@ -18,18 +18,16 @@ public interface VillagerOptimizerCommand extends CommandExecutor {
 
     HashSet<VillagerOptimizerCommand> commands = new HashSet<>();
     static void reloadCommands() {
+        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
+        CommandMap commandMap = plugin.getServer().getCommandMap();
+        commands.forEach(command -> plugin.getCommand(command.label()).unregister(commandMap));
         commands.clear();
 
         commands.add(new VillagerOptimizerCmd());
         commands.add(new OptVillagersRadius());
         commands.add(new UnOptVillagersRadius());
 
-        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
-        CommandMap commandMap = plugin.getServer().getCommandMap();
-        commands.forEach(command -> {
-            plugin.getCommand(command.label()).unregister(commandMap);
-            plugin.getCommand(command.label()).setExecutor(command);
-        });
+        commands.forEach(command -> plugin.getCommand(command.label()).setExecutor(command));
     }
 
     @Override
