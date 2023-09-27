@@ -1,8 +1,8 @@
 package me.xginko.villageroptimizer.modules;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.utils.LogUtil;
 import org.bukkit.Chunk;
@@ -23,17 +23,13 @@ import java.util.logging.Level;
 
 public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
-    /*
-    * TODO: expand villager chunk limit with settings for optimized and unoptimized.
-    * */
-
     private final VillagerOptimizer plugin;
     private final VillagerCache villagerCache;
     private ScheduledTask scheduledTask;
     private final List<Villager.Profession> removalPriority = new ArrayList<>(16);
-    private final int global_max_villagers_per_chunk, max_unoptimized_per_chunk, max_optimized_per_chunk;
-    private final boolean logIsEnabled;
     private final long check_period;
+    private final int max_unoptimized_per_chunk, max_optimized_per_chunk;
+    private final boolean logIsEnabled;
 
     protected VillagerChunkLimit() {
         shouldEnable();
@@ -44,10 +40,6 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 Checks chunks for too many villagers and removes excess villagers based on priority.\s
                 Naturally, optimized villagers will be picked last since they don't affect performance\s
                 as much as unoptimized villagers.""");
-        this.global_max_villagers_per_chunk = config.getInt("villager-chunk-limit.global-max-villagers-per-chunk", 50, """
-                The total amount of villagers, no matter if optimized or unoptimized per chunk.\s
-                You want this number to be minimum as high as the sum of optimized and unoptimized\s
-                per chunk if you don't want to risk deleting the wrong villagers.""");
         this.max_unoptimized_per_chunk = config.getInt("villager-chunk-limit.max-unoptimized-per-chunk", 30,
                 "The maximum amount of unoptimized villagers per chunk.");
         this.max_optimized_per_chunk = config.getInt("villager-chunk-limit.max-optimized-per-chunk", 20,
@@ -111,32 +103,53 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
     }
 
     private void checkVillagersInChunk(Chunk chunk) {
-        // Create a list with all villagers in that chunk
-        List<Villager> villagers_in_chunk = new ArrayList<>();
+        // Create lists with all optimized and unoptimzed villagers in that chunk
+        List<Villager> unoptimized_villagers = new ArrayList<>();
+        List<Villager> optimized_villagers = new ArrayList<>();
+
+        // Collect villagers accordingly
         for (Entity entity : chunk.getEntities()) {
             if (entity.getType().equals(EntityType.VILLAGER)) {
-                villagers_in_chunk.add((Villager) entity);
+                Villager villager = (Villager) entity;
+                if (villagerCache.getOrAdd(villager).isOptimized()) {
+                    optimized_villagers.add(villager);
+                } else {
+                    unoptimized_villagers.add(villager);
+                }
             }
         }
 
-        // Check if there are more villagers in that chunk than allowed
-        int amount_over_the_limit = villagers_in_chunk.size() - global_max_villagers_per_chunk;
-        if (amount_over_the_limit <= 0) return;
+        // Check if there are more unoptimized villagers in that chunk than allowed
+        int unoptimized_vils_too_many = unoptimized_villagers.size() - max_unoptimized_per_chunk;
+        if (unoptimized_vils_too_many > 0) {
+            // Sort villagers by profession priority
+            unoptimized_villagers.sort(Comparator.comparingInt(this::getProfessionPriority));
+            // Remove prioritized villagers that are too many
+            for (int i = 0; i < unoptimized_vils_too_many; i++) {
+                Villager villager = unoptimized_villagers.get(i);
+                villager.remove();
+                if (logIsEnabled) LogUtil.moduleLog(Level.INFO, "villager-chunk-limit",
+                        "Removed unoptimized villager of profession type '"+villager.getProfession().name()+"' at "+villager.getLocation());
+            }
+        }
 
-        // Sort villager list by profession priority
-        villagers_in_chunk.sort(Comparator.comparingInt(this::getProfessionPriority));
-
-        // Remove prioritized villagers that are too many
-        for (int i = 0; i < amount_over_the_limit; i++) {
-            Villager villager = villagers_in_chunk.get(i);
-            villager.remove();
-            if (logIsEnabled) LogUtil.moduleLog(Level.INFO, "villager-chunk-limit",
-                    "Removed villager of profession type '"+villager.getProfession()+"' at "+villager.getLocation());
+        // Check if there are more optimized villagers in that chunk than allowed
+        int optimized_vils_too_many = optimized_villagers.size() - max_optimized_per_chunk;
+        if (optimized_vils_too_many > 0) {
+            // Sort villagers by profession priority
+            optimized_villagers.sort(Comparator.comparingInt(this::getProfessionPriority));
+            // Remove prioritized villagers that are too many
+            for (int i = 0; i < optimized_vils_too_many; i++) {
+                Villager villager = unoptimized_villagers.get(i);
+                villager.remove();
+                if (logIsEnabled) LogUtil.moduleLog(Level.INFO, "villager-chunk-limit",
+                        "Removed optimized villager of profession type '"+villager.getProfession().name()+"' at "+villager.getLocation());
+            }
         }
     }
 
     private int getProfessionPriority(Villager villager) {
         final Villager.Profession profession = villager.getProfession();
-        return removalPriority.contains(profession) && !villagerCache.getOrAdd(villager).isOptimized() ? removalPriority.indexOf(profession) : Integer.MAX_VALUE;
+        return removalPriority.contains(profession) ? removalPriority.indexOf(profession) : Integer.MAX_VALUE;
     }
 }
