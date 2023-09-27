@@ -7,7 +7,6 @@ import java.time.Duration;
 import static java.lang.String.format;
 
 public class CommonUtil {
-
     public static @NotNull String formatTime(final long millis) {
         Duration duration = Duration.ofMillis(millis);
         final int seconds = duration.toSecondsPart();
@@ -22,5 +21,4 @@ public class CommonUtil {
             return format("%02ds", seconds);
         }
     }
-
 }
