@@ -63,8 +63,6 @@ public final class VillagerOptimizer extends JavaPlugin {
         reloadLang(true);
         console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Loading Config...").style(plugin_style)).append(Component.text("                         │").style(plugin_style)));
         reloadConfiguration();
-        console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ➤  Registering Commands...").style(plugin_style)).append(Component.text("                   │").style(plugin_style)));
-        VillagerOptimizerCommand.reloadCommands();
         console.sendMessage(Component.text("│              ").style(plugin_style).append(Component.text(" ✓  Done.").color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD)).append(Component.text("                                     │").style(plugin_style)));
         console.sendMessage(Component.text("│                                                            │").style(plugin_style));
         console.sendMessage(Component.text("│                                                            │").style(plugin_style));
