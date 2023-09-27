@@ -32,8 +32,8 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
 
     public OptVillagersRadius() {
         Config config = VillagerOptimizer.getConfiguration();
-        this.maxRadius = config.getInt("optimization-methods.command.optimizevillagers.max-block-radius", 100);
-        this.cooldown = config.getInt("optimization-methods.command.optimizevillagers.cooldown-seconds", 600, """
+        this.maxRadius = config.getInt("optimization-methods.commands.optimizevillagers.max-block-radius", 100);
+        this.cooldown = config.getInt("optimization-methods.commands.optimizevillagers.cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using the command.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
     }

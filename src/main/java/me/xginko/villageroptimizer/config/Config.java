@@ -57,10 +57,11 @@ public class Config {
                 It is recommended to choose preferably one (no more than 2) of the below methods, as this can\s
                 get confusing and depending on your config exploitable otherwise.
                 """);
+        config.addDefault("optimization-methods.commands.unoptimizevillagers", null);
         config.addDefault("optimization-methods.nametag-optimization.enable", true);
         createTitledSection("Villager Chunk Limit", "villager-chunk-limit");
         createTitledSection("Gameplay", "gameplay");
-        config.addDefault("gameplay.villagers-spawn-as-adults", false);
+        config.addDefault("gameplay.villagers-spawn-as-adults.enable", false);
         config.addDefault("gameplay.prevent-trading-with-unoptimized.enable", false);
         config.addDefault("gameplay.villager-leveling.enable", true);
         config.addDefault("gameplay.trade-restocking.enable", true);

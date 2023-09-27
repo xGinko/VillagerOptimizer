@@ -29,7 +29,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
     private final int maxRadius;
 
     public UnOptVillagersRadius() {
-        this.maxRadius = VillagerOptimizer.getConfiguration().getInt("optimization-methods.command.unoptimizevillagers.max-block-radius", 100);
+        this.maxRadius = VillagerOptimizer.getConfiguration().getInt("optimization-methods.commands.unoptimizevillagers.max-block-radius", 100);
     }
 
     @Override
