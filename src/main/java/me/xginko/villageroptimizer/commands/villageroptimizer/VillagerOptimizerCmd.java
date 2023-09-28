@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer.commands.villageroptimizer;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.SubCommand;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
+import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.DisableSubCmd;
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.ReloadSubCmd;
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.VersionSubCmd;
 import me.xginko.villageroptimizer.enums.Permissions;
@@ -19,12 +20,13 @@ import java.util.List;
 
 public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerCommand {
 
-    private final List<SubCommand> subCommands = new ArrayList<>(2);
-    private final List<String> tabCompleter = new ArrayList<>(2);
+    private final List<SubCommand> subCommands = new ArrayList<>(3);
+    private final List<String> tabCompleter = new ArrayList<>(3);
 
     public VillagerOptimizerCmd() {
         subCommands.add(new ReloadSubCmd());
         subCommands.add(new VersionSubCmd());
+        subCommands.add(new DisableSubCmd());
         subCommands.forEach(subCommand -> tabCompleter.add(subCommand.getLabel()));
     }
 

@@ -3,12 +3,13 @@ package me.xginko.villageroptimizer.commands.villageroptimizer.subcommands;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.SubCommand;
 import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
-public class ReloadSubCmd extends SubCommand {
+public class DisableSubCmd extends SubCommand {
 
     @Override
     public String getLabel() {
@@ -17,7 +18,7 @@ public class ReloadSubCmd extends SubCommand {
 
     @Override
     public TextComponent getDescription() {
-        return Component.text("Reload the plugin configuration.").color(NamedTextColor.GRAY);
+        return Component.text("Disable all plugin tasks and listeners.").color(NamedTextColor.GRAY);
     }
 
     @Override
@@ -28,12 +29,12 @@ public class ReloadSubCmd extends SubCommand {
     @Override
     public void perform(CommandSender sender, String[] args) {
         if (sender.hasPermission(Permissions.Commands.RELOAD.get())) {
-            sender.sendMessage(Component.text("Reloading VillagerOptimizer...").color(NamedTextColor.WHITE));
-            VillagerOptimizer plugin = VillagerOptimizer.getInstance();
-            plugin.getServer().getAsyncScheduler().runNow(plugin, reloadPlugin -> {
-                plugin.reloadPlugin();
-                sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.GREEN));
-            });
+            sender.sendMessage(Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
+            VillagerOptimizerModule.modules.forEach(VillagerOptimizerModule::disable);
+            VillagerOptimizerModule.modules.clear();
+            VillagerOptimizer.getCache().cacheMap().clear();
+            sender.sendMessage(Component.text("Disabled all plugin listeners and tasks.").color(NamedTextColor.GREEN));
+            sender.sendMessage(Component.text("You can enable the plugin again using the reload command.").color(NamedTextColor.YELLOW));
         } else {
             sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
         }
