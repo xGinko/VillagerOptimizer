@@ -140,7 +140,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
             optimized_villagers.sort(Comparator.comparingInt(this::getProfessionPriority));
             // Remove prioritized villagers that are too many
             for (int i = 0; i < optimized_vils_too_many; i++) {
-                Villager villager = unoptimized_villagers.get(i);
+                Villager villager = optimized_villagers.get(i);
                 villager.remove();
                 if (logIsEnabled) LogUtil.moduleLog(Level.INFO, "villager-chunk-limit",
                         "Removed optimized villager of profession type '"+villager.getProfession().name()+"' at "+villager.getLocation());
