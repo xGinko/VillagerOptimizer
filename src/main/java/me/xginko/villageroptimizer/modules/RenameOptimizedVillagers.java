@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer.modules;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
+import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import net.kyori.adventure.text.Component;
@@ -50,15 +51,17 @@ public class RenameOptimizedVillagers implements VillagerOptimizerModule, Listen
     private void onOptimize(VillagerOptimizeEvent event) {
         WrappedVillager wVillager = event.getWrappedVillager();
         wVillager.villager().getScheduler().runDelayed(plugin, rename -> {
-            wVillager.renameForOptimization(optimized_name, overwrite_previous_name);
+            wVillager.rename(optimized_name, overwrite_previous_name);
         }, null, 10L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onUnOptimize(VillagerUnoptimizeEvent event) {
         WrappedVillager wVillager = event.getWrappedVillager();
+        if (wVillager.getOptimizationType().equals(OptimizationType.NAMETAG)) return;
+
         wVillager.villager().getScheduler().runDelayed(plugin, rename -> {
-            wVillager.renameForOptimization(null, overwrite_previous_name);
+            wVillager.rename(null, overwrite_previous_name);
         }, null, 10L);
     }
 }

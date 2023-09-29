@@ -180,7 +180,7 @@ public final class WrappedVillager {
         return dataContainer.has(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
     }
 
-    public void renameForOptimization(final @Nullable Component newName, final boolean replace_existing_name) {
+    public void rename(final @Nullable Component newName, final boolean replace_existing_name) {
         if (replace_existing_name) {
             villager.customName(newName);
             if (newName == null) dataContainer.remove(Keys.LAST_OPTIMIZE_NAME.key());
