@@ -37,7 +37,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
         Config config = VillagerOptimizer.getConfiguration();
         this.maxRadius = config.getInt("optimization-methods.commands.unoptimizevillagers.max-block-radius", 100);
         this.shouldRename = config.getBoolean("optimization-methods.commands.rename-optimized-villagers.enable", true);
-        this.optimizeName = MiniMessage.miniMessage().stripTags(config.getString("optimization-methods.commands.name-villager.name", "<green>Optimized"));
+        this.optimizeName = MiniMessage.miniMessage().stripTags(config.getString("optimization-methods.commands.rename-optimized-villagers.name", "<green>Optimized"));
     }
 
     @Override

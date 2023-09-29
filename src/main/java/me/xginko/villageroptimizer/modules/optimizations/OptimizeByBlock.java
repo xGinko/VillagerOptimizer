@@ -71,7 +71,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                 "Renames villagers to what you configure below when they're optimized.");
         this.overwrite_name = config.getBoolean("optimization-methods.block-optimization.rename-optimized-villagers.overwrite-previous-name", false,
                 "Whether to overwrite the previous name or not.");
-        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.block-optimization.name-villager.name", "<green>Block Optimized",
+        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.block-optimization.rename-optimized-villagers.name", "<green>Block Optimized",
                 "The MiniMessage formatted name to give optimized villagers."));
         this.shouldLog = config.getBoolean("optimization-methods.block-optimization.log", false);
     }

@@ -43,7 +43,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                 "Renames villagers to what you configure below when they're optimized.");
         this.overwrite_name = config.getBoolean("optimization-methods.commands.rename-optimized-villagers.overwrite-previous-name", false,
                 "Whether to overwrite the previous name or not.");
-        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.commands.name-villager.name", "<green>Optimized",
+        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.commands.rename-optimized-villagers.name", "<green>Optimized",
                 "The MiniMessage formatted name to give optimized villagers."));
     }
 
