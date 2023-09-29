@@ -27,16 +27,16 @@ public class PreventVillagerDamage implements VillagerOptimizerModule, Listener 
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("gameplay.prevent-damage.enable",
                 "Configure what kind of damage you want to cancel for optimized villagers here.");
-        this.block = config.getBoolean("gameplay.prevent-damage.block", false,
-                "Prevents damage from blocks like lava, tnt, respawn anchors, etc.");
-        this.player = config.getBoolean("gameplay.prevent-damage.player", false,
-                "Prevents damage from getting hit by players.");
-        this.mob = config.getBoolean("gameplay.prevent-damage.mob", true,
-                "Prevents damage from hostile mobs.");
-        this.other = config.getBoolean("gameplay.prevent-damage.other", true,
-                "Prevents damage from all other entities.");
         this.push = config.getBoolean("gameplay.prevent-damage.prevent-push-from-attack", true,
                 "Prevents optimized villagers from getting pushed by an attacking entity");
+        this.block = config.getBoolean("gameplay.prevent-damage.damagers.block", false,
+                "Prevents damage from blocks like lava, tnt, respawn anchors, etc.");
+        this.player = config.getBoolean("gameplay.prevent-damage.damagers.player", false,
+                "Prevents damage from getting hit by players.");
+        this.mob = config.getBoolean("gameplay.prevent-damage.damagers.mob", true,
+                "Prevents damage from hostile mobs.");
+        this.other = config.getBoolean("gameplay.prevent-damage.damagers.other", true,
+                "Prevents damage from all other entities.");
     }
 
     @Override

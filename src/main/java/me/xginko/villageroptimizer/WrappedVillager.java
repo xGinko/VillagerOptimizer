@@ -25,10 +25,10 @@ public final class WrappedVillager {
     }
 
     /**
-     * @return True if the villager is optimized by the plugin, otherwise false.
+     * @return True if the villager is optimized by this or another plugin, otherwise false.
      */
     public boolean isOptimized() {
-        return dataContainer.has(Keys.OPTIMIZATION_TYPE.key());
+        return dataContainer.has(Keys.OPTIMIZATION_TYPE.key()) || !villager.isAware() || !villager.hasAI();
     }
 
     /**
