@@ -9,7 +9,9 @@ import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
 import me.xginko.villageroptimizer.utils.LogUtil;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,9 +33,10 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
     private final HashSet<Material> blocks_that_disable = new HashSet<>(4);
+    private final Component optimizeName;
     private final long cooldown;
     private final double search_radius;
-    private final boolean onlyWhileSneaking, shouldLog, shouldNotifyPlayer;
+    private final boolean onlyWhileSneaking, shouldRename, overwrite_name, shouldLog, shouldNotifyPlayer;
 
     public OptimizeByBlock() {
         shouldEnable();
@@ -63,6 +66,12 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                 "Only optimize/unoptimize by workstation when player is sneaking during place or break.");
         this.shouldNotifyPlayer = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized or unoptimized a villager.");
+        this.shouldRename = config.getBoolean("optimization-methods.block-optimization.rename-optimized-villagers.enable", true,
+                "Renames villagers to what you configure below when they're optimized.");
+        this.overwrite_name = config.getBoolean("optimization-methods.block-optimization.rename-optimized-villagers.overwrite-previous-name", false,
+                "Whether to overwrite the previous name or not.");
+        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.block-optimization.name-villager.name", "<gray>Optimize",
+                "The MiniMessage formatted name to give optimized villagers."));
         this.shouldLog = config.getBoolean("optimization-methods.block-optimization.log", false);
     }
 
@@ -114,6 +123,16 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (closestOptimizableVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.BLOCK_COOLDOWN.get())) {
             closestOptimizableVillager.setOptimization(OptimizationType.BLOCK);
             closestOptimizableVillager.saveOptimizeTime();
+
+            if (shouldRename) {
+                if (overwrite_name) {
+                    closestOptimizableVillager.villager().customName(optimizeName);
+                } else {
+                    Villager villager = closestOptimizableVillager.villager();
+                    if (villager.customName() == null) villager.customName(optimizeName);
+                }
+            }
+
             if (shouldNotifyPlayer) {
                 final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                         .matchLiteral("%vil_profession%")
