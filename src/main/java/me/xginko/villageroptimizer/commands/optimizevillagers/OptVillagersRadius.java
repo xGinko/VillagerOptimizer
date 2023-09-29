@@ -66,10 +66,11 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                 int specifiedRadius = Integer.parseInt(args[0]);
 
                 if (specifiedRadius > maxRadius) {
-                    final String maxRadiusStr = Integer.toString(maxRadius);
-                    VillagerOptimizer.getLang(player.locale()).command_radius_limit_exceed.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%distance%").replacement(maxRadiusStr).build())
-                    ));
+                    final TextReplacementConfig limit = TextReplacementConfig.builder()
+                            .matchLiteral("%distance%")
+                            .replacement(Integer.toString(maxRadius))
+                            .build();
+                    VillagerOptimizer.getLang(player.locale()).command_radius_limit_exceed.forEach(line -> player.sendMessage(line.replaceText(limit)));
                     return true;
                 }
 
@@ -95,26 +96,34 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                 }
 
                 if (successCount <= 0 && failCount <= 0) {
-                    final String radius = Integer.toString(specifiedRadius);
-                    VillagerOptimizer.getLang(player.locale()).command_no_villagers_nearby.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%radius%").replacement(radius).build())
-                    ));
+                    final TextReplacementConfig radius = TextReplacementConfig.builder()
+                            .matchLiteral("%radius%")
+                            .replacement(Integer.toString(specifiedRadius))
+                            .build();
+                    VillagerOptimizer.getLang(player.locale()).command_no_villagers_nearby.forEach(line -> player.sendMessage(line.replaceText(radius)));
                     return true;
                 }
 
                 if (successCount > 0) {
-                    final String success = Integer.toString(successCount);
-                    final String radius = Integer.toString(specifiedRadius);
+                    final TextReplacementConfig success_amount = TextReplacementConfig.builder()
+                            .matchLiteral("%amount%")
+                            .replacement(Integer.toString(successCount))
+                            .build();
+                    final TextReplacementConfig radius = TextReplacementConfig.builder()
+                            .matchLiteral("%radius%")
+                            .replacement(Integer.toString(specifiedRadius))
+                            .build();
                     VillagerOptimizer.getLang(player.locale()).command_optimize_success.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%amount%").replacement(success).build())
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%radius%").replacement(radius).build())
+                            .replaceText(success_amount)
+                            .replaceText(radius)
                     ));
                 }
                 if (failCount > 0) {
-                    final String alreadyOptimized = Integer.toString(failCount);
-                    VillagerOptimizer.getLang(player.locale()).command_optimize_fail.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%amount%").replacement(alreadyOptimized).build())
-                    ));
+                    final TextReplacementConfig alreadyOptimized = TextReplacementConfig.builder()
+                            .matchLiteral("%amount%")
+                            .replacement(Integer.toString(failCount))
+                            .build();
+                    VillagerOptimizer.getLang(player.locale()).command_optimize_fail.forEach(line -> player.sendMessage(line.replaceText(alreadyOptimized)));
                 }
             } catch (NumberFormatException e) {
                 VillagerOptimizer.getLang(player.locale()).command_radius_invalid.forEach(player::sendMessage);

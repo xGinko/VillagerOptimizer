@@ -99,11 +99,17 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
             closestOptimizableVillager.setOptimization(OptimizationType.WORKSTATION);
             closestOptimizableVillager.saveOptimizeTime();
             if (shouldNotifyPlayer) {
-                final String vilProfession = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
-                final String workstation = placed.getType().toString().toLowerCase();
+                final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
+                        .matchLiteral("%vil_profession%")
+                        .replacement(closestOptimizableVillager.villager().getProfession().toString().toLowerCase())
+                        .build();
+                final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
+                        .matchLiteral("%workstation%")
+                        .replacement(placed.getType().toString().toLowerCase())
+                        .build();
                 VillagerOptimizer.getLang(player.locale()).workstation_optimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(vilProfession).build())
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(workstation).build())
+                        .replaceText(vilProfession)
+                        .replaceText(placedWorkstation)
                 ));
             }
             if (shouldLog)
@@ -111,9 +117,12 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         } else {
             closestOptimizableVillager.villager().shakeHead();
             if (shouldNotifyPlayer) {
-                final String timeLeft = CommonUtil.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown));
+                final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
+                        .matchLiteral("%time%")
+                        .replacement(CommonUtil.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown)))
+                        .build();
                 VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())
+                        .replaceText(timeLeft)
                 ));
             }
         }
@@ -150,11 +159,17 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
         closestOptimizedVillager.setOptimization(OptimizationType.NONE);
         if (shouldNotifyPlayer) {
-            final String vilProfession = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
-            final String workstation = broken.getType().toString().toLowerCase();
+            final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
+                    .matchLiteral("%vil_profession%")
+                    .replacement(closestOptimizedVillager.villager().getProfession().toString().toLowerCase())
+                    .build();
+            final TextReplacementConfig brokenWorkstation = TextReplacementConfig.builder()
+                    .matchLiteral("%workstation%")
+                    .replacement(broken.getType().toString().toLowerCase())
+                    .build();
             VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
-                    .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(vilProfession).build())
-                    .replaceText(TextReplacementConfig.builder().matchLiteral("%workstation%").replacement(workstation).build())
+                    .replaceText(vilProfession)
+                    .replaceText(brokenWorkstation)
             ));
         }
         if (shouldLog)

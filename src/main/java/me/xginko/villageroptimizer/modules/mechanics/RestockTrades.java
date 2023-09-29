@@ -19,10 +19,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class RestockTrades implements VillagerOptimizerModule, Listener {
 
-    /*
-     * TODO: Disable notify message for cooldown bypassers
-     * */
-
     private final VillagerCache villagerCache;
     private final long restock_delay_millis;
     private final boolean shouldLog, notifyPlayer;
@@ -65,14 +61,17 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
         if (!wVillager.isOptimized()) return;
         Player player = event.getPlayer();
 
-        if (wVillager.canRestock(restock_delay_millis) || player.hasPermission(Permissions.Bypass.RESTOCK_COOLDOWN.get())) {
+        final boolean player_bypassing = player.hasPermission(Permissions.Bypass.RESTOCK_COOLDOWN.get());
+
+        if (wVillager.canRestock(restock_delay_millis) || player_bypassing) {
             wVillager.restock();
             wVillager.saveRestockTime();
-            if (notifyPlayer) {
-                final String timeLeft = CommonUtil.formatTime(wVillager.getRestockCooldownMillis(restock_delay_millis));
-                VillagerOptimizer.getLang(player.locale()).trades_restocked.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build()))
-                );
+            if (notifyPlayer && !player_bypassing) {
+                final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
+                        .matchLiteral("%time%")
+                        .replacement(CommonUtil.formatTime(wVillager.getRestockCooldownMillis(restock_delay_millis)))
+                        .build();
+                VillagerOptimizer.getLang(player.locale()).trades_restocked.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
             }
             if (shouldLog)
                 VillagerOptimizer.getLog().info("Restocked optimized villager at "+ wVillager.villager().getLocation());

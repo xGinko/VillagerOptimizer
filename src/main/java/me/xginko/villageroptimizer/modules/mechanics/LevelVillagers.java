@@ -79,10 +79,11 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
             } else {
                 if (shouldNotify) {
                     Player player = (Player) event.getPlayer();
-                    final String timeLeft = CommonUtil.formatTime(wVillager.getLevelCooldownMillis(cooldown));
-                    VillagerOptimizer.getLang(player.locale()).villager_leveling_up.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())
-                    ));
+                    final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
+                            .matchLiteral("%time%")
+                            .replacement(CommonUtil.formatTime(wVillager.getLevelCooldownMillis(cooldown)))
+                            .build();
+                    VillagerOptimizer.getLang(player.locale()).villager_leveling_up.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
                 }
             }
         }

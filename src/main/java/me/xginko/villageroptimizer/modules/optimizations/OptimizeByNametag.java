@@ -69,7 +69,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onPlayerNameEntity(PlayerInteractEntityEvent event) {
+    private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.NAMETAG.get())) return;
@@ -105,9 +105,11 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 event.setCancelled(true);
                 villager.shakeHead();
                 if (shouldNotifyPlayer) {
-                    final String time = CommonUtil.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
-                    VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(time).build())));
+                    final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
+                            .matchLiteral("%time%")
+                            .replacement(CommonUtil.formatTime(wVillager.getOptimizeCooldownMillis(cooldown)))
+                            .build();
+                    VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
                 }
             }
         } else {

@@ -115,11 +115,17 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             closestOptimizableVillager.setOptimization(OptimizationType.BLOCK);
             closestOptimizableVillager.saveOptimizeTime();
             if (shouldNotifyPlayer) {
-                final String vilProfession = closestOptimizableVillager.villager().getProfession().toString().toLowerCase();
-                final String placedType = placed.getType().toString().toLowerCase();
+                final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
+                        .matchLiteral("%vil_profession%")
+                        .replacement(closestOptimizableVillager.villager().getProfession().toString().toLowerCase())
+                        .build();
+                final TextReplacementConfig placedMaterial = TextReplacementConfig.builder()
+                        .matchLiteral("%blocktype%")
+                        .replacement(placed.getType().toString().toLowerCase())
+                        .build();
                 VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(vilProfession).build())
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(placedType).build())
+                        .replaceText(vilProfession)
+                        .replaceText(placedMaterial)
                 ));
             }
             if (shouldLog)
@@ -127,9 +133,11 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         } else {
             closestOptimizableVillager.villager().shakeHead();
             if (shouldNotifyPlayer) {
-                final String timeLeft = CommonUtil.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown));
-                VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                        .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(timeLeft).build())));
+                final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
+                        .matchLiteral("%time%")
+                        .replacement(CommonUtil.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown)))
+                        .build();
+                VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
             }
         }
     }
@@ -163,11 +171,17 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
         closestOptimizedVillager.setOptimization(OptimizationType.NONE);
         if (shouldNotifyPlayer) {
-            final String vilProfession = closestOptimizedVillager.villager().getProfession().toString().toLowerCase();
-            final String brokenType = broken.getType().toString().toLowerCase();
+            final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
+                    .matchLiteral("%vil_profession%")
+                    .replacement(closestOptimizedVillager.villager().getProfession().toString().toLowerCase())
+                    .build();
+            final TextReplacementConfig brokenMaterial = TextReplacementConfig.builder()
+                    .matchLiteral("%blocktype%")
+                    .replacement(broken.getType().toString().toLowerCase())
+                    .build();
             VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
-                    .replaceText(TextReplacementConfig.builder().matchLiteral("%vil_profession%").replacement(vilProfession).build())
-                    .replaceText(TextReplacementConfig.builder().matchLiteral("%blocktype%").replacement(brokenType).build())
+                    .replaceText(vilProfession)
+                    .replaceText(brokenMaterial)
             ));
         }
         if (shouldLog)
