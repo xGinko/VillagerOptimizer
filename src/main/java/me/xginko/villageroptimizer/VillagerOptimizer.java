@@ -13,6 +13,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -92,6 +93,9 @@ public final class VillagerOptimizer extends JavaPlugin {
     }
     public static LanguageCache getLang(String lang) {
         return config.auto_lang ? languageCacheMap.getOrDefault(lang.replace("-", "_"), languageCacheMap.get(config.default_lang.toString().toLowerCase())) : languageCacheMap.get(config.default_lang.toString().toLowerCase());
+    }
+    public static void callEvent(Event event) {
+        instance.getServer().getPluginManager().callEvent(event);
     }
 
     public void reloadPlugin() {

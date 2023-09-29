@@ -1,17 +1,17 @@
 package me.xginko.villageroptimizer.commands.optimizevillagers;
 
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
-import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -28,10 +28,8 @@ import java.util.List;
 public class OptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
 
     private final List<String> tabCompletes = List.of("5", "10", "25", "50");
-    private final Component optimizeName;
     private final long cooldown;
     private final int maxRadius;
-    private final boolean shouldRename, overwrite_name;
 
     public OptVillagersRadius() {
         Config config = VillagerOptimizer.getConfiguration();
@@ -39,12 +37,6 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
         this.cooldown = config.getInt("optimization-methods.commands.optimizevillagers.cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using the command.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
-        this.shouldRename = config.getBoolean("optimization-methods.commands.rename-optimized-villagers.enable", true,
-                "Renames villagers to what you configure below when they're optimized.");
-        this.overwrite_name = config.getBoolean("optimization-methods.commands.rename-optimized-villagers.overwrite-previous-name", false,
-                "Whether to overwrite the previous name or not.");
-        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.commands.rename-optimized-villagers.name", "<green>Optimized",
-                "The MiniMessage formatted name to give optimized villagers."));
     }
 
     @Override
@@ -96,19 +88,13 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                     WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
                     if (wVillager.canOptimize(cooldown)) {
-                        wVillager.setOptimization(OptimizationType.COMMAND);
-                        wVillager.saveOptimizeTime();
-
-                        if (shouldRename) {
-                            if (overwrite_name) {
-                                villager.customName(optimizeName);
-                            } else {
-                                if (villager.customName() == null)
-                                    villager.customName(optimizeName);
-                            }
+                        VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.COMMAND);
+                        VillagerOptimizer.callEvent(optimizeEvent);
+                        if (!optimizeEvent.isCancelled()) {
+                            wVillager.setOptimization(optimizeEvent.getOptimizationType());
+                            wVillager.saveOptimizeTime();
+                            successCount++;
                         }
-
-                        successCount++;
                     } else {
                         failCount++;
                     }

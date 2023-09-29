@@ -8,7 +8,8 @@ public enum Keys {
     OPTIMIZATION_TYPE(VillagerOptimizer.getKey("optimization-type")),
     LAST_OPTIMIZE(VillagerOptimizer.getKey("last-optimize")),
     LAST_LEVELUP(VillagerOptimizer.getKey("last-levelup")),
-    LAST_RESTOCK(VillagerOptimizer.getKey("last-restock"));
+    LAST_RESTOCK(VillagerOptimizer.getKey("last-restock")),
+    LAST_OPTIMIZE_NAME(VillagerOptimizer.getKey("last-optimize-name"));
 
     private final NamespacedKey key;
 

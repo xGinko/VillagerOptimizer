@@ -4,15 +4,13 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
-import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -29,15 +27,10 @@ import java.util.List;
 public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
 
     private final List<String> tabCompletes = List.of("5", "10", "25", "50");
-    private final String optimizeName;
     private final int maxRadius;
-    private final boolean shouldRename;
 
     public UnOptVillagersRadius() {
-        Config config = VillagerOptimizer.getConfiguration();
-        this.maxRadius = config.getInt("optimization-methods.commands.unoptimizevillagers.max-block-radius", 100);
-        this.shouldRename = config.getBoolean("optimization-methods.commands.rename-optimized-villagers.enable", true);
-        this.optimizeName = MiniMessage.miniMessage().stripTags(config.getString("optimization-methods.commands.rename-optimized-villagers.name", "<green>Optimized"));
+        this.maxRadius = VillagerOptimizer.getConfiguration().getInt("optimization-methods.commands.unoptimizevillagers.max-block-radius", 100);
     }
 
     @Override
@@ -88,16 +81,12 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
                     WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
                     if (wVillager.isOptimized()) {
-                        wVillager.setOptimization(OptimizationType.NONE);
-
-                        if (shouldRename) {
-                            Component vilName = villager.customName();
-                            if (vilName != null && PlainTextComponentSerializer.plainText().serialize(vilName).equalsIgnoreCase(optimizeName)) {
-                                villager.customName(null);
-                            }
+                        VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager);
+                        VillagerOptimizer.callEvent(unOptimizeEvent);
+                        if (!unOptimizeEvent.isCancelled()) {
+                            wVillager.setOptimization(OptimizationType.NONE);
+                            successCount++;
                         }
-
-                        successCount++;
                     }
                 }
 

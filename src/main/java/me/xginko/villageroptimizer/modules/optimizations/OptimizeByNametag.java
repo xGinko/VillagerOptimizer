@@ -6,6 +6,8 @@ import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
+import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
@@ -31,7 +33,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
     private final VillagerCache villagerCache;
     private final HashSet<String> nametags = new HashSet<>(4);
     private final long cooldown;
-    private final boolean shouldLog, shouldNotifyPlayer, consumeNametag;
+    private final boolean consumeNametag, shouldNotifyPlayer, shouldLog;
 
     public OptimizeByNametag() {
         shouldEnable();
@@ -82,19 +84,22 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         // Get component name first, so we can manually name the villager when canceling the event to avoid item consumption.
         Component newVillagerName = meta.displayName();
         assert newVillagerName != null; // Legitimate since we checked for hasDisplayName()
-        Villager villager = (Villager) event.getRightClicked();
-
-        if (!consumeNametag) {
-            event.setCancelled(true);
-            villager.customName(newVillagerName);
-        }
-
         final String name = PlainTextComponentSerializer.plainText().serialize(newVillagerName);
+        Villager villager = (Villager) event.getRightClicked();
         WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
         if (nametags.contains(name.toLowerCase())) {
             if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
-                wVillager.setOptimization(OptimizationType.NAMETAG);
+                if (!consumeNametag) {
+                    event.setCancelled(true);
+                    villager.customName(newVillagerName);
+                }
+
+                VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.NAMETAG, event.isAsynchronous());
+                VillagerOptimizer.callEvent(optimizeEvent);
+                if (optimizeEvent.isCancelled()) return;
+
+                wVillager.setOptimization(optimizeEvent.getOptimizationType());
                 wVillager.saveOptimizeTime();
 
                 if (shouldNotifyPlayer)
@@ -114,7 +119,12 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
             }
         } else {
             if (wVillager.isOptimized()) {
+                VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager, event.isAsynchronous());
+                VillagerOptimizer.callEvent(unOptimizeEvent);
+                if (unOptimizeEvent.isCancelled()) return;
+
                 wVillager.setOptimization(OptimizationType.NONE);
+
                 if (shouldNotifyPlayer)
                     VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
                 if (shouldLog)

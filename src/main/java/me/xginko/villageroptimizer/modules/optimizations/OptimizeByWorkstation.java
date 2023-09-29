@@ -6,12 +6,13 @@ import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
+import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -106,17 +107,12 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (closestOptimizableVillager == null) return;
 
         if (closestOptimizableVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.WORKSTATION_COOLDOWN.get())) {
-            closestOptimizableVillager.setOptimization(OptimizationType.WORKSTATION);
-            closestOptimizableVillager.saveOptimizeTime();
+            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(closestOptimizableVillager, OptimizationType.WORKSTATION, event.isAsynchronous());
+            VillagerOptimizer.callEvent(optimizeEvent);
+            if (optimizeEvent.isCancelled()) return;
 
-            if (shouldRename) {
-                if (overwrite_name) {
-                    closestOptimizableVillager.villager().customName(optimizeName);
-                } else {
-                    Villager villager = closestOptimizableVillager.villager();
-                    if (villager.customName() == null) villager.customName(optimizeName);
-                }
-            }
+            closestOptimizableVillager.setOptimization(optimizeEvent.getOptimizationType());
+            closestOptimizableVillager.saveOptimizeTime();
 
             if (shouldNotifyPlayer) {
                 final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
@@ -177,21 +173,16 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
         if (closestOptimizedVillager == null) return;
 
+        VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(closestOptimizedVillager, event.isAsynchronous());
+        VillagerOptimizer.callEvent(unOptimizeEvent);
+        if (unOptimizeEvent.isCancelled()) return;
+
         closestOptimizedVillager.setOptimization(OptimizationType.NONE);
-
-        Villager villager = closestOptimizedVillager.villager();
-
-        if (shouldRename) {
-            Component vilName = villager.customName();
-            if (vilName != null && PlainTextComponentSerializer.plainText().serialize(vilName).equalsIgnoreCase(PlainTextComponentSerializer.plainText().serialize(optimizeName))) {
-                villager.customName(null);
-            }
-        }
 
         if (shouldNotifyPlayer) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(villager.getProfession().toString().toLowerCase())
+                    .replacement(closestOptimizedVillager.villager().getProfession().toString().toLowerCase())
                     .build();
             final TextReplacementConfig brokenWorkstation = TextReplacementConfig.builder()
                     .matchLiteral("%workstation%")
