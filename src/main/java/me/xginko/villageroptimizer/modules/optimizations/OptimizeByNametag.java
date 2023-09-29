@@ -21,10 +21,10 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
@@ -74,57 +74,50 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.NAMETAG.get())) return;
 
-        this.getNameTag(
-                player.getInventory().getItemInMainHand(),
-                player.getInventory().getItemInOffHand()
-        ).ifPresent(nametagItem -> {
-            Component newVillagerName = nametagItem.getItemMeta().displayName();
-            assert newVillagerName != null; // Legitimate since we checked for hasDisplayName()
-            Villager villager = (Villager) event.getRightClicked();
+        ItemStack usedItem = player.getInventory().getItem(event.getHand());
+        if (!usedItem.getType().equals(Material.NAME_TAG)) return;
+        ItemMeta meta = usedItem.getItemMeta();
+        if (!meta.hasDisplayName()) return;
 
-            if (!consumeNametag) {
-                event.setCancelled(true);
-                villager.customName(newVillagerName);
-            }
+        // Get component name first, so we can manually name the villager when canceling the event to avoid item consumption.
+        Component newVillagerName = meta.displayName();
+        assert newVillagerName != null; // Legitimate since we checked for hasDisplayName()
+        Villager villager = (Villager) event.getRightClicked();
 
-            final String nameTag = PlainTextComponentSerializer.plainText().serialize(newVillagerName);
-            WrappedVillager wVillager = villagerCache.getOrAdd(villager);
+        if (!consumeNametag) {
+            event.setCancelled(true);
+            villager.customName(newVillagerName);
+        }
 
-            if (nametags.contains(nameTag.toLowerCase())) {
-                if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
-                    wVillager.setOptimization(OptimizationType.NAMETAG);
-                    wVillager.saveOptimizeTime();
+        final String name = PlainTextComponentSerializer.plainText().serialize(newVillagerName);
+        WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
-                    if (shouldNotifyPlayer)
-                        VillagerOptimizer.getLang(player.locale()).nametag_optimize_success.forEach(player::sendMessage);
-                    if (shouldLog)
-                        VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using nametag: '" + nameTag + "'");
-                } else {
-                    event.setCancelled(true);
-                    villager.shakeHead();
-                    if (shouldNotifyPlayer) {
-                        final String time = CommonUtil.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
-                        VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                                .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(time).build())));
-                    }
-                }
+        if (nametags.contains(name.toLowerCase())) {
+            if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
+                wVillager.setOptimization(OptimizationType.NAMETAG);
+                wVillager.saveOptimizeTime();
+
+                if (shouldNotifyPlayer)
+                    VillagerOptimizer.getLang(player.locale()).nametag_optimize_success.forEach(player::sendMessage);
+                if (shouldLog)
+                    VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using nametag: '" + name + "'");
             } else {
-                if (wVillager.isOptimized()) {
-                    wVillager.setOptimization(OptimizationType.NONE);
-                    if (shouldNotifyPlayer)
-                        VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
-                    if (shouldLog)
-                        VillagerOptimizer.getLog().info(event.getPlayer().getName() + " disabled optimizations for a villager using nametag: '" + nameTag + "'");
+                event.setCancelled(true);
+                villager.shakeHead();
+                if (shouldNotifyPlayer) {
+                    final String time = CommonUtil.formatTime(wVillager.getOptimizeCooldownMillis(cooldown));
+                    VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
+                            .replaceText(TextReplacementConfig.builder().matchLiteral("%time%").replacement(time).build())));
                 }
             }
-        });
-    }
-
-    private Optional<ItemStack> getNameTag(ItemStack mainHand, ItemStack offHand) {
-        if (mainHand.getType().equals(Material.NAME_TAG) && mainHand.getItemMeta().hasDisplayName())
-            return Optional.of(mainHand);
-        if (offHand.getType().equals(Material.NAME_TAG) && offHand.getItemMeta().hasDisplayName())
-            return Optional.of(offHand);
-        return Optional.empty();
+        } else {
+            if (wVillager.isOptimized()) {
+                wVillager.setOptimization(OptimizationType.NONE);
+                if (shouldNotifyPlayer)
+                    VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
+                if (shouldLog)
+                    VillagerOptimizer.getLog().info(event.getPlayer().getName() + " disabled optimizations for a villager using nametag: '" + name + "'");
+            }
+        }
     }
 }
