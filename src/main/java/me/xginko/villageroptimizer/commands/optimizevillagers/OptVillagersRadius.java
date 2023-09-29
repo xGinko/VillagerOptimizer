@@ -39,11 +39,11 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
         this.cooldown = config.getInt("optimization-methods.commands.optimizevillagers.cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using the command.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
-        this.shouldRename = config.getBoolean("optimization-methods.commands.optimizevillagers.rename-optimized-villagers.enable", true,
+        this.shouldRename = config.getBoolean("optimization-methods.commands.rename-optimized-villagers.enable", true,
                 "Renames villagers to what you configure below when they're optimized.");
-        this.overwrite_name = config.getBoolean("optimization-methods.commands.optimizevillagers.rename-optimized-villagers.overwrite-previous-name", false,
+        this.overwrite_name = config.getBoolean("optimization-methods.commands.rename-optimized-villagers.overwrite-previous-name", false,
                 "Whether to overwrite the previous name or not.");
-        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.commands.optimizevillagers.name-villager.name", "<gray>Optimize",
+        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.commands.name-villager.name", "<green>Optimized",
                 "The MiniMessage formatted name to give optimized villagers."));
     }
 

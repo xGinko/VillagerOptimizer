@@ -12,6 +12,7 @@ import me.xginko.villageroptimizer.utils.LogUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -70,7 +71,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                 "Renames villagers to what you configure below when they're optimized.");
         this.overwrite_name = config.getBoolean("optimization-methods.block-optimization.rename-optimized-villagers.overwrite-previous-name", false,
                 "Whether to overwrite the previous name or not.");
-        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.block-optimization.name-villager.name", "<gray>Optimize",
+        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.block-optimization.name-villager.name", "<green>Block Optimized",
                 "The MiniMessage formatted name to give optimized villagers."));
         this.shouldLog = config.getBoolean("optimization-methods.block-optimization.log", false);
     }
@@ -189,10 +190,20 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (closestOptimizedVillager == null) return;
 
         closestOptimizedVillager.setOptimization(OptimizationType.NONE);
+
+        Villager villager = closestOptimizedVillager.villager();
+
+        if (shouldRename) {
+            Component vilName = villager.customName();
+            if (vilName != null && PlainTextComponentSerializer.plainText().serialize(vilName).equalsIgnoreCase(PlainTextComponentSerializer.plainText().serialize(optimizeName))) {
+                villager.customName(null);
+            }
+        }
+
         if (shouldNotifyPlayer) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(closestOptimizedVillager.villager().getProfession().toString().toLowerCase())
+                    .replacement(villager.getProfession().toString().toLowerCase())
                     .build();
             final TextReplacementConfig brokenMaterial = TextReplacementConfig.builder()
                     .matchLiteral("%blocktype%")
