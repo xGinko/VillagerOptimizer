@@ -53,11 +53,6 @@ public class Config {
         createTitledSection("Optimization", "optimization-methods");
         config.addDefault("optimization-methods.commands.unoptimizevillagers", null);
         config.addDefault("optimization-methods.nametag-optimization.enable", true);
-        addComment("optimization-methods", """
-                BE AWARE:\s
-                It is recommended to choose preferably ONE, no more than TWO of the below methods, as it can\s
-                become confusing and - depending on your config - exploitable otherwise.
-                """);
         createTitledSection("Villager Chunk Limit", "villager-chunk-limit");
         createTitledSection("Gameplay", "gameplay");
         config.addDefault("gameplay.villagers-spawn-as-adults.enable", false);
