@@ -13,7 +13,7 @@ public class DisableSubCmd extends SubCommand {
 
     @Override
     public String getLabel() {
-        return "reload";
+        return "disable";
     }
 
     @Override
