@@ -26,10 +26,10 @@ public class VillagerOptimizeEvent extends Event implements Cancellable {
 
     public VillagerOptimizeEvent(@NotNull WrappedVillager wrappedVillager, @NotNull OptimizationType type) throws IllegalArgumentException {
         this.wrappedVillager = wrappedVillager;
-        this.type = type;
-
         if (type.equals(OptimizationType.NONE)) {
             throw new IllegalArgumentException("Type can't be NONE.");
+        } else {
+            this.type = type;
         }
     }
 
@@ -41,8 +41,12 @@ public class VillagerOptimizeEvent extends Event implements Cancellable {
         return type;
     }
 
-    public void setOptimizationType(@NotNull OptimizationType type) {
-        this.type = type;
+    public void setOptimizationType(@NotNull OptimizationType type) throws IllegalArgumentException {
+        if (type.equals(OptimizationType.NONE)) {
+            throw new IllegalArgumentException("Type can't be NONE.");
+        } else {
+            this.type = type;
+        }
     }
 
     @Override
