@@ -52,6 +52,11 @@ public class Config {
         createTitledSection("General", "general");
         createTitledSection("Optimization", "optimization-methods");
         config.addDefault("optimization-methods.commands.unoptimizevillagers", null);
+        config.addComment("optimization-methods.commands", """
+                If you want to disable commands, negate the following permissions:\s 
+                villageroptimizer.cmd.optimize\s
+                villageroptimizer.cmd.unoptimize
+                """);
         config.addDefault("optimization-methods.nametag-optimization.enable", true);
         createTitledSection("Villager Chunk Limit", "villager-chunk-limit");
         createTitledSection("Gameplay", "gameplay");
