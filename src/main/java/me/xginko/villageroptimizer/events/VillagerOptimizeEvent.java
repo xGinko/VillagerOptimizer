@@ -17,17 +17,17 @@ public class VillagerOptimizeEvent extends Event implements Cancellable {
     public VillagerOptimizeEvent(@NotNull WrappedVillager wrappedVillager, @NotNull OptimizationType type, boolean isAsync) throws IllegalArgumentException {
         super(isAsync);
         this.wrappedVillager = wrappedVillager;
-        this.type = type;
-
         if (type.equals(OptimizationType.NONE)) {
-            throw new IllegalArgumentException("Type can't be NONE.");
+            throw new IllegalArgumentException("OptimizationType can't be NONE.");
+        } else {
+            this.type = type;
         }
     }
 
     public VillagerOptimizeEvent(@NotNull WrappedVillager wrappedVillager, @NotNull OptimizationType type) throws IllegalArgumentException {
         this.wrappedVillager = wrappedVillager;
         if (type.equals(OptimizationType.NONE)) {
-            throw new IllegalArgumentException("Type can't be NONE.");
+            throw new IllegalArgumentException("OptimizationType can't be NONE.");
         } else {
             this.type = type;
         }
@@ -43,7 +43,7 @@ public class VillagerOptimizeEvent extends Event implements Cancellable {
 
     public void setOptimizationType(@NotNull OptimizationType type) throws IllegalArgumentException {
         if (type.equals(OptimizationType.NONE)) {
-            throw new IllegalArgumentException("Type can't be NONE.");
+            throw new IllegalArgumentException("OptimizationType can't be NONE.");
         } else {
             this.type = type;
         }
