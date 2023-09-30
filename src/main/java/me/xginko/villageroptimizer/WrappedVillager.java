@@ -153,7 +153,7 @@ public final class WrappedVillager {
 
     /**
      * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
-     * @return The system time in millis when the villager was last optimized, 0L if the villager was never optimized.
+     * @return Whether the villager can be leveled up or not with the checked milliseconds
      */
     public boolean canLevelUp(final long cooldown_millis) {
         return getLastLevelUpTime() + cooldown_millis <= villager.getWorld().getFullTime();

@@ -10,9 +10,7 @@ import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -30,10 +28,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
-    private final Component optimizeName;
     private final long cooldown;
     private final double search_radius;
-    private final boolean onlyWhileSneaking, shouldRename, overwrite_name, shouldLog, shouldNotifyPlayer;
+    private final boolean onlyWhileSneaking, shouldLog, shouldNotifyPlayer;
 
     public OptimizeByWorkstation() {
         shouldEnable();
@@ -52,12 +49,6 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 "Only optimize/unoptimize by workstation when player is sneaking during place or break");
         this.shouldNotifyPlayer = config.getBoolean("optimization-methods.workstation-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
-        this.shouldRename = config.getBoolean("optimization-methods.workstation-optimization.rename-optimized-villagers.enable", true,
-                "Renames villagers to what you configure below when they're optimized.");
-        this.overwrite_name = config.getBoolean("optimization-methods.workstation-optimization.rename-optimized-villagers.overwrite-previous-name", false,
-                "Whether to overwrite the previous name or not.");
-        this.optimizeName = MiniMessage.miniMessage().deserialize(config.getString("optimization-methods.workstation-optimization.rename-optimized-villagers.name", "<green>Workstation Optimized",
-                "The MiniMessage formatted name to give optimized villagers."));
         this.shouldLog = config.getBoolean("optimization-methods.workstation-optimization.log", false);
     }
 
