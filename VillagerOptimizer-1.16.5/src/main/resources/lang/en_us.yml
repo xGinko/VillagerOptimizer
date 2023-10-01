@@ -5,7 +5,7 @@ messages:
   trades-restocked:
     - "<green>All trades have been restocked! Next restock in %time%."
   villager-leveling-up:
-    - "<yellow>Villager is currently leveling up! You can use the villager again in %time%"
+    - "<yellow>Villager is currently leveling up! You can use the villager again in %time%."
   nametag:
     optimize-success:
       - "<green>Successfully optimized villager by using a nametag."

@@ -1,0 +1,44 @@
+messages:
+  no-permission: "<red>Du hast keine Berechtigung für diesen Befehl."
+  optimize-to-trade:
+    - "<red>Optimiere den Dorfbewohner um mit ihm handeln zu können."
+  trades-restocked:
+    - "<green>Alle Angebote sind wieder verfügbar! Nächste Auffrischung in %time%."
+  villager-leveling-up:
+    - "<yellow>Dorfbewohner steigt gerade im Level auf und kann in %time% wieder handeln."
+  nametag:
+    optimize-success:
+      - "<green>Dorfbewohner erfolgreich mit einem Namensschild optimiert."
+    optimize-on-cooldown:
+      - "<gray>Du musst %time% warten, bevor du diesen Dorfbewohner erneut optimieren kannst."
+    unoptimize-success:
+      - "<green>Optimierung erfolgreich durch eine Namensschildänderung aufgehoben."
+  block:
+    optimize-success:
+      - "<green>%vil_profession% Dorfbewohner erfolgreich mit %blocktype% optimiert."
+    optimize-on-cooldown:
+      - "<gray>Du musst %time% warten, bevor du diesen Dorfbewohner erneut optimieren kannst."
+    unoptimize-success:
+      - "<green>Optimierung des %vil_profession% Dorfbewohners erfolgreich durch Abbauen von %blocktype% aufgehoben."
+  workstation:
+    optimize-success:
+      - "<green>%vil_profession% Dorfbewohner erfolgreich mit Arbeitsplatz-Block %blocktype% optimiert."
+    optimize-on-cooldown:
+      - "<gray>Du musst %time% warten, bevor du diesen Dorfbewohner erneut optimieren kannst."
+    unoptimize-success:
+      - "<green>Optimierung des %vil_profession% Dorfbewohners erfolgreich durch Abbauen von %blocktype% aufgehoben."
+  command:
+    optimize-success:
+      - "<green>Erfolgreich %amount% Dorfbewohner in einem Radius von %radius% Blöcken optimiert."
+    optimize-fail:
+      - "<gray>%amount% Dorfbewohner konnten nicht optimiert werden, da sie erst vor Kurzem optimiert wurden."
+    radius-limit-exceed:
+      - "<red>Der eingegebene Radius überschreitet das Limit von %distance% Blöcken."
+    unoptimize-success:
+      - "<green>Optimierung von %amount% Dorfbewohnern in einem Radius von %radius% Blöcken erfolgreich aufgehoben."
+    specify-radius:
+      - "<red>Bitte gib einen Radius an."
+    radius-invalid:
+      - "<red>Der eingegebene Radius ist keine gültige Zahl. Versuche es erneut."
+    no-villagers-nearby:
+      - "<gray>Es wurden keine beschäftigten Dorfbewohner innerhalb eines Radius von %radius% Blöcken gefunden."

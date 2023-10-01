@@ -169,7 +169,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                     languageFiles.add(path);
             });
         } catch (IOException e) {
-            logger.severe("Error while getting default language file names! - " + e.getLocalizedMessage());
+            logger.severe("Error while getting default language files! - " + e.getLocalizedMessage());
             e.printStackTrace();
         }
         return languageFiles;
