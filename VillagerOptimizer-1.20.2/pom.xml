@@ -70,10 +70,6 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-        <repository>
-            <id>configmaster-repo</id>
-            <url>https://ci.pluginwiki.us/plugin/repository/everything/</url>
-        </repository>
     </repositories>
 
     <dependencies>
