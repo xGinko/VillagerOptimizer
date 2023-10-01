@@ -52,7 +52,7 @@ public class RenameOptimizedVillagers implements VillagerOptimizerModule, Listen
         WrappedVillager wVillager = event.getWrappedVillager();
         Villager villager = wVillager.villager();
 
-        villager.getScheduler().runDelayed(plugin, rename -> {
+        villager.getScheduler().runDelayed(plugin, nameOptimized -> {
             if (overwrite_previous_name) {
                 villager.customName(optimized_name);
                 wVillager.memorizeName(optimized_name);
@@ -71,7 +71,7 @@ public class RenameOptimizedVillagers implements VillagerOptimizerModule, Listen
         WrappedVillager wVillager = event.getWrappedVillager();
         Villager villager = wVillager.villager();
 
-        villager.getScheduler().runDelayed(plugin, rename -> {
+        villager.getScheduler().runDelayed(plugin, unNameOptimized -> {
             final Component currentName = villager.customName();
             final Component memorizedName = wVillager.getMemorizedName();
             if (memorizedName != null)
