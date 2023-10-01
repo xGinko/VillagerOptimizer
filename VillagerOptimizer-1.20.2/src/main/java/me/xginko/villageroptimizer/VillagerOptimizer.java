@@ -9,6 +9,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -68,6 +69,7 @@ public final class VillagerOptimizer extends JavaPlugin {
         console.sendMessage(Component.text("│                                                            │").style(plugin_style));
         console.sendMessage(Component.text("│                                                            │").style(plugin_style));
         console.sendMessage(Component.text("╰────────────────────────────────────────────────────────────╯").style(plugin_style));
+        new Metrics(this, 19939);
     }
 
     public static VillagerOptimizer getInstance()  {
