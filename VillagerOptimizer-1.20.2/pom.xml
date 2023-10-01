@@ -4,20 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.xginko.VillagerOptimizer</groupId>
-    <artifactId>VillagerOptimizer</artifactId>
-    <version>1.0.0</version>
-    <modules>
-        <module>VillagerOptimizer-1.20.2</module>
-        <module>VillagerOptimizer-1.16.5</module>
-    </modules>
-    <packaging>pom</packaging>
+    <parent>
+        <groupId>me.xginko.VillagerOptimizer</groupId>
+        <artifactId>VillagerOptimizer</artifactId>
+        <version>1.0.0</version>
+    </parent>
 
-    <name>VillagerOptimizer</name>
-    <description>Combat heavy villager lag by letting players optimize their trading halls.</description>
-    <url>https://github.com/xGinko/VillagerOptimizer</url>
+    <artifactId>1.20.2</artifactId>
+    <name>${project.parent.artifactId}-${project.parent.version}--${project.artifactId}</name>
+    <packaging>jar</packaging>
 
     <properties>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -43,17 +41,13 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>me.xginko.villageroptimizer.bstats</shadedPattern>
+                                </relocation>
+                            </relocations>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <finalName>${project.parent.artifactId}-${project.parent.version}--${project.artifactId}</finalName>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>module-info.class</exclude>
-                                        <exclude>META-INF/MANIFEST.MF</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                         </configuration>
                     </execution>
                 </executions>
@@ -69,8 +63,12 @@
 
     <repositories>
         <repository>
-            <id>papermc</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
+            <id>papermc-repo</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
             <id>configmaster-repo</id>
@@ -79,25 +77,11 @@
     </repositories>
 
     <dependencies>
-        <!-- Bukkit bStats -->
         <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Enhanced config.yml manager -->
-        <dependency>
-            <groupId>com.github.thatsmusic99</groupId>
-            <artifactId>ConfigurationMaster-API</artifactId>
-            <version>v2.0.0-rc.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Caching -->
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>3.1.8</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.20.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

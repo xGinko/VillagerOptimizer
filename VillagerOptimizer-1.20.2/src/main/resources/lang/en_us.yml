@@ -1,0 +1,44 @@
+messages:
+  no-permission: "<red>You don't have permission to use this command."
+  optimize-to-trade:
+    - "<red>You need to optimize this villager before you can trade with it."
+  trades-restocked:
+    - "<green>All trades have been restocked! Next restock in %time%."
+  villager-leveling-up:
+    - "<yellow>Villager is currently leveling up! You can use the villager again in %time%"
+  nametag:
+    optimize-success:
+      - "<green>Successfully optimized villager by using a nametag."
+    optimize-on-cooldown:
+      - "<gray>You need to wait %time% until you can optimize this villager again."
+    unoptimize-success:
+      - "<green>Successfully unoptimized villager by using a nametag."
+  block:
+    optimize-success:
+      - "<green>%vil_profession% villager successfully optimized using block %blocktype%."
+    optimize-on-cooldown:
+      - "<gray>You need to wait %time% until you can optimize this villager again."
+    unoptimize-success:
+      - "<green>Successfully unoptimized %vil_profession% villager by removing %blocktype%."
+  workstation:
+    optimize-success:
+      - "<green>%vil_profession% villager successfully optimized using workstation block %blocktype%."
+    optimize-on-cooldown:
+      - "<gray>You need to wait %time% until you can optimize this villager again."
+    unoptimize-success:
+      - "<green>Successfully unoptimized villager by removing workstation block %blocktype%."
+  command:
+    optimize-success:
+      - "<green>Successfully optimized %amount% villager(s) in a radius of %radius% blocks."
+    optimize-fail:
+      - "<gray>%amount% villagers couldn't be optimized because they have recently been optimized."
+    radius-limit-exceed:
+      - "<red>The radius you entered exceeds the limit of %distance% blocks."
+    unoptimize-success:
+      - "<green>Successfully unoptimized %amount% villager(s) in a radius of %radius% blocks."
+    specify-radius:
+      - "<red>Please specify a radius."
+    radius-invalid:
+      - "<red>The radius you entered is not a valid number. Try again."
+    no-villagers-nearby:
+      - "<gray>Couldn't find any employed villagers within a radius of %radius%."
