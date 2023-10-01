@@ -77,7 +77,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         if (!player.hasPermission(Permissions.Optimize.NAMETAG.get())) return;
 
         ItemStack usedItem = player.getInventory().getItem(event.getHand());
-        if (!usedItem.getType().equals(Material.NAME_TAG)) return;
+        if (usedItem == null || !usedItem.getType().equals(Material.NAME_TAG)) return;
         ItemMeta meta = usedItem.getItemMeta();
         if (!meta.hasDisplayName()) return;
 
