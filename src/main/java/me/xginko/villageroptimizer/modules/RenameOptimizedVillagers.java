@@ -3,11 +3,11 @@ package me.xginko.villageroptimizer.modules;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -50,18 +50,34 @@ public class RenameOptimizedVillagers implements VillagerOptimizerModule, Listen
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onOptimize(VillagerOptimizeEvent event) {
         WrappedVillager wVillager = event.getWrappedVillager();
-        wVillager.villager().getScheduler().runDelayed(plugin, rename -> {
-            wVillager.rename(optimized_name, overwrite_previous_name);
+        Villager villager = wVillager.villager();
+
+        villager.getScheduler().runDelayed(plugin, rename -> {
+            if (overwrite_previous_name) {
+                villager.customName(optimized_name);
+                wVillager.memorizeName(optimized_name);
+            } else {
+                final Component currentName = villager.customName();
+                if (currentName == null) {
+                    villager.customName(optimized_name);
+                    wVillager.memorizeName(optimized_name);
+                }
+            }
         }, null, 10L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onUnOptimize(VillagerUnoptimizeEvent event) {
         WrappedVillager wVillager = event.getWrappedVillager();
-        if (wVillager.getOptimizationType().equals(OptimizationType.NAMETAG)) return;
+        Villager villager = wVillager.villager();
 
-        wVillager.villager().getScheduler().runDelayed(plugin, rename -> {
-            wVillager.rename(null, overwrite_previous_name);
+        villager.getScheduler().runDelayed(plugin, rename -> {
+            final Component currentName = villager.customName();
+            final Component memorizedName = wVillager.getMemorizedName();
+            if (memorizedName != null)
+                wVillager.forgetName();
+            if (currentName != null && currentName.equals(memorizedName))
+                villager.customName(null);
         }, null, 10L);
     }
 }

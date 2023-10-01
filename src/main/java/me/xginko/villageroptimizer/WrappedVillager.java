@@ -10,8 +10,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 public final class WrappedVillager {
 
     private final @NotNull Villager villager;
@@ -180,33 +178,15 @@ public final class WrappedVillager {
         return dataContainer.has(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keys.LAST_LEVELUP.key(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
     }
 
-    public void rename(final @Nullable Component newName, final boolean replace_existing_name) {
-        if (replace_existing_name) {
-            villager.customName(newName);
-            if (newName == null) dataContainer.remove(Keys.LAST_OPTIMIZE_NAME.key());
-            else saveOptimizeName(newName);
-        } else {
-            Component currentName = villager.customName();
-            if (currentName == null) {
-                villager.customName(newName);
-                if (newName == null) dataContainer.remove(Keys.LAST_OPTIMIZE_NAME.key());
-                else saveOptimizeName(newName);
-            } else {
-                Component lastName = getOptimizeName();
-                if (Objects.equals(currentName, lastName)) {
-                    villager.customName(newName);
-                    if (newName == null) dataContainer.remove(Keys.LAST_OPTIMIZE_NAME.key());
-                    else saveOptimizeName(newName);
-                }
-            }
-        }
-    }
-
-    public void saveOptimizeName(final Component customName) {
+    public void memorizeName(final Component customName) {
         dataContainer.set(Keys.LAST_OPTIMIZE_NAME.key(), PersistentDataType.STRING, MiniMessage.miniMessage().serialize(customName));
     }
 
-    public @Nullable Component getOptimizeName() {
+    public @Nullable Component getMemorizedName() {
         return dataContainer.has(Keys.LAST_OPTIMIZE_NAME.key()) ? MiniMessage.miniMessage().deserialize(dataContainer.get(Keys.LAST_OPTIMIZE_NAME.key(), PersistentDataType.STRING)) : null;
+    }
+
+    public void forgetName() {
+        dataContainer.remove(Keys.LAST_OPTIMIZE_NAME.key());
     }
 }
