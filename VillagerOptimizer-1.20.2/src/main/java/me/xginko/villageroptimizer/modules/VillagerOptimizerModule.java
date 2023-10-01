@@ -37,7 +37,7 @@ public interface VillagerOptimizerModule {
         modules.add(new PreventVillagerTargetting());
 
         modules.add(new VillagerChunkLimit());
-        modules.add(new RenameOptimizedVillagers());
+        modules.add(new RenameOptimized());
 
         modules.forEach(module -> {
             if (module.shouldEnable()) module.enable();

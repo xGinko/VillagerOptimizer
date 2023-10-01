@@ -13,13 +13,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-public class RenameOptimizedVillagers implements VillagerOptimizerModule, Listener {
+public class RenameOptimized implements VillagerOptimizerModule, Listener {
 
     private final VillagerOptimizer plugin;
     private final Component optimized_name;
     private final boolean overwrite_previous_name;
 
-    protected RenameOptimizedVillagers() {
+    protected RenameOptimized() {
         this.plugin = VillagerOptimizer.getInstance();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("general.rename-villagers.enable", """
