@@ -1,0 +1,44 @@
+messages:
+  no-permission: "<red>Non hai il permesso per usare questo comando."
+  optimize-to-trade:
+    - "<red>Devi ottimizzare il villager prima di poterci commerciare."
+  trades-restocked:
+    - "<green>Tutti i commerci sono stati riavviati! Prossimo riavvio in %time%."
+  villager-leveling-up:
+    - "<yellow>Il villager si sta ancora ottimizzando! Potrai utilizzarlo di nuovo tra %time%."
+  nametag:
+    optimize-success:
+      - "<green>Villager ottimizzato correttamente utilizzando il name-tag."
+    optimize-on-cooldown:
+      - "<gray>Devi attendere %time% prima di poter ottimizzare di nuovo questo villager."
+    unoptimize-success:
+      - "<green>Ottimizzazione rimossa con successo dal villager usando il name-tag."
+  block:
+    optimize-success:
+      - "<green>%vil_profession% ottimizzato con successo usando il blocco: %blocktype%."
+    optimize-on-cooldown:
+      - "<gray>Devi attendere %time% prima di poter ottimizzare di nuovo questo villager."
+    unoptimize-success:
+      - "<green>Ottimizzazione rimossa al villager %vil_profession% rimuovendo il blocco: %blocktype%."
+  workstation:
+    optimize-success:
+      - "<green>%vil_profession% ottimizzato con successo usando la workstation: %blocktype%."
+    optimize-on-cooldown:
+      - "<gray>Devi aspettare %time% prima di poter ottimizzare il villager."
+    unoptimize-success:
+      - "<green>Ottimizzazione rimossa al villager %vil_profession% rimuovendo la workstation: %blocktype%."
+  command:
+    optimize-success:
+      - "<green>Ottimizzato con successo %amount% villager in un raggio di %radius% blocchi."
+    optimize-fail:
+      - "<gray>%amount% villager non possono essere ottimizzati poiché sono stati già ottimizzati di recente."
+    radius-limit-exceed:
+      - "<red>Il raggio inserito supera il limite di %distance% blocchi."
+    unoptimize-success:
+      - "<green>Ottimizzazione rimossa con successo da %amount% villager in un raggio di %radius% blocchi."
+    specify-radius:
+      - "<red>Per favore, specifica un raggio."
+    radius-invalid:
+      - "<red>Il raggio inserito non è un numero valido, riprova."
+    no-villagers-nearby:
+      - "<gray>Non è stato possibile trovare villager entro un raggio di %radius% blocchi."
