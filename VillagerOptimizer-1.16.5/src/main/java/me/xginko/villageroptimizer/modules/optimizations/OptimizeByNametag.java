@@ -84,8 +84,6 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         // Get component name first, so we can manually name the villager when canceling the event to avoid item consumption.
         Component newVillagerName = meta.displayName();
         assert newVillagerName != null; // Legitimate since we checked for hasDisplayName()
-
-
         final String name = PlainTextComponentSerializer.plainText().serialize(newVillagerName);
         Villager villager = (Villager) event.getRightClicked();
         WrappedVillager wVillager = villagerCache.getOrAdd(villager);
