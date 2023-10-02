@@ -91,7 +91,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Ru
     private void onCreatureSpawn(CreatureSpawnEvent event) {
         Entity spawned = event.getEntity();
         if (spawned.getType().equals(EntityType.VILLAGER)) {
-            checkVillagersInChunk(spawned.getChunk());
+            this.checkVillagersInChunk(spawned.getChunk());
         }
     }
 
@@ -99,7 +99,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Ru
     private void onInteract(PlayerInteractEntityEvent event) {
         Entity clicked = event.getRightClicked();
         if (clicked.getType().equals(EntityType.VILLAGER)) {
-            checkVillagersInChunk(clicked.getChunk());
+            this.checkVillagersInChunk(clicked.getChunk());
         }
     }
 

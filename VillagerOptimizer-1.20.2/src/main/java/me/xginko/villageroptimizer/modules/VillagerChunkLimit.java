@@ -76,7 +76,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
             for (World world : server.getWorlds()) {
                 for (Chunk chunk : world.getLoadedChunks()) {
                     plugin.getServer().getRegionScheduler().run(
-                            plugin, world, chunk.getX(), chunk.getZ(), check_chunk -> checkVillagersInChunk(chunk)
+                            plugin, world, chunk.getX(), chunk.getZ(), check_chunk -> this.checkVillagersInChunk(chunk)
                     );
                 }
             }
@@ -98,7 +98,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
     private void onCreatureSpawn(CreatureSpawnEvent event) {
         Entity spawned = event.getEntity();
         if (spawned.getType().equals(EntityType.VILLAGER)) {
-            checkVillagersInChunk(spawned.getChunk());
+            this.checkVillagersInChunk(spawned.getChunk());
         }
     }
 
@@ -106,7 +106,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
     private void onInteract(PlayerInteractEntityEvent event) {
         Entity clicked = event.getRightClicked();
         if (clicked.getType().equals(EntityType.VILLAGER)) {
-            checkVillagersInChunk(clicked.getChunk());
+            this.checkVillagersInChunk(clicked.getChunk());
         }
     }
 
