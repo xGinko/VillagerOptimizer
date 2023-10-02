@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.TradeSelectEvent;
 public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
-    private final boolean notifyPlayer;
+    private final boolean notify_player;
 
     public PreventUnoptimizedTrading() {
         shouldEnable();
@@ -27,7 +27,7 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
                 Will prevent players from selecting and using trades of unoptimized villagers.\s
                 Use this if you have a lot of villagers and therefore want to force your players to optimize them.\s
                 Inventories can still be opened so players can move villagers around.""");
-        this.notifyPlayer = config.getBoolean("gameplay.prevent-trading-with-unoptimized.notify-player", true,
+        this.notify_player = config.getBoolean("gameplay.prevent-trading-with-unoptimized.notify-player", true,
                 "Sends players a message when they try to trade with an unoptimized villager.");
     }
 
@@ -52,7 +52,7 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
                 && !villagerCache.getOrAdd(villager).isOptimized()
         ) {
             event.setCancelled(true);
-            if (notifyPlayer)
+            if (notify_player)
                 VillagerOptimizer.getLang(player.locale()).optimize_for_trading.forEach(player::sendMessage);
         }
     }
@@ -67,7 +67,7 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
                 && !villagerCache.getOrAdd(villager).isOptimized()
         ) {
             event.setCancelled(true);
-            if (notifyPlayer)
+            if (notify_player)
                 VillagerOptimizer.getLang(player.locale()).optimize_for_trading.forEach(player::sendMessage);
         }
     }

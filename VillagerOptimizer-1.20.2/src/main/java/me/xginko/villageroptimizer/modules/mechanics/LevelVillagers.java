@@ -22,7 +22,7 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
 
     private final VillagerOptimizer plugin;
     private final VillagerCache villagerCache;
-    private final boolean shouldNotify;
+    private final boolean notify_player;
     private final long cooldown;
 
     public LevelVillagers() {
@@ -36,7 +36,7 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
         this.cooldown = config.getInt("gameplay.villager-leveling.level-check-cooldown-seconds", 5, """
                 Cooldown in seconds until the level of a villager will be checked and updated again.\s
                 Recommended to leave as is.""") * 1000L;
-        this.shouldNotify = config.getBoolean("gameplay.villager-leveling.notify-player", true,
+        this.notify_player = config.getBoolean("gameplay.villager-leveling.notify-player", true,
                 "Tell players to wait when a villager is leveling up.");
     }
 
@@ -77,7 +77,7 @@ public class LevelVillagers implements VillagerOptimizerModule, Listener {
                     }, null, 100L);
                 }
             } else {
-                if (shouldNotify) {
+                if (notify_player) {
                     Player player = (Player) event.getPlayer();
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")

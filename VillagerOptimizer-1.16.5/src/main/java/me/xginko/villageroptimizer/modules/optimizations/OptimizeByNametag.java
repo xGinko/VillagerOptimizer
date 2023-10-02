@@ -32,7 +32,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
     private final VillagerCache villagerCache;
     private final HashSet<String> nametags = new HashSet<>(4);
     private final long cooldown;
-    private final boolean consumeNametag, shouldNotifyPlayer, shouldLog;
+    private final boolean consume_nametag, notify_player, log_enabled;
 
     public OptimizeByNametag() {
         shouldEnable();
@@ -43,14 +43,14 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 Nametag optimized villagers will be unoptimized again when they are renamed to something else.""");
         this.nametags.addAll(config.getList("optimization-methods.nametag-optimization.names", List.of("Optimize", "DisableAI"),
                 "Names are case insensitive, capital letters won't matter.").stream().map(String::toLowerCase).toList());
-        this.consumeNametag = config.getBoolean("optimization-methods.nametag-optimization.nametags-get-consumed", true,
+        this.consume_nametag = config.getBoolean("optimization-methods.nametag-optimization.nametags-get-consumed", true,
                 "Enable or disable consumption of the used nametag item.");
         this.cooldown = config.getInt("optimization-methods.nametag-optimization.optimize-cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using a nametag.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
-        this.shouldNotifyPlayer = config.getBoolean("optimization-methods.nametag-optimization.notify-player", true,
+        this.notify_player = config.getBoolean("optimization-methods.nametag-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
-        this.shouldLog = config.getBoolean("optimization-methods.nametag-optimization.log", false);
+        this.log_enabled = config.getBoolean("optimization-methods.nametag-optimization.log", false);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 VillagerOptimizer.callEvent(optimizeEvent);
                 if (optimizeEvent.isCancelled()) return;
 
-                if (!consumeNametag) {
+                if (!consume_nametag) {
                     event.setCancelled(true);
                     villager.customName(newVillagerName);
                 }
@@ -96,13 +96,13 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 wVillager.setOptimization(optimizeEvent.getOptimizationType());
                 wVillager.saveOptimizeTime();
 
-                if (shouldNotifyPlayer)
+                if (notify_player)
                     VillagerOptimizer.getLang(player.locale()).nametag_optimize_success.forEach(player::sendMessage);
-                if (shouldLog)
+                if (log_enabled)
                     VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using nametag: '" + name + "'");
             } else {
                 event.setCancelled(true);
-                if (shouldNotifyPlayer) {
+                if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
                             .replacement(CommonUtil.formatTime(wVillager.getOptimizeCooldownMillis(cooldown)))
@@ -118,9 +118,9 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
                 wVillager.setOptimization(OptimizationType.NONE);
 
-                if (shouldNotifyPlayer)
+                if (notify_player)
                     VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
-                if (shouldLog)
+                if (log_enabled)
                     VillagerOptimizer.getLog().info(event.getPlayer().getName() + " disabled optimizations for a villager using nametag: '" + name + "'");
             }
         }

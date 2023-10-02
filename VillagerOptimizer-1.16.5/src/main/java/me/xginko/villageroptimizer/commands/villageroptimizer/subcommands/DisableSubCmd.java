@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.HandlerList;
 
 public class DisableSubCmd extends SubCommand {
 
@@ -30,7 +31,9 @@ public class DisableSubCmd extends SubCommand {
     public void perform(CommandSender sender, String[] args) {
         if (sender.hasPermission(Permissions.Commands.DISABLE.get())) {
             sender.sendMessage(Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
-            VillagerOptimizerModule.modules.forEach(VillagerOptimizerModule::disable);
+            VillagerOptimizer plugin = VillagerOptimizer.getInstance();
+            HandlerList.unregisterAll(plugin);
+            plugin.getServer().getScheduler().cancelTasks(plugin);
             VillagerOptimizerModule.modules.clear();
             VillagerOptimizer.getCache().cacheMap().clear();
             sender.sendMessage(Component.text("Disabled all plugin listeners and tasks.").color(NamedTextColor.GREEN));

@@ -21,7 +21,7 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
     private final long restock_delay_millis;
-    private final boolean shouldLog, notifyPlayer;
+    private final boolean log_enabled, notify_player;
 
     public RestockTrades() {
         shouldEnable();
@@ -32,9 +32,9 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
                 Don't have enough AI to do trade restocks themselves, so this needs to always be enabled.""");
         this.restock_delay_millis = config.getInt("gameplay.trade-restocking.delay-in-ticks", 1000,
                 "1 second = 20 ticks. There are 24.000 ticks in a single minecraft day.") * 50L;
-        this.notifyPlayer = config.getBoolean("gameplay.trade-restocking.notify-player", true,
+        this.notify_player = config.getBoolean("gameplay.trade-restocking.notify-player", true,
                 "Sends the player a message when the trades were restocked on a clicked villager.");
-        this.shouldLog = config.getBoolean("gameplay.trade-restocking.log", false);
+        this.log_enabled = config.getBoolean("gameplay.trade-restocking.log", false);
     }
 
     @Override
@@ -66,14 +66,14 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
         if (wVillager.canRestock(restock_delay_millis) || player_bypassing) {
             wVillager.restock();
             wVillager.saveRestockTime();
-            if (notifyPlayer && !player_bypassing) {
+            if (notify_player && !player_bypassing) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
                         .replacement(CommonUtil.formatTime(wVillager.getRestockCooldownMillis(restock_delay_millis)))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).trades_restocked.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
             }
-            if (shouldLog)
+            if (log_enabled)
                 VillagerOptimizer.getLog().info("Restocked optimized villager at "+ wVillager.villager().getLocation());
         }
     }

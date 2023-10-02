@@ -28,11 +28,11 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
 
     private final List<String> tabCompletes = List.of("5", "10", "25", "50");
     private final long cooldown;
-    private final int maxRadius;
+    private final int max_radius;
 
     public OptVillagersRadius() {
         Config config = VillagerOptimizer.getConfiguration();
-        this.maxRadius = config.getInt("optimization-methods.commands.optimizevillagers.max-block-radius", 100);
+        this.max_radius = config.getInt("optimization-methods.commands.optimizevillagers.max-block-radius", 100);
         this.cooldown = config.getInt("optimization-methods.commands.optimizevillagers.cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using the command.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
@@ -65,10 +65,10 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
             try {
                 int specifiedRadius = Integer.parseInt(args[0]);
 
-                if (specifiedRadius > maxRadius) {
+                if (specifiedRadius > max_radius) {
                     final TextReplacementConfig limit = TextReplacementConfig.builder()
                             .matchLiteral("%distance%")
-                            .replacement(Integer.toString(maxRadius))
+                            .replacement(Integer.toString(max_radius))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).command_radius_limit_exceed.forEach(line -> player.sendMessage(line.replaceText(limit)));
                     return true;

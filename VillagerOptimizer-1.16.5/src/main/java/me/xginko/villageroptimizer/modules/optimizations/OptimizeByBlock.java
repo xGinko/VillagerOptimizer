@@ -34,7 +34,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
     private final HashSet<Material> blocks_that_disable = new HashSet<>(4);
     private final long cooldown;
     private final double search_radius;
-    private final boolean onlyWhileSneaking, shouldNotifyPlayer, shouldLog;
+    private final boolean only_while_sneaking, notify_player, log_enabled;
 
     public OptimizeByBlock() {
         shouldEnable();
@@ -60,11 +60,11 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         this.search_radius = config.getDouble("optimization-methods.block-optimization.search-radius-in-blocks", 2.0, """
                 The radius in blocks a villager can be away from the player when he places an optimize block.\s
                 The closest unoptimized villager to the player will be optimized.""") / 2;
-        this.onlyWhileSneaking = config.getBoolean("optimization-methods.block-optimization.only-when-sneaking", true,
+        this.only_while_sneaking = config.getBoolean("optimization-methods.block-optimization.only-when-sneaking", true,
                 "Only optimize/unoptimize by workstation when player is sneaking during place or break.");
-        this.shouldNotifyPlayer = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
+        this.notify_player = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized or unoptimized a villager.");
-        this.shouldLog = config.getBoolean("optimization-methods.block-optimization.log", false);
+        this.log_enabled = config.getBoolean("optimization-methods.block-optimization.log", false);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (!blocks_that_disable.contains(placed.getType())) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
-        if (onlyWhileSneaking && !player.isSneaking()) return;
+        if (only_while_sneaking && !player.isSneaking()) return;
 
         final Location blockLoc = placed.getLocation();
         WrappedVillager closestOptimizableVillager = null;
@@ -115,7 +115,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             closestOptimizableVillager.setOptimization(optimizeEvent.getOptimizationType());
             closestOptimizableVillager.saveOptimizeTime();
 
-            if (shouldNotifyPlayer) {
+            if (notify_player) {
                 final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                         .matchLiteral("%vil_profession%")
                         .replacement(closestOptimizableVillager.villager().getProfession().toString().toLowerCase())
@@ -129,10 +129,10 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                         .replaceText(placedMaterial)
                 ));
             }
-            if (shouldLog)
+            if (log_enabled)
                 VillagerOptimizer.getLog().info("Villager was optimized by block at "+closestOptimizableVillager.villager().getLocation());
         } else {
-            if (shouldNotifyPlayer) {
+            if (notify_player) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
                         .replacement(CommonUtil.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown)))
@@ -148,7 +148,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (!blocks_that_disable.contains(broken.getType())) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
-        if (onlyWhileSneaking && !player.isSneaking()) return;
+        if (only_while_sneaking && !player.isSneaking()) return;
 
         final Location blockLoc = broken.getLocation();
         WrappedVillager closestOptimizedVillager = null;
@@ -175,7 +175,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
         closestOptimizedVillager.setOptimization(OptimizationType.NONE);
 
-        if (shouldNotifyPlayer) {
+        if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
                     .replacement(closestOptimizedVillager.villager().getProfession().toString().toLowerCase())
@@ -189,7 +189,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                     .replaceText(brokenMaterial)
             ));
         }
-        if (shouldLog)
+        if (log_enabled)
             VillagerOptimizer.getLog().info("Villager unoptimized because nearby optimization block broken at: "+closestOptimizedVillager.villager().getLocation());
     }
 }

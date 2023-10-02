@@ -26,10 +26,10 @@ import java.util.List;
 public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
 
     private final List<String> tabCompletes = List.of("5", "10", "25", "50");
-    private final int maxRadius;
+    private final int max_radius;
 
     public UnOptVillagersRadius() {
-        this.maxRadius = VillagerOptimizer.getConfiguration().getInt("optimization-methods.commands.unoptimizevillagers.max-block-radius", 100);
+        this.max_radius = VillagerOptimizer.getConfiguration().getInt("optimization-methods.commands.unoptimizevillagers.max-block-radius", 100);
     }
 
     @Override
@@ -59,10 +59,10 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
             try {
                 int specifiedRadius = Integer.parseInt(args[0]);
 
-                if (specifiedRadius > maxRadius) {
+                if (specifiedRadius > max_radius) {
                     final TextReplacementConfig limit = TextReplacementConfig.builder()
                             .matchLiteral("%distance%")
-                            .replacement(Integer.toString(maxRadius))
+                            .replacement(Integer.toString(max_radius))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).command_radius_limit_exceed.forEach(line -> player.sendMessage(line.replaceText(limit)));
                     return true;

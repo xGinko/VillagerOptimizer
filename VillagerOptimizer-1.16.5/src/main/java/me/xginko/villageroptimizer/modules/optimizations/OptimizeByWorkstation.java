@@ -29,7 +29,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
     private final VillagerCache villagerCache;
     private final long cooldown;
     private final double search_radius;
-    private final boolean onlyWhileSneaking, shouldLog, shouldNotifyPlayer;
+    private final boolean only_while_sneaking, log_enabled, notify_player;
 
     public OptimizeByWorkstation() {
         shouldEnable();
@@ -44,11 +44,11 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         this.cooldown = config.getInt("optimization-methods.workstation-optimization.optimize-cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using a workstation.\s
                 Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
-        this.onlyWhileSneaking = config.getBoolean("optimization-methods.workstation-optimization.only-when-sneaking", true,
+        this.only_while_sneaking = config.getBoolean("optimization-methods.workstation-optimization.only-when-sneaking", true,
                 "Only optimize/unoptimize by workstation when player is sneaking during place or break");
-        this.shouldNotifyPlayer = config.getBoolean("optimization-methods.workstation-optimization.notify-player", true,
+        this.notify_player = config.getBoolean("optimization-methods.workstation-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
-        this.shouldLog = config.getBoolean("optimization-methods.workstation-optimization.log", false);
+        this.log_enabled = config.getBoolean("optimization-methods.workstation-optimization.log", false);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (workstationProfession.equals(Villager.Profession.NONE)) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
-        if (onlyWhileSneaking && !player.isSneaking()) return;
+        if (only_while_sneaking && !player.isSneaking()) return;
 
         final Location workstationLoc = placed.getLocation();
         WrappedVillager closestOptimizableVillager = null;
@@ -99,7 +99,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
             closestOptimizableVillager.setOptimization(optimizeEvent.getOptimizationType());
             closestOptimizableVillager.saveOptimizeTime();
 
-            if (shouldNotifyPlayer) {
+            if (notify_player) {
                 final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                         .matchLiteral("%vil_profession%")
                         .replacement(closestOptimizableVillager.villager().getProfession().toString().toLowerCase())
@@ -113,10 +113,10 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                         .replaceText(placedWorkstation)
                 ));
             }
-            if (shouldLog)
+            if (log_enabled)
                 VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using workstation: '" + placed.getType().toString().toLowerCase() + "'");
         } else {
-            if (shouldNotifyPlayer) {
+            if (notify_player) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
                         .replacement(CommonUtil.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown)))
@@ -135,7 +135,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (workstationProfession.equals(Villager.Profession.NONE)) return;
         Player player = event.getPlayer();
         if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
-        if (onlyWhileSneaking && !player.isSneaking()) return;
+        if (only_while_sneaking && !player.isSneaking()) return;
 
         final Location workstationLoc = broken.getLocation();
         WrappedVillager closestOptimizedVillager = null;
@@ -163,7 +163,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
         closestOptimizedVillager.setOptimization(OptimizationType.NONE);
 
-        if (shouldNotifyPlayer) {
+        if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
                     .replacement(closestOptimizedVillager.villager().getProfession().toString().toLowerCase())
@@ -177,7 +177,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                     .replaceText(brokenWorkstation)
             ));
         }
-        if (shouldLog)
+        if (log_enabled)
             VillagerOptimizer.getLog().info(player.getName() + " unoptimized a villager by breaking workstation: '" + broken.getType().toString().toLowerCase() + "'");
     }
 
