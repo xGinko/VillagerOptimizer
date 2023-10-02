@@ -18,11 +18,13 @@ commands:
     description: Optmize villagers in a radius around you
     aliases:
       - optvils
+      - noai
   unoptimizevillagers:
     usage: /unoptimizevillagers <blockradius>
     description: Unoptmize villagers in a radius around you
     aliases:
       - unoptvils
+      - noaiundo
 permissions:
   villageroptimizer.ignore:
     description: Players with this permission won't be able to use the plugin features
