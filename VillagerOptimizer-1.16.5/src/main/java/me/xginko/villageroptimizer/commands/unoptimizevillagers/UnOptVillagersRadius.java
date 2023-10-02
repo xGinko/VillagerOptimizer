@@ -21,7 +21,6 @@ import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
@@ -40,7 +39,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return args.length == 1 ? tabCompletes : Collections.emptyList();
+        return args.length == 1 ? tabCompletes : null;
     }
 
     @Override

@@ -15,7 +15,6 @@ import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerCommand {
@@ -37,7 +36,7 @@ public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerComm
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
-        return args.length == 1 ? tabCompleter : Collections.emptyList();
+        return args.length == 1 ? tabCompleter : null;
     }
 
     @Override
