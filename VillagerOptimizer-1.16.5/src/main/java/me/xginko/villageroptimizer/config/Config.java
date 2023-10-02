@@ -62,10 +62,10 @@ public class Config {
         createTitledSection("Gameplay", "gameplay");
         config.addDefault("gameplay.villagers-spawn-as-adults.enable", false);
         config.addDefault("gameplay.prevent-trading-with-unoptimized.enable", false);
+        config.addDefault("gameplay.prevent-damage.enable", true);
+        config.addDefault("gameplay.prevent-targeting.enable", true);
         config.addDefault("gameplay.villager-leveling.enable", true);
         config.addDefault("gameplay.trade-restocking.enable", true);
-        config.addDefault("gameplay.prevent-targeting.enable", true);
-        config.addDefault("gameplay.prevent-damage.enable", true);
     }
 
     public void createTitledSection(@NotNull String title, @NotNull String path) {
