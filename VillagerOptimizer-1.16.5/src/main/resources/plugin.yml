@@ -61,6 +61,7 @@ permissions:
     description: All command permissions
     children:
       villageroptimizer.cmd.reload: true
+      villageroptimizer.cmd.disable: true
       villageroptimizer.cmd.version: true
       villageroptimizer.cmd.optimize: true
       villageroptimizer.cmd.unoptimize: true

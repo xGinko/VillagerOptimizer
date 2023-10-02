@@ -28,7 +28,7 @@ public class DisableSubCmd extends SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        if (sender.hasPermission(Permissions.Commands.RELOAD.get())) {
+        if (sender.hasPermission(Permissions.Commands.DISABLE.get())) {
             sender.sendMessage(Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
             VillagerOptimizerModule.modules.forEach(VillagerOptimizerModule::disable);
             VillagerOptimizerModule.modules.clear();

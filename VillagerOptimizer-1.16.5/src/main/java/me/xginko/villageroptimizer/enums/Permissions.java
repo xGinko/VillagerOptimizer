@@ -4,6 +4,7 @@ public class Permissions {
     public enum Commands {
         VERSION("villageroptimizer.cmd.version"),
         RELOAD("villageroptimizer.cmd.reload"),
+        DISABLE("villageroptimizer.cmd.disable"),
         OPTIMIZE_RADIUS("villageroptimizer.cmd.optimize"),
         UNOPTIMIZE_RADIUS("villageroptimizer.cmd.unoptimize");
         private final String key;
