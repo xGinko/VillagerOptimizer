@@ -44,8 +44,10 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 "The maximum amount of unoptimized villagers per chunk.");
         this.max_optimized_per_chunk = config.getInt("villager-chunk-limit.max-optimized-per-chunk", 20,
                 "The maximum amount of optimized villagers per chunk.");
-        this.check_period = config.getInt("villager-chunk-limit.check-period-in-ticks", 600,
-                "Check all loaded chunks every X ticks. 1 second = 20 ticks");
+        this.check_period = config.getInt("villager-chunk-limit.check-period-in-ticks", 600, """
+                Check all loaded chunks every X ticks. 1 second = 20 ticks\s
+                A shorter delay in between checks is more efficient but is also more resource intense.\s
+                A larger delay is less resource intense but could become inefficient.""");
         this.logIsEnabled = config.getBoolean("villager-chunk-limit.log-removals", false);
         config.getList("villager-chunk-limit.removal-priority", List.of(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",

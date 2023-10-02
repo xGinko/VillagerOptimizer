@@ -5,12 +5,13 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.utils.LogUtil;
 import org.bukkit.Chunk;
+import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -20,9 +21,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 
-public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
+public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Runnable {
 
-    private final VillagerOptimizer plugin;
+    private final Server server;
     private final VillagerCache villagerCache;
     private final List<Villager.Profession> removalPriority = new ArrayList<>(16);
     private final long check_period;
@@ -31,7 +32,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
     protected VillagerChunkLimit() {
         shouldEnable();
-        this.plugin = VillagerOptimizer.getInstance();
+        this.server = VillagerOptimizer.getInstance().getServer();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("villager-chunk-limit.enable", """
@@ -42,8 +43,10 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 "The maximum amount of unoptimized villagers per chunk.");
         this.max_optimized_per_chunk = config.getInt("villager-chunk-limit.max-optimized-per-chunk", 20,
                 "The maximum amount of optimized villagers per chunk.");
-        this.check_period = config.getInt("villager-chunk-limit.check-period-in-ticks", 600,
-                "Check all loaded chunks every X ticks. 1 second = 20 ticks");
+        this.check_period = config.getInt("villager-chunk-limit.check-period-in-ticks", 600, """
+                Check all loaded chunks every X ticks. 1 second = 20 ticks\s
+                A shorter delay in between checks is more efficient but is also more resource intense.\s
+                A larger delay is less resource intense but could become inefficient.""");
         this.logIsEnabled = config.getBoolean("villager-chunk-limit.log-removals", false);
         config.getList("villager-chunk-limit.removal-priority", List.of(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
@@ -64,14 +67,9 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
     @Override
     public void enable() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            plugin.getServer().getWorlds().forEach(world -> {
-                for (Chunk chunk : world.getLoadedChunks()) {
-                    this.checkVillagersInChunk(chunk);
-                }
-            });
-        }, check_period, check_period);
+        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
+        server.getPluginManager().registerEvents(this, plugin);
+        server.getScheduler().scheduleSyncRepeatingTask(plugin, this, check_period, check_period);
     }
 
     @Override
@@ -80,8 +78,12 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
     }
 
     @Override
-    public void disable() {
-        HandlerList.unregisterAll(this);
+    public void run() {
+        for (World world : server.getWorlds()) {
+            for (Chunk chunk : world.getLoadedChunks()) {
+                this.checkVillagersInChunk(chunk);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
