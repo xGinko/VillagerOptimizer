@@ -20,7 +20,7 @@ public class RenameOptimizedVillagers implements VillagerOptimizerModule, Listen
     private final Component optimized_name;
     private final boolean overwrite_previous_name;
 
-    protected RenameOptimizedVillagers() {
+    public RenameOptimizedVillagers() {
         shouldEnable();
         this.plugin = VillagerOptimizer.getInstance();
         Config config = VillagerOptimizer.getConfiguration();

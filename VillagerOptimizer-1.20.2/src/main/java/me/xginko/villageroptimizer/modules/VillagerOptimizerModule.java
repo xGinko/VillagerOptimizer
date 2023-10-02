@@ -32,9 +32,9 @@ public interface VillagerOptimizerModule {
         modules.add(new PreventUnoptimizedTrading());
         modules.add(new PreventVillagerDamage());
         modules.add(new PreventVillagerTargetting());
+        modules.add(new RenameOptimizedVillagers());
 
         modules.add(new VillagerChunkLimit());
-        modules.add(new RenameOptimizedVillagers());
 
         modules.forEach(module -> {
             if (module.shouldEnable()) module.enable();
