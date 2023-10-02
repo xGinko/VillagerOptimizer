@@ -69,7 +69,7 @@ public final class VillagerOptimizer extends JavaPlugin {
         console.sendMessage(Component.text("│                                                            │").style(plugin_style));
         console.sendMessage(Component.text("│                                                            │").style(plugin_style));
         console.sendMessage(Component.text("╰────────────────────────────────────────────────────────────╯").style(plugin_style));
-        new Metrics(this, 19939);
+        new Metrics(this, 19954);
     }
 
     public static VillagerOptimizer getInstance()  {
