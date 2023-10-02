@@ -54,8 +54,8 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN"
         ), """
                 Professions that are in the top of the list are going to be scheduled for removal first.\s
-                Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html
-        """).forEach(configuredProfession -> {
+                Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html"""
+        ).forEach(configuredProfession -> {
             try {
                 Villager.Profession profession = Villager.Profession.valueOf(configuredProfession);
                 this.removal_priority.add(profession);
