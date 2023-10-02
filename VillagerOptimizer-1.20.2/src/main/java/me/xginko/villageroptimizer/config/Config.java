@@ -60,6 +60,7 @@ public class Config {
         config.addDefault("optimization-methods.nametag-optimization.enable", true);
         createTitledSection("Villager Chunk Limit", "villager-chunk-limit");
         createTitledSection("Gameplay", "gameplay");
+        config.addDefault("gameplay.rename-optimized-villagers.enable", true);
         config.addDefault("gameplay.villagers-spawn-as-adults.enable", false);
         config.addDefault("gameplay.prevent-trading-with-unoptimized.enable", false);
         config.addDefault("gameplay.prevent-damage.enable", true);

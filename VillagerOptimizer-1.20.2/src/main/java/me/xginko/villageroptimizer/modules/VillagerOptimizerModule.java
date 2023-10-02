@@ -1,9 +1,6 @@
 package me.xginko.villageroptimizer.modules;
 
-import me.xginko.villageroptimizer.modules.extras.PreventUnoptimizedTrading;
-import me.xginko.villageroptimizer.modules.extras.PreventVillagerDamage;
-import me.xginko.villageroptimizer.modules.extras.PreventVillagerTargetting;
-import me.xginko.villageroptimizer.modules.extras.MakeVillagersSpawnAdult;
+import me.xginko.villageroptimizer.modules.extras.*;
 import me.xginko.villageroptimizer.modules.mechanics.LevelVillagers;
 import me.xginko.villageroptimizer.modules.mechanics.RestockTrades;
 import me.xginko.villageroptimizer.modules.optimizations.OptimizeByBlock;
@@ -37,7 +34,7 @@ public interface VillagerOptimizerModule {
         modules.add(new PreventVillagerTargetting());
 
         modules.add(new VillagerChunkLimit());
-        modules.add(new RenameOptimized());
+        modules.add(new RenameOptimizedVillagers());
 
         modules.forEach(module -> {
             if (module.shouldEnable()) module.enable();
