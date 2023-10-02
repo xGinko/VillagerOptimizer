@@ -17,14 +17,14 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class LevelOptimizedVillagers implements VillagerOptimizerModule, Listener {
+public class LevelOptimizedProfession implements VillagerOptimizerModule, Listener {
 
     private final VillagerOptimizer plugin;
     private final VillagerCache villagerCache;
     private final boolean notify_player;
     private final long cooldown;
 
-    public LevelOptimizedVillagers() {
+    public LevelOptimizedProfession() {
         shouldEnable();
         this.plugin = VillagerOptimizer.getInstance();
         this.villagerCache = VillagerOptimizer.getCache();

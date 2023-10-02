@@ -27,12 +27,12 @@ public interface VillagerOptimizerModule {
         modules.add(new OptimizeByWorkstation());
 
         modules.add(new RestockOptimizedTrades());
-        modules.add(new LevelOptimizedVillagers());
+        modules.add(new LevelOptimizedProfession());
         modules.add(new RenameOptimizedVillagers());
         modules.add(new MakeVillagersSpawnAdult());
         modules.add(new PreventUnoptimizedTrading());
-        modules.add(new PreventVillagerTargetting());
-        modules.add(new PreventVillagerDamage());
+        modules.add(new PreventOptimizedTargeting());
+        modules.add(new PreventOptimizedDamage());
 
         modules.add(new VillagerChunkLimit());
 

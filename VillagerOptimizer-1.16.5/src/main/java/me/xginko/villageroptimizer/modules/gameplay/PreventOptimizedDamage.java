@@ -14,12 +14,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class PreventVillagerDamage implements VillagerOptimizerModule, Listener {
+public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
     private final boolean block, player, mob, other;
 
-    public PreventVillagerDamage() {
+    public PreventOptimizedDamage() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
