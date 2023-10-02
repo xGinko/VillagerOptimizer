@@ -51,16 +51,17 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Ru
         config.getList("villager-chunk-limit.removal-priority", List.of(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
                 "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN"
-        ),
-                "Professions that are in the top of the list are going to be scheduled for removal first."
-
-        ).forEach(configuredProfession -> {
+        ), """
+                Professions that are in the top of the list are going to be scheduled for removal first.\s
+                Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html
+        """).forEach(configuredProfession -> {
             try {
                 Villager.Profession profession = Villager.Profession.valueOf(configuredProfession);
                 this.removal_priority.add(profession);
             } catch (IllegalArgumentException e) {
                 LogUtil.moduleLog(Level.WARNING, "villager-chunk-limit",
-                        "Villager profession '"+configuredProfession+"' not recognized. Make sure you're using the correct profession enums.");
+                        "Villager profession '"+configuredProfession+"' not recognized. " +
+                                "Make sure you're using the correct profession enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
             }
         });
     }

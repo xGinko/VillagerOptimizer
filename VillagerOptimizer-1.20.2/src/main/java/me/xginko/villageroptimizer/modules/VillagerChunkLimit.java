@@ -25,7 +25,6 @@ import java.util.logging.Level;
 
 public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
-    private final Server server;
     private final VillagerCache villagerCache;
     private ScheduledTask periodic_chunk_check;
     private final List<Villager.Profession> removal_priority = new ArrayList<>(16);
@@ -35,7 +34,6 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
     protected VillagerChunkLimit() {
         shouldEnable();
-        this.server = VillagerOptimizer.getInstance().getServer();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("villager-chunk-limit.enable", """
@@ -54,23 +52,25 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         config.getList("villager-chunk-limit.removal-priority", List.of(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
                 "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN"
-        ),
-                "Professions that are in the top of the list are going to be scheduled for removal first."
-
-        ).forEach(configuredProfession -> {
+        ), """
+                Professions that are in the top of the list are going to be scheduled for removal first.\s
+                Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html
+        """).forEach(configuredProfession -> {
             try {
                 Villager.Profession profession = Villager.Profession.valueOf(configuredProfession);
                 this.removal_priority.add(profession);
             } catch (IllegalArgumentException e) {
                 LogUtil.moduleLog(Level.WARNING, "villager-chunk-limit",
-                        "Villager profession '"+configuredProfession+"' not recognized. Make sure you're using the correct profession enums.");
+                        "Villager profession '"+configuredProfession+"' not recognized. " +
+                                "Make sure you're using the correct profession enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
             }
         });
     }
 
     @Override
     public void enable() {
-        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
+        final VillagerOptimizer plugin = VillagerOptimizer.getInstance();
+        final Server server = plugin.getServer();
         server.getPluginManager().registerEvents(this, plugin);
         this.periodic_chunk_check = server.getGlobalRegionScheduler().runAtFixedRate(plugin, periodic_chunk_check -> {
             for (World world : server.getWorlds()) {
