@@ -68,10 +68,10 @@ public class RenameOptimized implements VillagerOptimizerModule, Listener {
         villager.getScheduler().runDelayed(plugin, unNameOptimized -> {
             final Component currentName = villager.customName();
             final Component memorizedName = wVillager.getMemorizedName();
-            if (memorizedName != null)
-                wVillager.forgetName();
             if (currentName != null && currentName.equals(memorizedName))
                 villager.customName(null);
+            if (memorizedName != null)
+                wVillager.forgetName();
         }, null, 10L);
     }
 }
