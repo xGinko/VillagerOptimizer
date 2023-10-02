@@ -1,11 +1,9 @@
 package me.xginko.villageroptimizer.modules;
 
-import me.xginko.villageroptimizer.modules.extras.*;
-import me.xginko.villageroptimizer.modules.mechanics.LevelVillagers;
-import me.xginko.villageroptimizer.modules.mechanics.RestockTrades;
-import me.xginko.villageroptimizer.modules.optimizations.OptimizeByBlock;
-import me.xginko.villageroptimizer.modules.optimizations.OptimizeByNametag;
-import me.xginko.villageroptimizer.modules.optimizations.OptimizeByWorkstation;
+import me.xginko.villageroptimizer.modules.gameplay.*;
+import me.xginko.villageroptimizer.modules.optimization.OptimizeByBlock;
+import me.xginko.villageroptimizer.modules.optimization.OptimizeByNametag;
+import me.xginko.villageroptimizer.modules.optimization.OptimizeByWorkstation;
 
 import java.util.HashSet;
 
@@ -25,14 +23,13 @@ public interface VillagerOptimizerModule {
         modules.add(new OptimizeByBlock());
         modules.add(new OptimizeByWorkstation());
 
-        modules.add(new RestockTrades());
-        modules.add(new LevelVillagers());
-
+        modules.add(new RestockOptimizedTrades());
+        modules.add(new LevelOptimizedVillagers());
+        modules.add(new RenameOptimizedVillagers());
         modules.add(new MakeVillagersSpawnAdult());
         modules.add(new PreventUnoptimizedTrading());
-        modules.add(new PreventVillagerDamage());
         modules.add(new PreventVillagerTargetting());
-        modules.add(new RenameOptimizedVillagers());
+        modules.add(new PreventVillagerDamage());
 
         modules.add(new VillagerChunkLimit());
 

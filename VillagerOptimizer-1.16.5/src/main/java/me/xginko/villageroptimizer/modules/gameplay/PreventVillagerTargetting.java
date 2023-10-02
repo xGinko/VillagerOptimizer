@@ -1,8 +1,8 @@
-package me.xginko.villageroptimizer.modules.extras;
+package me.xginko.villageroptimizer.modules.gameplay;
 
 import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -10,7 +10,6 @@ import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
@@ -30,13 +29,8 @@ public class PreventVillagerTargetting implements VillagerOptimizerModule, Liste
     }
 
     @Override
-    public void disable() {
-        HandlerList.unregisterAll(this);
-    }
-
-    @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.prevent-targeting.enable", true,
+        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.prevent-entities-from-targeting-optimized.enable", true,
                 "Prevents hostile entities from targeting optimized villagers.");
     }
 

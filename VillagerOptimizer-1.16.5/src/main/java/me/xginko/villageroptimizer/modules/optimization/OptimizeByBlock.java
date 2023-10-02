@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.modules.optimizations;
+package me.xginko.villageroptimizer.modules.optimization;
 
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;

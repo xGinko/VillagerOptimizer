@@ -60,13 +60,13 @@ public class Config {
         config.addDefault("optimization-methods.nametag-optimization.enable", true);
         createTitledSection("Villager Chunk Limit", "villager-chunk-limit");
         createTitledSection("Gameplay", "gameplay");
+        config.addDefault("gameplay.restock-optimized-trades", null);
+        config.addDefault("gameplay.level-optimized-profession", null);
         config.addDefault("gameplay.rename-optimized-villagers.enable", true);
         config.addDefault("gameplay.villagers-spawn-as-adults.enable", false);
         config.addDefault("gameplay.prevent-trading-with-unoptimized.enable", false);
-        config.addDefault("gameplay.prevent-damage.enable", true);
-        config.addDefault("gameplay.prevent-targeting.enable", true);
-        config.addDefault("gameplay.villager-leveling.enable", true);
-        config.addDefault("gameplay.trade-restocking.enable", true);
+        config.addDefault("gameplay.prevent-entities-from-targeting-optimized.enable", true);
+        config.addDefault("gameplay.prevent-damage-to-optimized.enable", true);
     }
 
     public void createTitledSection(@NotNull String title, @NotNull String path) {

@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.modules.extras;
+package me.xginko.villageroptimizer.modules.gameplay;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
@@ -6,6 +6,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
@@ -17,6 +18,11 @@ public class MakeVillagersSpawnAdult implements VillagerOptimizerModule, Listene
     public void enable() {
         VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    @Override
+    public void disable() {
+        HandlerList.unregisterAll(this);
     }
 
     @Override

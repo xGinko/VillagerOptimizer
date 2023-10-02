@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.modules.extras;
+package me.xginko.villageroptimizer.modules.gameplay;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;

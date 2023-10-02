@@ -1,10 +1,10 @@
-package me.xginko.villageroptimizer.modules.mechanics;
+package me.xginko.villageroptimizer.modules.gameplay;
 
-import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -13,27 +13,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
-public class RestockTrades implements VillagerOptimizerModule, Listener {
+public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
     private final long restock_delay_millis;
     private final boolean log_enabled, notify_player;
 
-    public RestockTrades() {
+    public RestockOptimizedTrades() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.addComment("gameplay.trade-restocking.enable", """
+        config.addComment("gameplay.restock-optimized-trades", """
                 This is for automatic restocking of trades for optimized villagers. Optimized Villagers\s
-                Don't have enough AI to do trade restocks themselves, so this needs to always be enabled.""");
-        this.restock_delay_millis = config.getInt("gameplay.trade-restocking.delay-in-ticks", 1000,
+                don't have enough AI to restock their trades naturally, so this is here as a workaround.""");
+        this.restock_delay_millis = config.getInt("gameplay.restock-optimized-trades.delay-in-ticks", 1000,
                 "1 second = 20 ticks. There are 24.000 ticks in a single minecraft day.") * 50L;
-        this.notify_player = config.getBoolean("gameplay.trade-restocking.notify-player", true,
+        this.notify_player = config.getBoolean("gameplay.restock-optimized-trades.notify-player", true,
                 "Sends the player a message when the trades were restocked on a clicked villager.");
-        this.log_enabled = config.getBoolean("gameplay.trade-restocking.log", false);
+        this.log_enabled = config.getBoolean("gameplay.restock-optimized-trades.log", false);
     }
 
     @Override
@@ -43,8 +44,13 @@ public class RestockTrades implements VillagerOptimizerModule, Listener {
     }
 
     @Override
+    public void disable() {
+        HandlerList.unregisterAll(this);
+    }
+
+    @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.trade-restocking.enable", true);
+        return true;
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

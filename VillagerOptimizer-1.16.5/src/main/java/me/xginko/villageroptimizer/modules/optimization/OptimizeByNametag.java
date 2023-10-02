@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.modules.optimizations;
+package me.xginko.villageroptimizer.modules.optimization;
 
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -61,11 +60,6 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
     }
 
     @Override
-    public void disable() {
-        HandlerList.unregisterAll(this);
-    }
-
-    @Override
     public boolean shouldEnable() {
         return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.nametag-optimization.enable", true);
     }
@@ -77,7 +71,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         if (!player.hasPermission(Permissions.Optimize.NAMETAG.get())) return;
 
         ItemStack usedItem = player.getInventory().getItem(event.getHand());
-        if (!usedItem.getType().equals(Material.NAME_TAG)) return;
+        if (usedItem == null || !usedItem.getType().equals(Material.NAME_TAG)) return;
         ItemMeta meta = usedItem.getItemMeta();
         if (!meta.hasDisplayName()) return;
 
@@ -108,7 +102,6 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                     VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using nametag: '" + name + "'");
             } else {
                 event.setCancelled(true);
-                villager.shakeHead();
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")

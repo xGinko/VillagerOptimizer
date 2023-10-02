@@ -1,7 +1,7 @@
-package me.xginko.villageroptimizer.modules.extras;
+package me.xginko.villageroptimizer.modules.gameplay;
 
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -36,11 +35,6 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
     public void enable() {
         VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
-    @Override
-    public void disable() {
-        HandlerList.unregisterAll(this);
     }
 
     @Override
