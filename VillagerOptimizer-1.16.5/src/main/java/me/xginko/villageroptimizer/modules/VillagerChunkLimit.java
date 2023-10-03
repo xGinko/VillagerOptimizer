@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -82,7 +83,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Ru
     public void run() {
         for (World world : server.getWorlds()) {
             for (Chunk chunk : world.getLoadedChunks()) {
-                this.checkVillagersInChunk(chunk);
+                this.checkVillagers(chunk);
             }
         }
     }
@@ -91,7 +92,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Ru
     private void onCreatureSpawn(CreatureSpawnEvent event) {
         Entity spawned = event.getEntity();
         if (spawned.getType().equals(EntityType.VILLAGER)) {
-            this.checkVillagersInChunk(spawned.getChunk());
+            this.checkVillagers(spawned.getChunk());
         }
     }
 
@@ -99,35 +100,34 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Ru
     private void onInteract(PlayerInteractEntityEvent event) {
         Entity clicked = event.getRightClicked();
         if (clicked.getType().equals(EntityType.VILLAGER)) {
-            this.checkVillagersInChunk(clicked.getChunk());
+            this.checkVillagers(clicked.getChunk());
         }
     }
 
-    private void checkVillagersInChunk(Chunk chunk) {
-        // Create lists with all optimized and unoptimzed villagers in that chunk
-        List<Villager> unoptimized_villagers = new ArrayList<>();
+    private void checkVillagers(@NotNull Chunk chunk) {
+        // Collect all optimized and unoptimized villagers in that chunk
         List<Villager> optimized_villagers = new ArrayList<>();
+        List<Villager> not_optimized_villagers = new ArrayList<>();
 
-        // Collect villagers accordingly
         for (Entity entity : chunk.getEntities()) {
             if (entity.getType().equals(EntityType.VILLAGER)) {
                 Villager villager = (Villager) entity;
                 if (villagerCache.getOrAdd(villager).isOptimized()) {
                     optimized_villagers.add(villager);
                 } else {
-                    unoptimized_villagers.add(villager);
+                    not_optimized_villagers.add(villager);
                 }
             }
         }
 
         // Check if there are more unoptimized villagers in that chunk than allowed
-        final int unoptimized_vils_too_many = unoptimized_villagers.size() - max_unoptimized_per_chunk;
-        if (unoptimized_vils_too_many > 0) {
+        final int not_optimized_villagers_too_many = not_optimized_villagers.size() - max_unoptimized_per_chunk;
+        if (not_optimized_villagers_too_many > 0) {
             // Sort villagers by profession priority
-            unoptimized_villagers.sort(Comparator.comparingInt(this::getProfessionPriority));
+            not_optimized_villagers.sort(Comparator.comparingInt(this::getProfessionPriority));
             // Remove prioritized villagers that are too many
-            for (int i = 0; i < unoptimized_vils_too_many; i++) {
-                Villager villager = unoptimized_villagers.get(i);
+            for (int i = 0; i < not_optimized_villagers_too_many; i++) {
+                Villager villager = not_optimized_villagers.get(i);
                 villager.remove();
                 if (log_enabled) LogUtil.moduleLog(Level.INFO, "villager-chunk-limit",
                         "Removed unoptimized villager of profession type '"+villager.getProfession().name()+"' at "+villager.getLocation()
@@ -136,12 +136,12 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Ru
         }
 
         // Check if there are more optimized villagers in that chunk than allowed
-        final int optimized_vils_too_many = optimized_villagers.size() - max_optimized_per_chunk;
-        if (optimized_vils_too_many > 0) {
+        final int optimized_villagers_too_many = optimized_villagers.size() - max_optimized_per_chunk;
+        if (optimized_villagers_too_many > 0) {
             // Sort villagers by profession priority
             optimized_villagers.sort(Comparator.comparingInt(this::getProfessionPriority));
             // Remove prioritized villagers that are too many
-            for (int i = 0; i < optimized_vils_too_many; i++) {
+            for (int i = 0; i < optimized_villagers_too_many; i++) {
                 Villager villager = optimized_villagers.get(i);
                 villager.remove();
                 if (log_enabled) LogUtil.moduleLog(Level.INFO, "villager-chunk-limit",
@@ -151,7 +151,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Ru
         }
     }
 
-    private int getProfessionPriority(Villager villager) {
+    private int getProfessionPriority(@NotNull Villager villager) {
         final Villager.Profession profession = villager.getProfession();
         return removal_priority.contains(profession) ? removal_priority.indexOf(profession) : Integer.MAX_VALUE;
     }
