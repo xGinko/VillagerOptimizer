@@ -114,7 +114,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (closestOptimizableVillager == null) return;
 
         if (closestOptimizableVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.BLOCK_COOLDOWN.get())) {
-            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(closestOptimizableVillager, OptimizationType.BLOCK, event.isAsynchronous());
+            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(closestOptimizableVillager, OptimizationType.BLOCK, player, event.isAsynchronous());
             VillagerOptimizer.callEvent(optimizeEvent);
             if (optimizeEvent.isCancelled()) return;
 
@@ -176,7 +176,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
         if (closestOptimizedVillager == null) return;
 
-        VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(closestOptimizedVillager, event.isAsynchronous());
+        VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(closestOptimizedVillager, player, OptimizationType.BLOCK, event.isAsynchronous());
         VillagerOptimizer.callEvent(unOptimizeEvent);
         if (unOptimizeEvent.isCancelled()) return;
 

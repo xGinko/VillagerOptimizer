@@ -88,7 +88,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                     WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
                     if (player_has_cooldown_bypass || wVillager.canOptimize(cooldown)) {
-                        VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.COMMAND);
+                        VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.COMMAND, player);
                         VillagerOptimizer.callEvent(optimizeEvent);
                         if (!optimizeEvent.isCancelled()) {
                             wVillager.setOptimization(optimizeEvent.getOptimizationType());

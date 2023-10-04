@@ -2,21 +2,25 @@ package me.xginko.villageroptimizer.events;
 
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.enums.OptimizationType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class VillagerOptimizeEvent extends Event implements Cancellable {
 
     private static final @NotNull HandlerList handlers = new HandlerList();
     private final @NotNull WrappedVillager wrappedVillager;
     private @NotNull OptimizationType type;
+    private final @Nullable Player whoOptimised;
     private boolean isCancelled = false;
 
-    public VillagerOptimizeEvent(@NotNull WrappedVillager wrappedVillager, @NotNull OptimizationType type, boolean isAsync) throws IllegalArgumentException {
+    public VillagerOptimizeEvent(@NotNull WrappedVillager wrappedVillager, @NotNull OptimizationType type, @Nullable Player whoOptimised, boolean isAsync) throws IllegalArgumentException {
         super(isAsync);
         this.wrappedVillager = wrappedVillager;
+        this.whoOptimised = whoOptimised;
         if (type.equals(OptimizationType.NONE)) {
             throw new IllegalArgumentException("OptimizationType can't be NONE.");
         } else {
@@ -24,8 +28,9 @@ public class VillagerOptimizeEvent extends Event implements Cancellable {
         }
     }
 
-    public VillagerOptimizeEvent(@NotNull WrappedVillager wrappedVillager, @NotNull OptimizationType type) throws IllegalArgumentException {
+    public VillagerOptimizeEvent(@NotNull WrappedVillager wrappedVillager, @NotNull OptimizationType type, @Nullable Player whoOptimised) throws IllegalArgumentException {
         this.wrappedVillager = wrappedVillager;
+        this.whoOptimised = whoOptimised;
         if (type.equals(OptimizationType.NONE)) {
             throw new IllegalArgumentException("OptimizationType can't be NONE.");
         } else {
@@ -47,6 +52,10 @@ public class VillagerOptimizeEvent extends Event implements Cancellable {
         } else {
             this.type = type;
         }
+    }
+
+    public @Nullable Player getWhoOptimised() {
+        return whoOptimised;
     }
 
     @Override
