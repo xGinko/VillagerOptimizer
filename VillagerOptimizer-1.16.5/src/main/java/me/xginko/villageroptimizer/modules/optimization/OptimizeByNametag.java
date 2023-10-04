@@ -85,7 +85,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         if (nametags.contains(name.toLowerCase())) {
             if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
                 VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.NAMETAG, player, event.isAsynchronous());
-                VillagerOptimizer.callEvent(optimizeEvent);
+                optimizeEvent.callEvent();
                 if (optimizeEvent.isCancelled()) return;
 
                 if (!consume_nametag) {
@@ -113,7 +113,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         } else {
             if (wVillager.isOptimized()) {
                 VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager, player, OptimizationType.NAMETAG, event.isAsynchronous());
-                VillagerOptimizer.callEvent(unOptimizeEvent);
+                unOptimizeEvent.callEvent();
                 if (unOptimizeEvent.isCancelled()) return;
 
                 wVillager.setOptimization(OptimizationType.NONE);

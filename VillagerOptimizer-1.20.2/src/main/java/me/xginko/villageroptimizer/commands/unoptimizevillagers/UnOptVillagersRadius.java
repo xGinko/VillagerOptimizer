@@ -81,7 +81,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
 
                     if (wVillager.isOptimized()) {
                         VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager, player, OptimizationType.COMMAND);
-                        VillagerOptimizer.callEvent(unOptimizeEvent);
+                        unOptimizeEvent.callEvent();
                         if (!unOptimizeEvent.isCancelled()) {
                             wVillager.setOptimization(OptimizationType.NONE);
                             successCount++;
