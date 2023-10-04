@@ -77,6 +77,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
                 VillagerCache villagerCache = VillagerOptimizer.getCache();
                 int successCount = 0;
                 int failCount = 0;
+                final boolean player_has_cooldown_bypass = player.hasPermission(Permissions.Bypass.COMMAND_COOLDOWN.get());
 
                 for (Entity entity : player.getNearbyEntities(specifiedRadius, specifiedRadius, specifiedRadius)) {
                     if (!entity.getType().equals(EntityType.VILLAGER)) continue;
@@ -86,7 +87,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
 
                     WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
-                    if (wVillager.canOptimize(cooldown)) {
+                    if (player_has_cooldown_bypass || wVillager.canOptimize(cooldown)) {
                         VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.COMMAND);
                         VillagerOptimizer.callEvent(optimizeEvent);
                         if (!optimizeEvent.isCancelled()) {
