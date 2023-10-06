@@ -17,7 +17,7 @@ public final class WrappedVillager {
 
     WrappedVillager(@NotNull Villager villager) {
         this.villager = villager;
-        this.dataContainer = this.villager.getPersistentDataContainer();
+        this.dataContainer = villager.getPersistentDataContainer();
     }
 
     /**
