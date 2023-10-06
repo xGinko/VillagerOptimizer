@@ -27,9 +27,10 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
         config.addComment("gameplay.prevent-damage-to-optimized.enable",
                 "Configure what kind of damage you want to cancel for optimized villagers here.");
         config.getList("gameplay.prevent-damage-to-optimized.damage-causes-to-cancel",
-                Arrays.stream(EntityDamageEvent.DamageCause.values()).map(Enum::name).toList(), """
-                These are all current entries in the game. Remove what you do not want blocked. Remember sometimes players need to dispose of villagers.
-                Refer to https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html for correct names and a description.\s"""
+                Arrays.stream(EntityDamageEvent.DamageCause.values()).map(Enum::name).sorted().toList(), """
+                These are all current entries in the game. Remove what you do not need blocked.\s
+                If you want a description or need to add a previously removed type, refer to:\s
+                https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html"""
         ).forEach(configuredDamageCause -> {
             try {
                 EntityDamageEvent.DamageCause damageCause = EntityDamageEvent.DamageCause.valueOf(configuredDamageCause);
