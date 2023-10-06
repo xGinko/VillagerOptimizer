@@ -1,25 +1,27 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import org.bukkit.entity.Entity;
+import me.xginko.villageroptimizer.utils.LogUtil;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
-    private final boolean block, player, mob, other, push;
+    private final HashSet<EntityDamageEvent.DamageCause> damage_causes_to_cancel = new HashSet<>();
+    private final boolean push;
 
     public PreventOptimizedDamage() {
         shouldEnable();
@@ -29,14 +31,18 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
                 "Configure what kind of damage you want to cancel for optimized villagers here.");
         this.push = config.getBoolean("gameplay.prevent-damage-to-optimized.prevent-push-from-attack", true,
                 "Prevents optimized villagers from getting pushed by an attacking entity");
-        this.block = config.getBoolean("gameplay.prevent-damage-to-optimized.damagers.block", false,
-                "Prevents damage from blocks like lava, tnt, respawn anchors, etc.");
-        this.player = config.getBoolean("gameplay.prevent-damage-to-optimized.damagers.player", false,
-                "Prevents damage from getting hit by players.");
-        this.mob = config.getBoolean("gameplay.prevent-damage-to-optimized.damagers.mob", true,
-                "Prevents damage from hostile mobs.");
-        this.other = config.getBoolean("gameplay.prevent-damage-to-optimized.damagers.other", true,
-                "Prevents damage from all other entities.");
+        config.getList("gameplay.prevent-damage-to-optimized.damage-causes-to-cancel",
+                Arrays.stream(EntityDamageEvent.DamageCause.values()).map(Enum::name).toList(), """
+                These are all current entries in the game. Remove what you do not need blocked. Remember sometimes players need to dispose of villagers.
+                Refer to https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html for correct names and a description.\s"""
+        ).forEach(configuredDamageCause -> {
+            try {
+                EntityDamageEvent.DamageCause damageCause = EntityDamageEvent.DamageCause.valueOf(configuredDamageCause);
+                this.damage_causes_to_cancel.add(damageCause);
+            } catch (IllegalArgumentException e) {
+                LogUtil.damageCauseNotRecognized("prevent-damage-to-optimized", configuredDamageCause);
+            }
+        });
     }
 
     @Override
@@ -56,33 +62,10 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onDamageByEntity(EntityDamageByEntityEvent event) {
+    private void onDamageByEntity(EntityDamageEvent event) {
         if (
                 event.getEntityType().equals(EntityType.VILLAGER)
-                && villagerCache.getOrAdd((Villager) event.getEntity()).isOptimized()
-        ) {
-            Entity damager = event.getDamager();
-            if (damager.getType().equals(EntityType.PLAYER)) {
-                if (player) event.setCancelled(true);
-                return;
-            }
-
-            if (damager instanceof Mob) {
-                if (mob) event.setCancelled(true);
-                return;
-            }
-
-            if (other) {
-                event.setCancelled(true);
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onDamageByBlock(EntityDamageByBlockEvent event) {
-        if (
-                block
-                && event.getEntityType().equals(EntityType.VILLAGER)
+                && damage_causes_to_cancel.contains(event.getCause())
                 && villagerCache.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {
             event.setCancelled(true);

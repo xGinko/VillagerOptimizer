@@ -12,7 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 
 public class PreventOptimizedTargeting implements VillagerOptimizerModule, Listener {
 
@@ -35,7 +35,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onTarget(EntityTargetLivingEntityEvent event) {
+    private void onTarget(EntityTargetEvent event) {
         // Yes, instanceof checks would look way more beautiful here but checking type is much faster
         Entity target = event.getTarget();
         if (
@@ -43,6 +43,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
                 && target.getType().equals(EntityType.VILLAGER)
                 && villagerCache.getOrAdd((Villager) target).isOptimized()
         ) {
+            event.setTarget(null);
             event.setCancelled(true);
         }
     }
