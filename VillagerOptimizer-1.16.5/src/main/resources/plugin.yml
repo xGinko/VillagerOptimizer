@@ -4,8 +4,8 @@ main: me.xginko.villageroptimizer.VillagerOptimizer
 authors: [ xGinko ]
 description: ${project.description}
 website: ${project.url}
-api-version: '1.19'
-folia-supported: true
+api-version: '1.16'
+folia-supported: false
 commands:
   villageroptimizer:
     usage: /villageroptimizer [ reload, version ]
