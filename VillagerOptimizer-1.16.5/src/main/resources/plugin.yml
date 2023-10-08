@@ -8,7 +8,7 @@ api-version: '1.16'
 folia-supported: false
 commands:
   villageroptimizer:
-    usage: /villageroptimizer [ reload, version ]
+    usage: /villageroptimizer [ reload, version, disable ]
     description: VillagerOptimizer admin commands
     aliases:
       - voptimizer
