@@ -65,6 +65,8 @@ permissions:
       villageroptimizer.cmd.version: true
       villageroptimizer.cmd.optimize: true
       villageroptimizer.cmd.unoptimize: true
+  villageroptimizer.cmd.disable:
+    description: Disable the plugin
   villageroptimizer.cmd.reload:
     description: Reload the plugin configuration
   villageroptimizer.cmd.version:
