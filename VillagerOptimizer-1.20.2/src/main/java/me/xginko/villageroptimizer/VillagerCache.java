@@ -24,17 +24,17 @@ public final class VillagerCache {
     }
 
     public @Nullable WrappedVillager get(@NotNull UUID uuid) {
-        WrappedVillager wrappedVillager = villagerCache.getIfPresent(uuid);
+        WrappedVillager wrappedVillager = this.villagerCache.getIfPresent(uuid);
         return wrappedVillager == null && Bukkit.getEntity(uuid) instanceof Villager villager ? add(villager) : wrappedVillager;
     }
 
     public @NotNull WrappedVillager getOrAdd(@NotNull Villager villager) {
-        WrappedVillager wrappedVillager = villagerCache.getIfPresent(villager.getUniqueId());
+        WrappedVillager wrappedVillager = this.villagerCache.getIfPresent(villager.getUniqueId());
         return wrappedVillager == null ? add(new WrappedVillager(villager)) : add(wrappedVillager);
     }
 
     public @NotNull WrappedVillager add(@NotNull WrappedVillager villager) {
-        villagerCache.put(villager.villager().getUniqueId(), villager);
+        this.villagerCache.put(villager.villager().getUniqueId(), villager);
         return villager;
     }
 
@@ -43,14 +43,14 @@ public final class VillagerCache {
     }
 
     public boolean contains(@NotNull UUID uuid) {
-        return villagerCache.getIfPresent(uuid) != null;
+        return this.villagerCache.getIfPresent(uuid) != null;
     }
 
     public boolean contains(@NotNull WrappedVillager villager) {
-        return villagerCache.getIfPresent(villager.villager().getUniqueId()) != null;
+        return this.villagerCache.getIfPresent(villager.villager().getUniqueId()) != null;
     }
 
     public boolean contains(@NotNull Villager villager) {
-        return villagerCache.getIfPresent(villager.getUniqueId()) != null;
+        return this.villagerCache.getIfPresent(villager.getUniqueId()) != null;
     }
 }
