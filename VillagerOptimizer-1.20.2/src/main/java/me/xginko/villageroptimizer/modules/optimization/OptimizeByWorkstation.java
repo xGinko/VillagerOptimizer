@@ -99,8 +99,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
         if (closestOptimizableVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.WORKSTATION_COOLDOWN.get())) {
             VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(closestOptimizableVillager, OptimizationType.WORKSTATION, player, event.isAsynchronous());
-            optimizeEvent.callEvent();
-            if (optimizeEvent.isCancelled()) return;
+            if (!optimizeEvent.callEvent()) return;
 
             closestOptimizableVillager.setOptimization(optimizeEvent.getOptimizationType());
             closestOptimizableVillager.saveOptimizeTime();
@@ -165,8 +164,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (closestOptimizedVillager == null) return;
 
         VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(closestOptimizedVillager, player, OptimizationType.WORKSTATION, event.isAsynchronous());
-        unOptimizeEvent.callEvent();
-        if (unOptimizeEvent.isCancelled()) return;
+        if (!unOptimizeEvent.callEvent()) return;
 
         closestOptimizedVillager.setOptimization(OptimizationType.NONE);
 

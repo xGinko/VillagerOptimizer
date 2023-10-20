@@ -89,8 +89,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
 
                     if (player_has_cooldown_bypass || wVillager.canOptimize(cooldown)) {
                         VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.COMMAND, player);
-                        optimizeEvent.callEvent();
-                        if (!optimizeEvent.isCancelled()) {
+                        if (optimizeEvent.callEvent()) {
                             wVillager.setOptimization(optimizeEvent.getOptimizationType());
                             wVillager.saveOptimizeTime();
                             successCount++;
