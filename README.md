@@ -1,5 +1,5 @@
 # VillagerOptimizer
-## Combat server lag caused by large amounts of villagers
+## Combat server lag caused by lots of ticking villagers
 
 This plugin enables you and your playerbase to optimize villagers in trading halls or other setups so they still remain their function but don't take up large amounts of resources.
 
