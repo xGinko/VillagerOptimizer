@@ -38,9 +38,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener, Ru
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.addComment("villager-chunk-limit.enable", """
-                Checks chunks for too many villagers and removes excess villagers based on priority.\s
-                Naturally, optimized villagers will be picked last since they don't affect performance\s
-                as much as unoptimized villagers.""");
+                Checks chunks for too many villagers and removes excess villagers based on priority.""");
         this.check_period = config.getInt("villager-chunk-limit.check-period-in-ticks", 600, """
                 Check all loaded chunks every X ticks. 1 second = 20 ticks\s
                 A shorter delay in between checks is more efficient but is also more resource intense.\s
