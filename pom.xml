@@ -6,7 +6,7 @@
 
     <groupId>me.xginko.VillagerOptimizer</groupId>
     <artifactId>VillagerOptimizer</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <modules>
         <module>VillagerOptimizer-1.20.2</module>
         <module>VillagerOptimizer-1.16.5</module>

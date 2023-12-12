@@ -12,7 +12,6 @@ import java.util.List;
 public class LanguageCache {
 
     private final @NotNull ConfigFile lang;
-    private final @NotNull MiniMessage miniMessage;
 
     public final @NotNull Component no_permission;
     public final @NotNull List<Component> nametag_optimize_success, nametag_on_optimize_cooldown, nametag_unoptimize_success,
@@ -22,9 +21,18 @@ public class LanguageCache {
             command_specify_radius, command_radius_invalid, command_no_villagers_nearby,
             trades_restocked, optimize_for_trading, villager_leveling_up;
 
-    public LanguageCache(String lang) throws Exception {
-        this.lang = loadLang(new File(VillagerOptimizer.getInstance().getDataFolder() + File.separator + "lang", lang + ".yml"));
-        this.miniMessage = MiniMessage.miniMessage();
+    public LanguageCache(String locale) throws Exception {
+        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
+        File langYML = new File(plugin.getDataFolder() + File.separator + "lang", locale + ".yml");
+        // Check if the lang folder has already been created
+        File parent = langYML.getParentFile();
+        if (!parent.exists() && !parent.mkdir())
+            VillagerOptimizer.getLog().severe("Unable to create lang directory.");
+        // Check if the file already exists and save the one from the plugins resources folder if it does not
+        if (!langYML.exists())
+            plugin.saveResource("lang/" + locale + ".yml", false);
+        // Finally load the lang file with configmaster
+        this.lang = ConfigFile.loadConfig(langYML);
 
         // General
         this.no_permission = getTranslation("messages.no-permission",
@@ -72,20 +80,6 @@ public class LanguageCache {
         this.command_no_villagers_nearby = getListTranslation("messages.command.no-villagers-nearby",
                 List.of("<gray>Couldn't find any employed villagers within a radius of %radius%."));
 
-        saveLang();
-    }
-
-    private ConfigFile loadLang(File ymlFile) throws Exception {
-        File parent = new File(ymlFile.getParent());
-        if (!parent.exists())
-            if (!parent.mkdir())
-                VillagerOptimizer.getLog().severe("Unable to create lang directory.");
-        if (!ymlFile.exists())
-            ymlFile.createNewFile(); // Result can be ignored because this method only returns false if the file already exists
-        return ConfigFile.loadConfig(ymlFile);
-    }
-
-    private void saveLang() {
         try {
             lang.save();
         } catch (Exception e) {
@@ -95,21 +89,21 @@ public class LanguageCache {
 
     public @NotNull Component getTranslation(@NotNull String path, @NotNull String defaultTranslation) {
         lang.addDefault(path, defaultTranslation);
-        return miniMessage.deserialize(lang.getString(path, defaultTranslation));
+        return MiniMessage.miniMessage().deserialize(lang.getString(path, defaultTranslation));
     }
 
     public @NotNull Component getTranslation(@NotNull String path, @NotNull String defaultTranslation, @NotNull String comment) {
         lang.addDefault(path, defaultTranslation, comment);
-        return miniMessage.deserialize(lang.getString(path, defaultTranslation));
+        return MiniMessage.miniMessage().deserialize(lang.getString(path, defaultTranslation));
     }
 
     public @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation) {
         lang.addDefault(path, defaultTranslation);
-        return lang.getStringList(path).stream().map(miniMessage::deserialize).toList();
+        return lang.getStringList(path).stream().map(MiniMessage.miniMessage()::deserialize).toList();
     }
 
     public @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation, @NotNull String comment) {
         lang.addDefault(path, defaultTranslation, comment);
-        return lang.getStringList(path).stream().map(miniMessage::deserialize).toList();
+        return lang.getStringList(path).stream().map(MiniMessage.miniMessage()::deserialize).toList();
     }
 }

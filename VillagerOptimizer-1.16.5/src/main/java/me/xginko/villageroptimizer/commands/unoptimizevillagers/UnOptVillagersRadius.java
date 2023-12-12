@@ -50,69 +50,70 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
             return true;
         }
 
-        if (sender.hasPermission(Permissions.Commands.UNOPTIMIZE_RADIUS.get())) {
-            if (args.length != 1) {
-                VillagerOptimizer.getLang(player.locale()).command_specify_radius.forEach(player::sendMessage);
+        if (!sender.hasPermission(Permissions.Commands.UNOPTIMIZE_RADIUS.get())) {
+            sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
+            return true;
+        }
+
+        if (args.length != 1) {
+            VillagerOptimizer.getLang(player.locale()).command_specify_radius.forEach(player::sendMessage);
+            return true;
+        }
+
+        try {
+            int specifiedRadius = Integer.parseInt(args[0]);
+
+            if (specifiedRadius > max_radius) {
+                final TextReplacementConfig limit = TextReplacementConfig.builder()
+                        .matchLiteral("%distance%")
+                        .replacement(Integer.toString(max_radius))
+                        .build();
+                VillagerOptimizer.getLang(player.locale()).command_radius_limit_exceed.forEach(line -> player.sendMessage(line.replaceText(limit)));
                 return true;
             }
 
-            try {
-                int specifiedRadius = Integer.parseInt(args[0]);
+            VillagerCache villagerCache = VillagerOptimizer.getCache();
+            int successCount = 0;
 
-                if (specifiedRadius > max_radius) {
-                    final TextReplacementConfig limit = TextReplacementConfig.builder()
-                            .matchLiteral("%distance%")
-                            .replacement(Integer.toString(max_radius))
-                            .build();
-                    VillagerOptimizer.getLang(player.locale()).command_radius_limit_exceed.forEach(line -> player.sendMessage(line.replaceText(limit)));
-                    return true;
-                }
+            for (Entity entity : player.getNearbyEntities(specifiedRadius, specifiedRadius, specifiedRadius)) {
+                if (!entity.getType().equals(EntityType.VILLAGER)) continue;
+                Villager villager = (Villager) entity;
+                Villager.Profession profession = villager.getProfession();
+                if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
 
-                VillagerCache villagerCache = VillagerOptimizer.getCache();
-                int successCount = 0;
+                WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
-                for (Entity entity : player.getNearbyEntities(specifiedRadius, specifiedRadius, specifiedRadius)) {
-                    if (!entity.getType().equals(EntityType.VILLAGER)) continue;
-                    Villager villager = (Villager) entity;
-                    Villager.Profession profession = villager.getProfession();
-                    if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
-
-                    WrappedVillager wVillager = villagerCache.getOrAdd(villager);
-
-                    if (wVillager.isOptimized()) {
-                        VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager, player, OptimizationType.COMMAND);
-                        if (unOptimizeEvent.callEvent()) {
-                            wVillager.setOptimization(OptimizationType.NONE);
-                            successCount++;
-                        }
+                if (wVillager.isOptimized()) {
+                    VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager, player, OptimizationType.COMMAND);
+                    if (unOptimizeEvent.callEvent()) {
+                        wVillager.setOptimization(OptimizationType.NONE);
+                        successCount++;
                     }
                 }
-
-                if (successCount <= 0) {
-                    final TextReplacementConfig radius = TextReplacementConfig.builder()
-                            .matchLiteral("%radius%")
-                            .replacement(Integer.toString(specifiedRadius))
-                            .build();
-                    VillagerOptimizer.getLang(player.locale()).command_no_villagers_nearby.forEach(line -> player.sendMessage(line.replaceText(radius)));
-                } else {
-                    final TextReplacementConfig success_amount = TextReplacementConfig.builder()
-                            .matchLiteral("%amount%")
-                            .replacement(Integer.toString(successCount))
-                            .build();
-                    final TextReplacementConfig radius = TextReplacementConfig.builder()
-                            .matchLiteral("%radius%")
-                            .replacement(Integer.toString(specifiedRadius))
-                            .build();
-                    VillagerOptimizer.getLang(player.locale()).command_unoptimize_success.forEach(line -> player.sendMessage(line
-                            .replaceText(success_amount)
-                            .replaceText(radius)
-                    ));
-                }
-            } catch (NumberFormatException e) {
-                VillagerOptimizer.getLang(player.locale()).command_radius_invalid.forEach(player::sendMessage);
             }
-        } else {
-            sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
+
+            if (successCount <= 0) {
+                final TextReplacementConfig radius = TextReplacementConfig.builder()
+                        .matchLiteral("%radius%")
+                        .replacement(Integer.toString(specifiedRadius))
+                        .build();
+                VillagerOptimizer.getLang(player.locale()).command_no_villagers_nearby.forEach(line -> player.sendMessage(line.replaceText(radius)));
+            } else {
+                final TextReplacementConfig success_amount = TextReplacementConfig.builder()
+                        .matchLiteral("%amount%")
+                        .replacement(Integer.toString(successCount))
+                        .build();
+                final TextReplacementConfig radius = TextReplacementConfig.builder()
+                        .matchLiteral("%radius%")
+                        .replacement(Integer.toString(specifiedRadius))
+                        .build();
+                VillagerOptimizer.getLang(player.locale()).command_unoptimize_success.forEach(line -> player.sendMessage(line
+                        .replaceText(success_amount)
+                        .replaceText(radius)
+                ));
+            }
+        } catch (NumberFormatException e) {
+            VillagerOptimizer.getLang(player.locale()).command_radius_invalid.forEach(player::sendMessage);
         }
 
         return true;

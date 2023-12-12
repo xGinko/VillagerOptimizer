@@ -126,7 +126,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                         Component.text("│                       ").style(plugin_style)
                         .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
                         .append(Component.text("                            │").style(plugin_style)));
-                else logger.info(String.format("Found language file for %s", localeString));
+                else logger.info("Found language file for " + localeString);
                 LanguageCache langCache = new LanguageCache(localeString);
                 languageCacheMap.put(localeString, langCache);
             }
@@ -140,7 +140,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                                 Component.text("│                       ").style(plugin_style)
                                 .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
                                 .append(Component.text("                            │").style(plugin_style)));
-                        else logger.info(String.format("Found language file for %s", localeString));
+                        else logger.info("Found language file for " + localeString);
                         LanguageCache langCache = new LanguageCache(localeString);
                         languageCacheMap.put(localeString, langCache);
                     }
