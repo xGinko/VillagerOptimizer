@@ -39,7 +39,7 @@ public final class VillagerCache {
     }
 
     public @NotNull WrappedVillager add(@NotNull Villager villager) {
-        return add(new WrappedVillager(villager));
+        return this.add(new WrappedVillager(villager));
     }
 
     public boolean contains(@NotNull UUID uuid) {

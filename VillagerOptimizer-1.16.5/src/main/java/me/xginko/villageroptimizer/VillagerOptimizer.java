@@ -19,14 +19,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 
 public final class VillagerOptimizer extends JavaPlugin {
 
@@ -118,56 +117,51 @@ public final class VillagerOptimizer extends JavaPlugin {
         languageCacheMap = new HashMap<>();
         ConsoleCommandSender console = getServer().getConsoleSender();
         try {
-            File langDirectory = new File(getDataFolder() + "/lang");
+            File langDirectory = new File(getDataFolder() + File.separator + "lang");
             Files.createDirectories(langDirectory.toPath());
             for (String fileName : getDefaultLanguageFiles()) {
-                String localeString = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
+                final String localeString = fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.lastIndexOf('.'));
                 if (startup) console.sendMessage(
                         Component.text("│                       ").style(plugin_style)
-                        .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
-                        .append(Component.text("                            │").style(plugin_style)));
-                else logger.info("Found language file for " + localeString);
-                LanguageCache langCache = new LanguageCache(localeString);
-                languageCacheMap.put(localeString, langCache);
+                                .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
+                                .append(Component.text("                            │").style(plugin_style)));
+                else logger.info(String.format("Found language file for %s", localeString));
+                languageCacheMap.put(localeString, new LanguageCache(localeString));
             }
-            Pattern langPattern = Pattern.compile("([a-z]{1,3}_[a-z]{1,3})(\\.yml)", Pattern.CASE_INSENSITIVE);
+            final Pattern langPattern = Pattern.compile("([a-z]{1,3}_[a-z]{1,3})(\\.yml)", Pattern.CASE_INSENSITIVE);
             for (File langFile : langDirectory.listFiles()) {
-                Matcher langMatcher = langPattern.matcher(langFile.getName());
+                final Matcher langMatcher = langPattern.matcher(langFile.getName());
                 if (langMatcher.find()) {
                     String localeString = langMatcher.group(1).toLowerCase();
                     if (!languageCacheMap.containsKey(localeString)) { // make sure it wasn't a default file that we already loaded
                         if (startup) console.sendMessage(
                                 Component.text("│                       ").style(plugin_style)
-                                .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
-                                .append(Component.text("                            │").style(plugin_style)));
-                        else logger.info("Found language file for " + localeString);
-                        LanguageCache langCache = new LanguageCache(localeString);
-                        languageCacheMap.put(localeString, langCache);
+                                        .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
+                                        .append(Component.text("                            │").style(plugin_style)));
+                        else logger.info(String.format("Found language file for %s", localeString));
+                        languageCacheMap.put(localeString, new LanguageCache(localeString));
                     }
                 }
             }
         } catch (Exception e) {
             if (startup) console.sendMessage(
                     Component.text("│                      ").style(plugin_style)
-                    .append(Component.text("LANG ERROR").color(NamedTextColor.RED).decorate(TextDecoration.BOLD))
-                    .append(Component.text("                            │").style(plugin_style)));
+                            .append(Component.text("LANG ERROR").color(NamedTextColor.RED).decorate(TextDecoration.BOLD))
+                            .append(Component.text("                            │").style(plugin_style)));
             else logger.severe("Error loading language files! Language files will not reload to avoid errors, make sure to correct this before restarting the server!");
             e.printStackTrace();
         }
     }
 
     private Set<String> getDefaultLanguageFiles() {
-        Set<String> languageFiles = new HashSet<>();
-        try (JarFile jarFile = new JarFile(this.getFile())) {
-            jarFile.entries().asIterator().forEachRemaining(jarFileEntry -> {
-                final String path = jarFileEntry.getName();
-                if (path.startsWith("lang/") && path.endsWith(".yml"))
-                    languageFiles.add(path);
-            });
+        try (final JarFile pluginJarFile = new JarFile(this.getFile())) {
+            return pluginJarFile.stream()
+                    .map(ZipEntry::getName)
+                    .filter(name -> name.startsWith("lang" + File.separator) && name.endsWith(".yml"))
+                    .collect(Collectors.toSet());
         } catch (IOException e) {
-            logger.severe("Error while getting default language files! - " + e.getLocalizedMessage());
-            e.printStackTrace();
+            logger.severe("Failed getting default lang files! - "+e.getLocalizedMessage());
+            return Collections.emptySet();
         }
-        return languageFiles;
     }
 }
