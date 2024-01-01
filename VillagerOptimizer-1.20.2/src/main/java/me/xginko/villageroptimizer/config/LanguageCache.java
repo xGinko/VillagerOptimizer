@@ -30,7 +30,7 @@ public class LanguageCache {
             VillagerOptimizer.getLog().severe("Failed to create lang directory.");
         // Check if the file already exists and save the one from the plugins resources folder if it does not
         if (!langYML.exists())
-            plugin.saveResource("lang/" + locale + ".yml", false);
+            plugin.saveResource("lang" + File.separator + locale + ".yml", false);
         // Finally load the lang file with configmaster
         this.lang = ConfigFile.loadConfig(langYML);
 
@@ -81,29 +81,29 @@ public class LanguageCache {
                 List.of("<gray>Couldn't find any employed villagers within a radius of %radius%."));
 
         try {
-            lang.save();
+            this.lang.save();
         } catch (Exception e) {
-            VillagerOptimizer.getLog().severe("Failed to save language file: "+ lang.getFile().getName() +" - " + e.getLocalizedMessage());
+            VillagerOptimizer.getLog().severe("Failed to save language file: "+ langYML.getName() +" - " + e.getLocalizedMessage());
         }
     }
 
     public @NotNull Component getTranslation(@NotNull String path, @NotNull String defaultTranslation) {
-        lang.addDefault(path, defaultTranslation);
-        return MiniMessage.miniMessage().deserialize(lang.getString(path, defaultTranslation));
+        this.lang.addDefault(path, defaultTranslation);
+        return MiniMessage.miniMessage().deserialize(this.lang.getString(path, defaultTranslation));
     }
 
     public @NotNull Component getTranslation(@NotNull String path, @NotNull String defaultTranslation, @NotNull String comment) {
-        lang.addDefault(path, defaultTranslation, comment);
-        return MiniMessage.miniMessage().deserialize(lang.getString(path, defaultTranslation));
+        this.lang.addDefault(path, defaultTranslation, comment);
+        return MiniMessage.miniMessage().deserialize(this.lang.getString(path, defaultTranslation));
     }
 
     public @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation) {
-        lang.addDefault(path, defaultTranslation);
-        return lang.getStringList(path).stream().map(MiniMessage.miniMessage()::deserialize).toList();
+        this.lang.addDefault(path, defaultTranslation);
+        return this.lang.getStringList(path).stream().map(MiniMessage.miniMessage()::deserialize).toList();
     }
 
     public @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull List<String> defaultTranslation, @NotNull String comment) {
-        lang.addDefault(path, defaultTranslation, comment);
-        return lang.getStringList(path).stream().map(MiniMessage.miniMessage()::deserialize).toList();
+        this.lang.addDefault(path, defaultTranslation, comment);
+        return this.lang.getStringList(path).stream().map(MiniMessage.miniMessage()::deserialize).toList();
     }
 }
