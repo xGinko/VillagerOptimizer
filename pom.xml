@@ -6,18 +6,15 @@
 
     <groupId>me.xginko.VillagerOptimizer</groupId>
     <artifactId>VillagerOptimizer</artifactId>
-    <version>1.0.2</version>
-    <modules>
-        <module>VillagerOptimizer-1.20.2</module>
-        <module>VillagerOptimizer-1.16.5</module>
-    </modules>
-    <packaging>pom</packaging>
+    <version>1.1.0</version>
+    <packaging>jar</packaging>
 
     <name>VillagerOptimizer</name>
     <description>Combat heavy villager lag by letting players optimize their trading halls.</description>
     <url>https://github.com/xGinko/VillagerOptimizer</url>
 
     <properties>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -43,8 +40,20 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <finalName>${project.parent.artifactId}-${project.parent.version}--${project.artifactId}</finalName>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.tcoded.folialib</pattern>
+                                    <shadedPattern>me.xginko.villageroptimizer.libs.folialib</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.github.benmanes.caffeine</pattern>
+                                    <shadedPattern>me.xginko.villageroptimizer.libs.caffeine</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>me.xginko.villageroptimizer.libs.bstats</shadedPattern>
+                                </relocation>
+                            </relocations>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
@@ -54,6 +63,7 @@
                                     </excludes>
                                 </filter>
                             </filters>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
                 </executions>
@@ -69,16 +79,43 @@
 
     <repositories>
         <repository>
-            <id>papermc</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
+            <id>papermc-repo</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
             <id>configmaster-repo</id>
             <url>https://ci.pluginwiki.us/plugin/repository/everything/</url>
         </repository>
+        <repository>
+            <id>folialib-repo</id>
+            <url>https://nexuslite.gcnt.net/repos/other/</url>
+        </repository>
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Needed for 1.16 as it's not in Paper on that version -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <version>4.15.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-plain</artifactId>
+            <version>4.15.0</version>
+            <scope>compile</scope>
+        </dependency>
         <!-- Bukkit bStats -->
         <dependency>
             <groupId>org.bstats</groupId>
@@ -93,11 +130,18 @@
             <version>v2.0.0-rc.1</version>
             <scope>compile</scope>
         </dependency>
-        <!-- Caching -->
+        <!-- Fast Caching -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Folia Support -->
+        <dependency>
+            <groupId>com.tcoded</groupId>
+            <artifactId>FoliaLib</artifactId>
+            <version>0.3.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
