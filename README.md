@@ -24,7 +24,4 @@ Other features:
 
 ### Found a bug or got an idea for an enhancement? Open an issue or join the [discord](https://discord.com/invite/3UgsYf3qyc)!
 
-
-# Important:
-### The 1.16 version is meant to be used on Paper servers 1.16-1.19.4
-### The 1.20.2 version is meant to be used on Paper 1.20+ and Folia 1.19.4+ servers
+# Supports Paper/Folia 1.16 - 1.20.4
