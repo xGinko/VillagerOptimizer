@@ -6,8 +6,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 
-import static java.lang.String.format;
-
 public class CommonUtil {
     public static @NotNull String formatTime(final long millis) {
         Duration duration = Duration.ofMillis(millis);
@@ -16,18 +14,23 @@ public class CommonUtil {
         final int hours = duration.toHoursPart();
 
         if (hours > 0) {
-            return format("%02dh %02dm %02ds", hours, minutes, seconds);
+            return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
         } else if (minutes > 0) {
-            return format("%02dm %02ds", minutes, seconds);
+            return String.format("%02dm %02ds", minutes, seconds);
         } else {
-            return format("%02ds", seconds);
+            return String.format("%02ds", seconds);
         }
     }
 
+    private static boolean newerLoadingMethodAvailable = true;
     public static boolean isEntitiesLoaded(@NotNull Chunk chunk) {
+        if (!newerLoadingMethodAvailable) {
+            return chunk.isLoaded();
+        }
         try {
             return chunk.isEntitiesLoaded();
         } catch (NoSuchMethodError e) {
+            newerLoadingMethodAvailable = false;
             return chunk.isLoaded();
         }
     }
