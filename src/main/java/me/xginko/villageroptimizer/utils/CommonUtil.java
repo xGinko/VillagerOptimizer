@@ -22,15 +22,15 @@ public class CommonUtil {
         }
     }
 
-    private static boolean newerLoadingMethodAvailable = true;
+    private static boolean specificChunkLoadedMethodAvailable = true;
     public static boolean isEntitiesLoaded(@NotNull Chunk chunk) {
-        if (!newerLoadingMethodAvailable) {
+        if (!specificChunkLoadedMethodAvailable) {
             return chunk.isLoaded();
         }
         try {
             return chunk.isEntitiesLoaded();
         } catch (NoSuchMethodError e) {
-            newerLoadingMethodAvailable = false;
+            specificChunkLoadedMethodAvailable = false;
             return chunk.isLoaded();
         }
     }
