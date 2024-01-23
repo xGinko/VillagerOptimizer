@@ -43,14 +43,14 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("This command can only be executed by a player.")
-                    .color(NamedTextColor.RED).decorate(TextDecoration.BOLD));
+        if (!sender.hasPermission(Commands.UNOPTIMIZE_RADIUS.get())) {
+            sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
             return true;
         }
 
-        if (!sender.hasPermission(Commands.UNOPTIMIZE_RADIUS.get())) {
-            sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("This command can only be executed by a player.")
+                    .color(NamedTextColor.RED).decorate(TextDecoration.BOLD));
             return true;
         }
 
@@ -60,9 +60,16 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
         }
 
         try {
-            int specifiedRadius = Integer.parseInt(args[0]);
+            final int specifiedRadius = Integer.parseInt(args[0]);
+            // Turn negative numbers into positive ones
+            final int safeRadius = (int) Math.sqrt(specifiedRadius * specifiedRadius);
 
-            if (specifiedRadius > max_radius) {
+            if (safeRadius == 0) {
+                VillagerOptimizer.getLang(player.locale()).command_radius_invalid.forEach(player::sendMessage);
+                return true;
+            }
+
+            if (safeRadius > max_radius) {
                 final TextReplacementConfig limit = TextReplacementConfig.builder()
                         .matchLiteral("%distance%")
                         .replacement(Integer.toString(max_radius))
@@ -74,7 +81,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
             VillagerCache villagerCache = VillagerOptimizer.getCache();
             int successCount = 0;
 
-            for (Entity entity : player.getNearbyEntities(specifiedRadius, specifiedRadius, specifiedRadius)) {
+            for (Entity entity : player.getNearbyEntities(safeRadius, safeRadius, safeRadius)) {
                 if (!entity.getType().equals(EntityType.VILLAGER)) continue;
                 Villager villager = (Villager) entity;
                 Villager.Profession profession = villager.getProfession();
@@ -94,7 +101,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
             if (successCount <= 0) {
                 final TextReplacementConfig radius = TextReplacementConfig.builder()
                         .matchLiteral("%radius%")
-                        .replacement(Integer.toString(specifiedRadius))
+                        .replacement(Integer.toString(safeRadius))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).command_no_villagers_nearby.forEach(line -> player.sendMessage(line.replaceText(radius)));
             } else {
@@ -104,7 +111,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
                         .build();
                 final TextReplacementConfig radius = TextReplacementConfig.builder()
                         .matchLiteral("%radius%")
-                        .replacement(Integer.toString(specifiedRadius))
+                        .replacement(Integer.toString(safeRadius))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).command_unoptimize_success.forEach(line -> player.sendMessage(line
                         .replaceText(success_amount)
