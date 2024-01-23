@@ -33,7 +33,7 @@ public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerComm
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
-        return args.length == 1 ? tabCompleter : null;
+        return args.length == 1 ? tabCompleter : NO_TABCOMPLETES;
     }
 
     @Override

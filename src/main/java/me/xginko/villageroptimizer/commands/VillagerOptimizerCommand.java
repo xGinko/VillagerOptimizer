@@ -10,13 +10,21 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 public interface VillagerOptimizerCommand extends CommandExecutor {
 
     String label();
+    @Override
+    boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args);
+
+    List<String> NO_TABCOMPLETES = Collections.emptyList();
+    List<String> RADIUS_TABCOMPLETES = List.of("5", "10", "25", "50");
 
     HashSet<VillagerOptimizerCommand> commands = new HashSet<>();
+
     static void reloadCommands() {
         VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         CommandMap commandMap = plugin.getServer().getCommandMap();
@@ -29,7 +37,4 @@ public interface VillagerOptimizerCommand extends CommandExecutor {
 
         commands.forEach(command -> plugin.getCommand(command.label()).setExecutor(command));
     }
-
-    @Override
-    boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args);
 }

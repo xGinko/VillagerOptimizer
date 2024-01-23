@@ -21,18 +21,17 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
     private final ServerImplementation scheduler;
     private final VillagerCache villagerCache;
     private WrappedTask periodic_chunk_check;
-    private final List<Villager.Profession> non_optimized_removal_priority = new ArrayList<>(16);
-    private final List<Villager.Profession> optimized_removal_priority = new ArrayList<>(16);
+    private final List<Villager.Profession> non_optimized_removal_priority;
+    private final List<Villager.Profession> optimized_removal_priority;
     private final long check_period;
     private final int non_optimized_max_per_chunk, optimized_max_per_chunk;
     private final boolean log_enabled, skip_unloaded_entity_chunks;
@@ -53,37 +52,37 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         this.log_enabled = config.getBoolean("villager-chunk-limit.log-removals", false);
         this.non_optimized_max_per_chunk = config.getInt("villager-chunk-limit.unoptimized.max-per-chunk", 20,
                 "The maximum amount of unoptimized villagers per chunk.");
-        config.getList("villager-chunk-limit.unoptimized.removal-priority", List.of(
+        this.non_optimized_removal_priority = config.getList("villager-chunk-limit.unoptimized.removal-priority", List.of(
                         "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
                         "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN"
         ), """
                 Professions that are in the top of the list are going to be scheduled for removal first.\s
                 Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html"""
-        ).forEach(configuredProfession -> {
+        ).stream().map(configuredProfession -> {
             try {
-                Villager.Profession profession = Villager.Profession.valueOf(configuredProfession);
-                this.non_optimized_removal_priority.add(profession);
+                return Villager.Profession.valueOf(configuredProfession);
             } catch (IllegalArgumentException e) {
                 LogUtil.moduleLog(Level.WARNING, "villager-chunk-limit.unoptimized",
                         "Villager profession '"+configuredProfession+"' not recognized. " +
                                 "Make sure you're using the correct profession enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
+                return null;
             }
-        });
+        }).filter(Objects::nonNull).toList();
         this.optimized_max_per_chunk = config.getInt("villager-chunk-limit.optimized.max-per-chunk", 60,
                 "The maximum amount of optimized villagers per chunk.");
-        config.getList("villager-chunk-limit.optimized.removal-priority", List.of(
+        this.optimized_removal_priority = config.getList("villager-chunk-limit.optimized.removal-priority", List.of(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
                 "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN"
-        )).forEach(configuredProfession -> {
+        )).stream().map(configuredProfession -> {
             try {
-                Villager.Profession profession = Villager.Profession.valueOf(configuredProfession);
-                this.optimized_removal_priority.add(profession);
+                return Villager.Profession.valueOf(configuredProfession);
             } catch (IllegalArgumentException e) {
                 LogUtil.moduleLog(Level.WARNING, "villager-chunk-limit.optimized",
                         "Villager profession '"+configuredProfession+"' not recognized. " +
                                 "Make sure you're using the correct profession enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
+                return null;
             }
-        });
+        }).filter(Objects::nonNull).toList();
     }
 
     @Override

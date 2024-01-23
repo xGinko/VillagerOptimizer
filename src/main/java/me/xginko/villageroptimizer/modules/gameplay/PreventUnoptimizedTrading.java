@@ -50,31 +50,35 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onTradeOpen(TradeSelectEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        if (player.hasPermission(Bypass.TRADE_PREVENTION.get())) return;
+        if (event.getWhoClicked().hasPermission(Bypass.TRADE_PREVENTION.get())) return;
+
         if (
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
                 && event.getInventory().getHolder() instanceof Villager villager
                 && !villagerCache.getOrAdd(villager).isOptimized()
         ) {
             event.setCancelled(true);
-            if (notify_player)
+            if (notify_player) {
+                Player player = (Player) event.getWhoClicked();
                 VillagerOptimizer.getLang(player.locale()).optimize_for_trading.forEach(player::sendMessage);
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     private void onInventoryClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        if (player.hasPermission(Bypass.TRADE_PREVENTION.get())) return;
+        if (event.getWhoClicked().hasPermission(Bypass.TRADE_PREVENTION.get())) return;
+
         if (
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
                 && event.getInventory().getHolder() instanceof Villager villager
                 && !villagerCache.getOrAdd(villager).isOptimized()
         ) {
             event.setCancelled(true);
-            if (notify_player)
+            if (notify_player) {
+                Player player = (Player) event.getWhoClicked();
                 VillagerOptimizer.getLang(player.locale()).optimize_for_trading.forEach(player::sendMessage);
+            }
         }
     }
 }

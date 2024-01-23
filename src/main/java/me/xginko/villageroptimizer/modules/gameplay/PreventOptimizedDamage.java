@@ -16,12 +16,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
-    private final Set<EntityDamageEvent.DamageCause> damage_causes_to_cancel = new HashSet<>();
+    private final Set<EntityDamageEvent.DamageCause> damage_causes_to_cancel;
     private final boolean cancelKnockback;
 
     public PreventOptimizedDamage() {
@@ -32,19 +34,19 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
                 "Configure what kind of damage you want to cancel for optimized villagers here.");
         this.cancelKnockback = config.getBoolean("gameplay.prevent-damage-to-optimized.prevent-knockback-from-entity", true,
                 "Prevents optimized villagers from getting knocked back by an attacking entity");
-        config.getList("gameplay.prevent-damage-to-optimized.damage-causes-to-cancel",
+        this.damage_causes_to_cancel = config.getList("gameplay.prevent-damage-to-optimized.damage-causes-to-cancel",
                 Arrays.stream(EntityDamageEvent.DamageCause.values()).map(Enum::name).sorted().toList(), """
                 These are all current entries in the game. Remove what you do not need blocked.\s
                 If you want a description or need to add a previously removed type, refer to:\s
                 https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html"""
-        ).forEach(configuredDamageCause -> {
+        ).stream().map(configuredDamageCause -> {
             try {
-                EntityDamageEvent.DamageCause damageCause = EntityDamageEvent.DamageCause.valueOf(configuredDamageCause);
-                this.damage_causes_to_cancel.add(damageCause);
+                return EntityDamageEvent.DamageCause.valueOf(configuredDamageCause);
             } catch (IllegalArgumentException e) {
                 LogUtil.damageCauseNotRecognized("prevent-damage-to-optimized", configuredDamageCause);
+                return null;
             }
-        });
+        }).filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));
     }
 
     @Override

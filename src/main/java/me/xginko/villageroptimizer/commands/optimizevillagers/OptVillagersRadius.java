@@ -27,7 +27,6 @@ import java.util.List;
 
 public class OptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
 
-    private final List<String> radiusSuggestions = List.of("5", "10", "25", "50");
     private final long cooldown;
     private final int max_radius;
 
@@ -46,7 +45,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand, TabComplete
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return args.length == 1 ? radiusSuggestions : null;
+        return args.length == 1 ? RADIUS_TABCOMPLETES : NO_TABCOMPLETES;
     }
 
     @Override

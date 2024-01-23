@@ -29,13 +29,15 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
-    private final Set<Material> blocks_that_disable = new HashSet<>();
+    private final Set<Material> blocks_that_disable;
     private final long cooldown_millis;
     private final double search_radius;
     private final boolean only_while_sneaking, notify_player, log_enabled;
@@ -47,17 +49,17 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         config.master().addComment("optimization-methods.block-optimization.enable", """
                 When enabled, the closest villager standing near a configured block being placed will be optimized.\s
                 If a configured block is broken nearby, the closest villager will become unoptimized again.""");
-        config.getList("optimization-methods.block-optimization.materials", List.of(
+        this.blocks_that_disable = config.getList("optimization-methods.block-optimization.materials", List.of(
                 "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
         ), "Values here need to be valid bukkit Material enums for your server version."
-        ).forEach(configuredMaterial -> {
+        ).stream().map(configuredMaterial -> {
             try {
-                Material disableBlock = Material.valueOf(configuredMaterial);
-                this.blocks_that_disable.add(disableBlock);
+                return Material.valueOf(configuredMaterial);
             } catch (IllegalArgumentException e) {
                 LogUtil.materialNotRecognized("block-optimization", configuredMaterial);
+                return null;
             }
-        });
+        }).filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
                 config.getInt("optimization-methods.block-optimization.optimize-cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again by using specific blocks.\s
