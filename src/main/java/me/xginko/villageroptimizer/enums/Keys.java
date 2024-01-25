@@ -11,12 +11,12 @@ public class Keys {
         VillagerOptimizer("VillagerOptimizer"),
         AntiVillagerLag("AntiVillagerLag");
 
-        private final String namespace;
+        private final String pluginName;
         Namespaces(String pluginName) {
-            this.namespace = pluginName;
+            this.pluginName = pluginName;
         }
-        public String namespace() {
-            return namespace;
+        public String pluginName() {
+            return pluginName;
         }
     }
 
@@ -46,7 +46,7 @@ public class Keys {
         private final NamespacedKey key;
 
         Own(String key) {
-            this.key = Keys.getKey(Namespaces.VillagerOptimizer.namespace(), key);
+            this.key = Keys.getKey(Namespaces.VillagerOptimizer.pluginName(), key);
         }
 
         public NamespacedKey key() {
@@ -65,7 +65,7 @@ public class Keys {
         private final NamespacedKey key;
 
         AntiVillagerLag(String avlKey) {
-            this.key = Keys.getKey(Namespaces.AntiVillagerLag.namespace(), avlKey);
+            this.key = Keys.getKey(Namespaces.AntiVillagerLag.pluginName(), avlKey);
         }
 
         public NamespacedKey key() {
