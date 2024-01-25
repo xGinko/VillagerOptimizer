@@ -87,9 +87,6 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static VillagerOptimizer getInstance()  {
         return instance;
     }
-    public static NamespacedKey getKey(String key) {
-        return new NamespacedKey(instance, key);
-    }
     public static Config getConfiguration() {
         return config;
     }

@@ -33,7 +33,7 @@ public class Config {
                 "If set to true, will display messages based on client language");
         this.cache_keep_time_seconds = getInt("general.cache-keep-time-seconds", 30,
                 "The amount of time in seconds a villager will be kept in the plugin's cache.");
-        this.support_other_plugins = getBoolean("general.support-avl-villagers", true, """
+        this.support_other_plugins = getBoolean("general.support-avl-villagers", false, """
                 Enable if you have previously used AntiVillagerLag (https://www.spigotmc.org/resources/antivillagerlag.102949/).\s
                 Tries to read pre-existing info like optimization state so players don't need to reoptimize their villagers.""");
     }

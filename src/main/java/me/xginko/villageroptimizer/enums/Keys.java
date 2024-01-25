@@ -8,24 +8,37 @@ import org.bukkit.plugin.Plugin;
 import java.util.Locale;
 
 public class Keys {
+
     public enum Origin {
         VillagerOptimizer,
         AntiVillagerLag;
     }
 
     public enum Own {
-        OPTIMIZATION_TYPE(VillagerOptimizer.getKey("optimization-type")),
-        LAST_OPTIMIZE(VillagerOptimizer.getKey("last-optimize")),
-        LAST_LEVELUP(VillagerOptimizer.getKey("last-levelup")),
-        LAST_RESTOCK(VillagerOptimizer.getKey("last-restock")),
-        LAST_OPTIMIZE_NAME(VillagerOptimizer.getKey("last-optimize-name"));
+        OPTIMIZATION_TYPE("optimization-type"),
+        LAST_OPTIMIZE("last-optimize"),
+        LAST_LEVELUP("last-levelup"),
+        LAST_RESTOCK("last-restock"),
+        LAST_OPTIMIZE_NAME("last-optimize-name");
 
         private final NamespacedKey key;
-        Own(NamespacedKey key) {
-            this.key = key;
+
+        Own(String key) {
+            this.key = getKey(key);
         }
+
         public NamespacedKey key() {
             return key;
+        }
+
+        /**
+         * Returns a NamespacedKey created by VillagerOptimizer.
+         *
+         * @return a {@link NamespacedKey} that can be used to test for and read data stored by VillagerOptimizer
+         * from a {@link PersistentDataContainer}
+         */
+        public static NamespacedKey getKey(String key) {
+            return new NamespacedKey(VillagerOptimizer.getInstance(), key);
         }
     }
 
