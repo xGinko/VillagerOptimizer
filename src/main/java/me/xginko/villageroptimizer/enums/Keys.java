@@ -1,6 +1,5 @@
 package me.xginko.villageroptimizer.enums;
 
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
@@ -8,10 +7,33 @@ import org.bukkit.plugin.Plugin;
 import java.util.Locale;
 
 public class Keys {
+    public enum Namespaces {
+        VillagerOptimizer("VillagerOptimizer"),
+        AntiVillagerLag("AntiVillagerLag");
 
-    public enum Origin {
-        VillagerOptimizer,
-        AntiVillagerLag;
+        private final String namespace;
+        Namespaces(String pluginName) {
+            this.namespace = pluginName;
+        }
+        public String namespace() {
+            return namespace;
+        }
+    }
+
+    /**
+     * Returns a NamespacedKey as if it was created by a specific plugin.
+     * This is possible because they are created using {@link NamespacedKey#NamespacedKey(Plugin, String)},
+     * meaning the Namespace is always the return of {@link Plugin#getName()} && {@link String#toLowerCase()}
+     * using {@link Locale#ROOT}
+     *
+     * @param pluginName The plugin name as configured in plugin.yml, section name
+     * @param key The key name
+     *
+     * @return a {@link NamespacedKey} that can be used to test for and read data stored by plugins
+     * from a {@link PersistentDataContainer}
+     */
+    public static NamespacedKey getKey(String pluginName, String key) {
+        return new NamespacedKey(pluginName.toLowerCase(Locale.ROOT), key);
     }
 
     public enum Own {
@@ -24,21 +46,11 @@ public class Keys {
         private final NamespacedKey key;
 
         Own(String key) {
-            this.key = getKey(key);
+            this.key = Keys.getKey(Namespaces.VillagerOptimizer.namespace(), key);
         }
 
         public NamespacedKey key() {
             return key;
-        }
-
-        /**
-         * Returns a NamespacedKey created by VillagerOptimizer.
-         *
-         * @return a {@link NamespacedKey} that can be used to test for and read data stored by VillagerOptimizer
-         * from a {@link PersistentDataContainer}
-         */
-        public static NamespacedKey getKey(String key) {
-            return new NamespacedKey(VillagerOptimizer.getInstance(), key);
         }
     }
 
@@ -53,24 +65,11 @@ public class Keys {
         private final NamespacedKey key;
 
         AntiVillagerLag(String avlKey) {
-            this.key = getKey(avlKey);
+            this.key = Keys.getKey(Namespaces.AntiVillagerLag.namespace(), avlKey);
         }
 
         public NamespacedKey key() {
             return key;
-        }
-
-        /**
-         * Returns a NamespacedKey as if it was created by AntiVillagerLag.
-         * This is possible because they are created using {@link NamespacedKey#NamespacedKey(Plugin, String)},
-         * meaning the Namespace is always the return of {@link Plugin#getName()} && {@link String#toLowerCase()}
-         * using {@link Locale#ROOT}
-         *
-         * @return a {@link NamespacedKey} that can be used to test for and read data stored by AntiVillagerLag
-         * from a {@link PersistentDataContainer}
-         */
-        public static NamespacedKey getKey(String key) {
-            return new NamespacedKey("AntiVillagerLag".toLowerCase(Locale.ROOT), key);
         }
     }
 }

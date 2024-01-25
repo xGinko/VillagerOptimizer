@@ -41,10 +41,10 @@ public final class WrappedVillager {
      */
     public boolean isOptimized() {
         if (!parseOther) {
-            return isOptimized(Keys.Origin.VillagerOptimizer);
+            return isOptimized(Keys.Namespaces.VillagerOptimizer);
         }
-        for (Keys.Origin pluginOrigin : Keys.Origin.values()) {
-            if (isOptimized(pluginOrigin)) return true;
+        for (Keys.Namespaces pluginNamespaces : Keys.Namespaces.values()) {
+            if (isOptimized(pluginNamespaces)) return true;
         }
         return false;
     }
@@ -52,8 +52,8 @@ public final class WrappedVillager {
     /**
      * @return True if the villager is optimized by the supported plugin, otherwise false.
      */
-    public boolean isOptimized(Keys.Origin origin) {
-        return switch (origin) {
+    public boolean isOptimized(Keys.Namespaces namespaces) {
+        return switch (namespaces) {
             case VillagerOptimizer -> dataContainer.has(Keys.Own.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING);
             case AntiVillagerLag -> dataContainer.has(Keys.AntiVillagerLag.OPTIMIZED_ANY.key(), PersistentDataType.STRING)
                     || dataContainer.has(Keys.AntiVillagerLag.OPTIMIZED_WORKSTATION.key(), PersistentDataType.STRING)
@@ -82,7 +82,7 @@ public final class WrappedVillager {
      */
     public void setOptimization(OptimizationType type) {
         if (type.equals(OptimizationType.NONE) && isOptimized()) {
-            if (!parseOther || isOptimized(Keys.Origin.VillagerOptimizer)) {
+            if (!parseOther || isOptimized(Keys.Namespaces.VillagerOptimizer)) {
                 dataContainer.remove(Keys.Own.OPTIMIZATION_TYPE.key());
             }
             VillagerOptimizer.getScheduler().runAtEntity(villager, enableAI -> {
@@ -100,19 +100,19 @@ public final class WrappedVillager {
      */
     public @NotNull OptimizationType getOptimizationType() {
         if (!parseOther) {
-            return getOptimizationType(Keys.Origin.VillagerOptimizer);
+            return getOptimizationType(Keys.Namespaces.VillagerOptimizer);
         }
-        OptimizationType optimizationType = getOptimizationType(Keys.Origin.VillagerOptimizer);
+        OptimizationType optimizationType = getOptimizationType(Keys.Namespaces.VillagerOptimizer);
         if (optimizationType != OptimizationType.NONE) {
             return optimizationType;
         }
-        return getOptimizationType(Keys.Origin.AntiVillagerLag);
+        return getOptimizationType(Keys.Namespaces.AntiVillagerLag);
     }
 
-    public @NotNull OptimizationType getOptimizationType(Keys.Origin origin) {
-        return switch (origin) {
+    public @NotNull OptimizationType getOptimizationType(Keys.Namespaces namespaces) {
+        return switch (namespaces) {
             case VillagerOptimizer -> {
-                if (isOptimized(Keys.Origin.VillagerOptimizer)) {
+                if (isOptimized(Keys.Namespaces.VillagerOptimizer)) {
                     yield OptimizationType.valueOf(dataContainer.get(Keys.Own.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING));
                 }
                 yield OptimizationType.NONE;
