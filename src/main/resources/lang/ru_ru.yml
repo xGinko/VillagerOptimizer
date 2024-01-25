@@ -29,7 +29,7 @@ messages:
       - "<green>Оптимизация была успешно снята с %vil_profession% удалением %blocktype%."
   command:
     optimize-success:
-      - "<green>Успешно оптимизинованы %amount% жителей в радиусе %radius% блоков."
+      - "<green>Успешно оптимизировано %amount% жителей в радиусе %radius% блоков."
     optimize-fail:
       - "<gray>%amount% жителей не могут быть оптимизированы снова так как они уже были оптимизированы недавно."
     radius-limit-exceed:
