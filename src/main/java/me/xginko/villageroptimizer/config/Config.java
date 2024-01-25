@@ -1,20 +1,18 @@
 package me.xginko.villageroptimizer.config;
 
 import io.github.thatsmusic99.configurationmaster.api.ConfigFile;
-import io.github.thatsmusic99.configurationmaster.api.ConfigSection;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class Config {
 
     private final @NotNull ConfigFile config;
     public final @NotNull Locale default_lang;
-    public final boolean auto_lang;
+    public final boolean auto_lang, support_other_plugins;
     public final long cache_keep_time_seconds;
 
     public Config() throws Exception {
@@ -35,6 +33,9 @@ public class Config {
                 "If set to true, will display messages based on client language");
         this.cache_keep_time_seconds = getInt("general.cache-keep-time-seconds", 30,
                 "The amount of time in seconds a villager will be kept in the plugin's cache.");
+        this.support_other_plugins = getBoolean("general.support-avl-villagers", true, """
+                Enable if you have previously used AntiVillagerLag (https://www.spigotmc.org/resources/antivillagerlag.102949/).\s
+                Tries to read pre-existing info like optimization state so players don't need to reoptimize their villagers.""");
     }
 
     public void saveConfig() {

@@ -2,19 +2,62 @@ package me.xginko.villageroptimizer.enums;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import org.bukkit.NamespacedKey;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.plugin.Plugin;
 
-public enum Keys {
-    OPTIMIZATION_TYPE(VillagerOptimizer.getKey("optimization-type")),
-    LAST_OPTIMIZE(VillagerOptimizer.getKey("last-optimize")),
-    LAST_LEVELUP(VillagerOptimizer.getKey("last-levelup")),
-    LAST_RESTOCK(VillagerOptimizer.getKey("last-restock")),
-    LAST_OPTIMIZE_NAME(VillagerOptimizer.getKey("last-optimize-name"));
+import java.util.Locale;
 
-    private final NamespacedKey key;
-    Keys(NamespacedKey key) {
-        this.key = key;
+public class Keys {
+    public enum Origin {
+        VillagerOptimizer,
+        AntiVillagerLag;
     }
-    public NamespacedKey key() {
-        return key;
+
+    public enum Own {
+        OPTIMIZATION_TYPE(VillagerOptimizer.getKey("optimization-type")),
+        LAST_OPTIMIZE(VillagerOptimizer.getKey("last-optimize")),
+        LAST_LEVELUP(VillagerOptimizer.getKey("last-levelup")),
+        LAST_RESTOCK(VillagerOptimizer.getKey("last-restock")),
+        LAST_OPTIMIZE_NAME(VillagerOptimizer.getKey("last-optimize-name"));
+
+        private final NamespacedKey key;
+        Own(NamespacedKey key) {
+            this.key = key;
+        }
+        public NamespacedKey key() {
+            return key;
+        }
+    }
+
+    public enum AntiVillagerLag {
+        NEXT_OPTIMIZATION_SYSTIME_SECONDS("cooldown"), // Returns LONG -> System.currentTimeMillis() / 1000 + cooldown seconds
+        LAST_RESTOCK_WORLDFULLTIME("time"), // Returns LONG -> villager.getWorld().getFullTime()
+        NEXT_LEVELUP_SYSTIME_SECONDS("levelCooldown"), // Returns LONG -> System.currentTimeMillis() / 1000 + cooldown seconds
+        OPTIMIZED_ANY("Marker"), // Returns STRING -> "AVL"
+        OPTIMIZED_BLOCK("disabledByBlock"), // Returns STRING -> key().toString()
+        OPTIMIZED_WORKSTATION("disabledByWorkstation"); // Returns STRING -> key().toString()
+
+        private final NamespacedKey key;
+
+        AntiVillagerLag(String avlKey) {
+            this.key = getKey(avlKey);
+        }
+
+        public NamespacedKey key() {
+            return key;
+        }
+
+        /**
+         * Returns a NamespacedKey as if it was created by AntiVillagerLag.
+         * This is possible because they are created using {@link NamespacedKey#NamespacedKey(Plugin, String)},
+         * meaning the Namespace is always the return of {@link Plugin#getName()} && {@link String#toLowerCase()}
+         * using {@link Locale#ROOT}
+         *
+         * @return a {@link NamespacedKey} that can be used to test for and read data stored by AntiVillagerLag
+         * from a {@link PersistentDataContainer}
+         */
+        public static NamespacedKey getKey(String key) {
+            return new NamespacedKey("AntiVillagerLag".toLowerCase(Locale.ROOT), key);
+        }
     }
 }
