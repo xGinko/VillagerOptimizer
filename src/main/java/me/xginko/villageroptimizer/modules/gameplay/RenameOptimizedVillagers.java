@@ -23,7 +23,7 @@ public class RenameOptimizedVillagers implements VillagerOptimizerModule, Listen
 
     public RenameOptimizedVillagers() {
         shouldEnable();
-        this.scheduler = VillagerOptimizer.getScheduler();
+        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         Config config = VillagerOptimizer.getConfiguration();
         config.master().addComment("gameplay.rename-optimized-villagers.enable", """
                 Will change a villager's name to the name configured below when they are optimized.\s

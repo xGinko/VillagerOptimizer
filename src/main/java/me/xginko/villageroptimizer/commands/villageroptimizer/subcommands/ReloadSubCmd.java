@@ -29,7 +29,7 @@ public class ReloadSubCmd extends SubCommand {
     public void perform(CommandSender sender, String[] args) {
         if (sender.hasPermission(Commands.RELOAD.get())) {
             sender.sendMessage(Component.text("Reloading VillagerOptimizer...").color(NamedTextColor.WHITE));
-            VillagerOptimizer.getScheduler().runNextTick(reload -> { // Reload in sync with the server
+            VillagerOptimizer.getFoliaLib().getImpl().runNextTick(reload -> { // Reload in sync with the server
                 VillagerOptimizer.getInstance().reloadPlugin();
                 sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.GREEN));
             });

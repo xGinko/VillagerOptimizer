@@ -5,10 +5,13 @@ import me.xginko.villageroptimizer.enums.OptimizationType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Villager;
+import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.TimeUnit;
 
 public final class WrappedVillager {
 
@@ -81,18 +84,23 @@ public final class WrappedVillager {
      * @param type OptimizationType the villager should be set to.
      */
     public void setOptimization(OptimizationType type) {
-        if (type.equals(OptimizationType.NONE) && isOptimized()) {
-            if (!parseOther || isOptimized(Keys.Namespaces.VillagerOptimizer)) {
-                dataContainer.remove(Keys.Own.OPTIMIZATION_TYPE.key());
-            }
-            VillagerOptimizer.getScheduler().runAtEntity(villager, enableAI -> {
+        VillagerOptimizer.getFoliaLib().getImpl().runAtEntityTimer(villager, setOptimization -> {
+            // Keep repeating task until villager is no longer trading with a player
+            if (villager.isTrading()) return;
+
+            if (type.equals(OptimizationType.NONE) && isOptimized()) {
+                if (!parseOther || isOptimized(Keys.Namespaces.VillagerOptimizer))
+                    dataContainer.remove(Keys.Own.OPTIMIZATION_TYPE.key());
                 villager.setAware(true);
-                villager.setAI(true);
-            });
-        } else {
-            dataContainer.set(Keys.Own.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING, type.name());
-            VillagerOptimizer.getScheduler().runAtEntity(villager, disableAI -> villager.setAware(false));
-        }
+                villager.setAI(true); // Done for stability so villager is guaranteed to wake up
+            } else {
+                dataContainer.set(Keys.Own.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING, type.name());
+                villager.setAware(false);
+            }
+
+            // End repeating task once logic is finished
+            setOptimization.cancel();
+        }, 0L, 1L, TimeUnit.SECONDS);
     }
 
     /**
@@ -190,7 +198,9 @@ public final class WrappedVillager {
      * Restock all trading recipes.
      */
     public void restock() {
-        villager.getRecipes().forEach(recipe -> recipe.setUses(0));
+        for (MerchantRecipe recipe : villager.getRecipes()) {
+            recipe.setUses(0);
+        }
     }
 
     /**

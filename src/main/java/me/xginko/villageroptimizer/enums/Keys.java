@@ -55,9 +55,9 @@ public class Keys {
     }
 
     public enum AntiVillagerLag {
-        NEXT_OPTIMIZATION_SYSTIME_SECONDS("cooldown"), // Returns LONG -> System.currentTimeMillis() / 1000 + cooldown seconds
+        NEXT_OPTIMIZATION_SYSTIME_SECONDS("cooldown"), // Returns LONG -> (System.currentTimeMillis() / 1000) + cooldown seconds
         LAST_RESTOCK_WORLDFULLTIME("time"), // Returns LONG -> villager.getWorld().getFullTime()
-        NEXT_LEVELUP_SYSTIME_SECONDS("levelCooldown"), // Returns LONG -> System.currentTimeMillis() / 1000 + cooldown seconds
+        NEXT_LEVELUP_SYSTIME_SECONDS("levelCooldown"), // Returns LONG -> (System.currentTimeMillis() / 1000) + cooldown seconds
         OPTIMIZED_ANY("Marker"), // Returns STRING -> "AVL"
         OPTIMIZED_BLOCK("disabledByBlock"), // Returns STRING -> key().toString()
         OPTIMIZED_WORKSTATION("disabledByWorkstation"); // Returns STRING -> key().toString()

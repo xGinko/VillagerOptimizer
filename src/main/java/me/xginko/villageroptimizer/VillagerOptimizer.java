@@ -11,10 +11,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,49 +35,47 @@ public final class VillagerOptimizer extends JavaPlugin {
     private static FoliaLib foliaLib;
     private static HashMap<String, LanguageCache> languageCacheMap;
     private static Config config;
-    private static ConsoleCommandSender console;
-    private static Logger logger;
+    private static ComponentLogger logger;
 
     @Override
     public void onEnable() {
         instance = this;
-        logger = getLogger();
-        console = getServer().getConsoleSender();
+        logger = getComponentLogger();
         foliaLib = new FoliaLib(this);
 
-        console.sendMessage(Component.text("╭────────────────────────────────────────────────────────────╮").style(plugin_style));
-        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
-        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
-        console.sendMessage(Component.text("│             _   __ _  __ __                                │").style(plugin_style));
-        console.sendMessage(Component.text("│            | | / /(_)/ // /___ _ ___ _ ___  ____           │").style(plugin_style));
-        console.sendMessage(Component.text("│            | |/ // // // // _ `// _ `// -_)/ __/           │").style(plugin_style));
-        console.sendMessage(Component.text("│            |___//_//_//_/ \\_,_/ \\_, / \\__//_/              │").style(plugin_style));
-        console.sendMessage(Component.text("│          ____        __   _    /___/_                      │").style(plugin_style));
-        console.sendMessage(Component.text("│         / __ \\ ___  / /_ (_)__ _   (_)___ ___  ____        │").style(plugin_style));
-        console.sendMessage(Component.text("│        / /_/ // _ \\/ __// //  ' \\ / //_ // -_)/ __/        │").style(plugin_style));
-        console.sendMessage(Component.text("│        \\____// .__/\\__//_//_/_/_//_/ /__/\\__//_/           │").style(plugin_style));
-        console.sendMessage(Component.text("│             /_/         by xGinko                          │").style(plugin_style));
-        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
-        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
-        console.sendMessage(Component.text("│        ")
+        logger.info(Component.text("╭────────────────────────────────────────────────────────────╮").style(plugin_style));
+        logger.info(Component.text("│                                                            │").style(plugin_style));
+        logger.info(Component.text("│                                                            │").style(plugin_style));
+        logger.info(Component.text("│             _   __ _  __ __                                │").style(plugin_style));
+        logger.info(Component.text("│            | | / /(_)/ // /___ _ ___ _ ___  ____           │").style(plugin_style));
+        logger.info(Component.text("│            | |/ // // // // _ `// _ `// -_)/ __/           │").style(plugin_style));
+        logger.info(Component.text("│            |___//_//_//_/ \\_,_/ \\_, / \\__//_/              │").style(plugin_style));
+        logger.info(Component.text("│          ____        __   _    /___/_                      │").style(plugin_style));
+        logger.info(Component.text("│         / __ \\ ___  / /_ (_)__ _   (_)___ ___  ____        │").style(plugin_style));
+        logger.info(Component.text("│        / /_/ // _ \\/ __// //  ' \\ / //_ // -_)/ __/        │").style(plugin_style));
+        logger.info(Component.text("│        \\____// .__/\\__//_//_/_/_//_/ /__/\\__//_/           │").style(plugin_style));
+        logger.info(Component.text("│             /_/         by xGinko                          │").style(plugin_style));
+        logger.info(Component.text("│                                                            │").style(plugin_style));
+        logger.info(Component.text("│                                                            │").style(plugin_style));
+        logger.info(Component.text("│        ")
                 .style(plugin_style).append(Component.text("https://github.com/xGinko/VillagerOptimizer")
                 .color(NamedTextColor.GRAY)).append(Component.text("         │").style(plugin_style)));
-        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
-        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
-        console.sendMessage(Component.text("│              ")
+        logger.info(Component.text("│                                                            │").style(plugin_style));
+        logger.info(Component.text("│                                                            │").style(plugin_style));
+        logger.info(Component.text("│              ")
                 .style(plugin_style).append(Component.text(" ➤  Loading Translations...").style(plugin_style))
                 .append(Component.text("                   │").style(plugin_style)));
         reloadLang(true);
-        console.sendMessage(Component.text("│              ")
+        logger.info(Component.text("│              ")
                 .style(plugin_style).append(Component.text(" ➤  Loading Config...").style(plugin_style))
                 .append(Component.text("                         │").style(plugin_style)));
         reloadConfiguration();
-        console.sendMessage(Component.text("│              ")
+        logger.info(Component.text("│              ")
                 .style(plugin_style).append(Component.text(" ✓  Done.").color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
                 .append(Component.text("                                     │").style(plugin_style)));
-        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
-        console.sendMessage(Component.text("│                                                            │").style(plugin_style));
-        console.sendMessage(Component.text("╰────────────────────────────────────────────────────────────╯").style(plugin_style));
+        logger.info(Component.text("│                                                            │").style(plugin_style));
+        logger.info(Component.text("│                                                            │").style(plugin_style));
+        logger.info(Component.text("╰────────────────────────────────────────────────────────────╯").style(plugin_style));
 
         new Metrics(this, 19954);
     }
@@ -96,13 +92,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static FoliaLib getFoliaLib() {
         return foliaLib;
     }
-    public static ServerImplementation getScheduler() {
-        return foliaLib.getImpl();
-    }
-    public static ConsoleCommandSender getConsole() {
-        return console;
-    }
-    public static Logger getLog() {
+    public static ComponentLogger getLog() {
         return logger;
     }
     public static LanguageCache getLang(Locale locale) {
@@ -129,7 +119,7 @@ public final class VillagerOptimizer extends JavaPlugin {
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();
         } catch (Exception e) {
-            logger.severe("Error loading config! - " + e.getLocalizedMessage());
+            logger.error("Error loading config! - " + e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -141,7 +131,7 @@ public final class VillagerOptimizer extends JavaPlugin {
             Files.createDirectories(langDirectory.toPath());
             for (String fileName : getDefaultLanguageFiles()) {
                 final String localeString = fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.lastIndexOf('.'));
-                if (startup) console.sendMessage(
+                if (startup) logger.info(
                         Component.text("│                       ").style(plugin_style)
                                 .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
                                 .append(Component.text("                            │").style(plugin_style)));
@@ -154,7 +144,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                 if (langMatcher.find()) {
                     String localeString = langMatcher.group(1).toLowerCase();
                     if (!languageCacheMap.containsKey(localeString)) { // make sure it wasn't a default file that we already loaded
-                        if (startup) console.sendMessage(
+                        if (startup) logger.info(
                                 Component.text("│                       ").style(plugin_style)
                                         .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
                                         .append(Component.text("                            │").style(plugin_style)));
@@ -164,11 +154,11 @@ public final class VillagerOptimizer extends JavaPlugin {
                 }
             }
         } catch (Exception e) {
-            if (startup) console.sendMessage(
+            if (startup) logger.error(
                     Component.text("│                      ").style(plugin_style)
                             .append(Component.text("LANG ERROR").color(NamedTextColor.RED).decorate(TextDecoration.BOLD))
                             .append(Component.text("                            │").style(plugin_style)));
-            else logger.severe("Error loading language files! Language files will not reload to avoid errors, make sure to correct this before restarting the server!");
+            else logger.error("Error loading language files! Language files will not reload to avoid errors, make sure to correct this before restarting the server!");
             e.printStackTrace();
         }
     }
@@ -180,7 +170,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                     .filter(name -> name.startsWith("lang" + File.separator) && name.endsWith(".yml"))
                     .collect(Collectors.toSet());
         } catch (IOException e) {
-            logger.severe("Failed getting default lang files! - "+e.getLocalizedMessage());
+            logger.error("Failed getting default lang files! - "+e.getLocalizedMessage());
             return Collections.emptySet();
         }
     }

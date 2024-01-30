@@ -12,6 +12,13 @@ There are 4 methods to do so:
 
 It aims to be highly customizable and performant. Offering a multilang system, which displays messages based on the player client's language setting as well as an optimize- and unoptimize event, so you may extend the plugin with your own custom solutions.
 
+### Commands:
+|                    Command                    |       Aliases       |                Description                 |
+|:---------------------------------------------:|:-------------------:|:------------------------------------------:|
+| /villageroptimizer [reload, version, disable] |   voptimizer, vo    |      VillagerOptimizer admin commands      |
+|       /optimizevillagers <blockradius>        |    noai, optvils    |  Optmize villagers in a radius around you  |
+|      /unoptimizevillagers <blockradius>       | noaiundo, unoptvils | Unoptmize villagers in a radius around you |
+
 Other features:
 - Prevent trading with unoptimized villagers to encourage players to optimize them
 - Smart villager chunk limit with configurable max numbers for optimized and unoptimized villagers and a villager profession based priorisation system (you can configure what kind of villagers should be deleted first, like for example nitwits or jobless villagers.)

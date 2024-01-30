@@ -20,10 +20,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.event.Level;
 
 import java.util.*;
-import java.util.logging.Level;
-import java.util.stream.Stream;
 
 public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
@@ -38,7 +37,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
     protected VillagerChunkLimit() {
         shouldEnable();
-        this.scheduler = VillagerOptimizer.getScheduler();
+        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.master().addComment("villager-chunk-limit.enable", """
@@ -62,7 +61,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
             try {
                 return Villager.Profession.valueOf(configuredProfession);
             } catch (IllegalArgumentException e) {
-                LogUtil.moduleLog(Level.WARNING, "villager-chunk-limit.unoptimized",
+                LogUtil.moduleLog(Level.WARN, "villager-chunk-limit.unoptimized",
                         "Villager profession '"+configuredProfession+"' not recognized. " +
                                 "Make sure you're using the correct profession enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
                 return null;
@@ -77,7 +76,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
             try {
                 return Villager.Profession.valueOf(configuredProfession);
             } catch (IllegalArgumentException e) {
-                LogUtil.moduleLog(Level.WARNING, "villager-chunk-limit.optimized",
+                LogUtil.moduleLog(Level.WARN, "villager-chunk-limit.optimized",
                         "Villager profession '"+configuredProfession+"' not recognized. " +
                                 "Make sure you're using the correct profession enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
                 return null;

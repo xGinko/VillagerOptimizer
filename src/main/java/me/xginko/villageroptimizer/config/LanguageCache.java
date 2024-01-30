@@ -27,7 +27,7 @@ public class LanguageCache {
         // Check if the lang folder has already been created
         File parent = langYML.getParentFile();
         if (!parent.exists() && !parent.mkdir())
-            VillagerOptimizer.getLog().severe("Failed to create lang directory.");
+            VillagerOptimizer.getLog().error("Failed to create lang directory.");
         // Check if the file already exists and save the one from the plugins resources folder if it does not
         if (!langYML.exists())
             plugin.saveResource("lang" + File.separator + locale + ".yml", false);
@@ -83,7 +83,7 @@ public class LanguageCache {
         try {
             this.lang.save();
         } catch (Exception e) {
-            VillagerOptimizer.getLog().severe("Failed to save language file: "+ langYML.getName() +" - " + e.getLocalizedMessage());
+            VillagerOptimizer.getLog().error("Failed to save language file: "+ langYML.getName() +" - " + e.getLocalizedMessage());
         }
     }
 
