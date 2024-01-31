@@ -80,7 +80,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         PlayerLeashEntityEvent leashEvent;
         try {
             leashEvent = new PlayerLeashEntityEvent(villager, player, player, event.getHand());
-        } catch (Exception e) {
+        } catch (Throwable versionException) {
             leashEvent = new PlayerLeashEntityEvent(villager, player, player);
         }
 
