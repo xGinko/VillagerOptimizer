@@ -54,6 +54,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         return VillagerOptimizer.getConfiguration().getBoolean("gameplay.villagers-can-be-leashed.enable", false);
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onLeash(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
@@ -80,7 +81,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         PlayerLeashEntityEvent leashEvent;
         try {
             leashEvent = new PlayerLeashEntityEvent(villager, player, player, event.getHand());
-        } catch (Throwable versionException) {
+        } catch (Throwable versionIncompatible) {
             leashEvent = new PlayerLeashEntityEvent(villager, player, player);
         }
 

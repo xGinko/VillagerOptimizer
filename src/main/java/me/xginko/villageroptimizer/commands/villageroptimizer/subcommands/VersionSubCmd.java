@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.commands.villageroptimizer.subcommands;
 
+import io.papermc.paper.plugin.configuration.PluginMeta;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.SubCommand;
 import me.xginko.villageroptimizer.enums.permissions.Commands;
@@ -28,26 +29,42 @@ public class VersionSubCmd extends SubCommand {
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "UnstableApiUsage"})
     public void perform(CommandSender sender, String[] args) {
-        if (sender.hasPermission(Commands.VERSION.get())) {
-            final PluginDescriptionFile pluginYML = VillagerOptimizer.getInstance().getDescription();
-            sender.sendMessage(
-                    Component.newline()
-                    .append(
-                            Component.text(pluginYML.getName()+" "+pluginYML.getVersion())
-                            .style(VillagerOptimizer.plugin_style)
-                            .clickEvent(ClickEvent.openUrl(pluginYML.getWebsite()))
-                    )
-                    .append(Component.text(" by ").color(NamedTextColor.GRAY))
-                    .append(
-                            Component.text(pluginYML.getAuthors().get(0))
-                            .color(NamedTextColor.WHITE)
-                            .clickEvent(ClickEvent.openUrl("https://github.com/xGinko"))
-                    )
-                    .append(Component.newline())
-            );
-        } else {
+        if (!sender.hasPermission(Commands.VERSION.get())) {
             sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
+            return;
         }
+
+        String name, version, website, author;
+
+        try {
+            final PluginMeta pluginMeta = VillagerOptimizer.getInstance().getPluginMeta();
+            name = pluginMeta.getName();
+            version = pluginMeta.getVersion();
+            website = pluginMeta.getWebsite();
+            author = pluginMeta.getAuthors().get(0);
+        } catch (Throwable versionIncompatible) {
+            final PluginDescriptionFile pluginYML = VillagerOptimizer.getInstance().getDescription();
+            name = pluginYML.getName();
+            version = pluginYML.getVersion();
+            website = pluginYML.getWebsite();
+            author = pluginYML.getAuthors().get(0);
+        }
+
+        sender.sendMessage(Component.newline()
+                .append(
+                        Component.text(name + " " + version)
+                                .style(VillagerOptimizer.plugin_style)
+                                .clickEvent(ClickEvent.openUrl(website))
+                )
+                .append(Component.text(" by ").color(NamedTextColor.GRAY))
+                .append(
+                        Component.text(author)
+                                .color(NamedTextColor.WHITE)
+                                .clickEvent(ClickEvent.openUrl("https://github.com/xGinko"))
+                )
+                .append(Component.newline())
+        );
     }
 }

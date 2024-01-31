@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressWarnings({"ALL", "EscapedSpace"})
 public class Config {
 
     private final @NotNull ConfigFile config;
@@ -52,7 +53,7 @@ public class Config {
         this.createTitledSection("Optimization", "optimization-methods");
         this.config.addDefault("optimization-methods.commands.unoptimizevillagers", null);
         this.config.addComment("optimization-methods.commands", """
-                If you want to disable commands, negate the following permissions:\s 
+                If you want to disable commands, negate the following permissions:\s
                 villageroptimizer.cmd.optimize\s
                 villageroptimizer.cmd.unoptimize
                 """);
