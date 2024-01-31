@@ -1,23 +1,33 @@
 package me.xginko.villageroptimizer.enums;
 
+import net.kyori.adventure.key.KeyPattern;
+import net.kyori.adventure.key.Namespaced;
+import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
+import org.intellij.lang.annotations.Subst;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
 public class Keyring {
 
-    public enum Namespaces {
+    public enum Spaces implements Namespaced {
         VillagerOptimizer("VillagerOptimizer"),
         AntiVillagerLag("AntiVillagerLag");
 
-        private final String pluginName;
-        Namespaces(String pluginName) {
-            this.pluginName = pluginName;
+        @KeyPattern.Namespace
+        private final @NotNull String namespace;
+
+        Spaces(@NotNull @KeyPattern.Namespace String pluginName) {
+            this.namespace = pluginName.toLowerCase(Locale.ROOT);
         }
-        public String pluginName() {
-            return pluginName;
+
+        @Override
+        @KeyPattern.Namespace
+        public @NotNull String namespace() {
+            return namespace;
         }
     }
 
@@ -27,33 +37,36 @@ public class Keyring {
      * meaning the Namespace is always the return of {@link Plugin#getName()} && {@link String#toLowerCase()}
      * using {@link Locale#ROOT}
      *
-     * @param pluginName The plugin name as configured in plugin.yml, section name
+     * @param pluginName The plugin name as configured in plugin.yml, under section name
      * @param key The key name
      *
      * @return a {@link NamespacedKey} that can be used to test for and read data stored by plugins
      * from a {@link PersistentDataContainer}
      */
-    public static NamespacedKey getKey(String pluginName, String key) {
+    public static NamespacedKey getKey(@NotNull String pluginName, @NotNull String key) {
         return new NamespacedKey(pluginName.toLowerCase(Locale.ROOT), key);
     }
 
-    public enum Own {
+    public enum VillagerOptimizer implements Keyed {
         OPTIMIZATION_TYPE("optimization-type"),
         LAST_OPTIMIZE("last-optimize"),
         LAST_LEVELUP("last-levelup"),
         LAST_RESTOCK("last-restock"),
         LAST_OPTIMIZE_NAME("last-optimize-name");
 
-        private final NamespacedKey key;
-        Own(String key) {
-            this.key = Keyring.getKey(Namespaces.VillagerOptimizer.pluginName(), key);
+        private final @NotNull NamespacedKey key;
+
+        VillagerOptimizer(@NotNull String key) {
+            this.key = new NamespacedKey(Spaces.VillagerOptimizer.namespace(), key);
         }
-        public NamespacedKey key() {
+
+        @Override
+        public @NotNull NamespacedKey getKey() {
             return key;
         }
     }
 
-    public enum AntiVillagerLag {
+    public enum AntiVillagerLag implements Keyed {
         NEXT_OPTIMIZATION_SYSTIME_SECONDS("cooldown"), // Returns LONG -> (System.currentTimeMillis() / 1000) + cooldown seconds
         LAST_RESTOCK_WORLDFULLTIME("time"), // Returns LONG -> villager.getWorld().getFullTime()
         NEXT_LEVELUP_SYSTIME_SECONDS("levelCooldown"), // Returns LONG -> (System.currentTimeMillis() / 1000) + cooldown seconds
@@ -61,11 +74,14 @@ public class Keyring {
         OPTIMIZED_BLOCK("disabledByBlock"), // Returns STRING -> key().toString()
         OPTIMIZED_WORKSTATION("disabledByWorkstation"); // Returns STRING -> key().toString()
 
-        private final NamespacedKey key;
-        AntiVillagerLag(String avlKey) {
-            this.key = Keyring.getKey(Namespaces.AntiVillagerLag.pluginName(), avlKey);
+        private final @NotNull NamespacedKey key;
+
+        AntiVillagerLag(@NotNull String avlKey) {
+            this.key = new NamespacedKey(Spaces.AntiVillagerLag.namespace(), avlKey);
         }
-        public NamespacedKey key() {
+
+        @Override
+        public @NotNull NamespacedKey getKey() {
             return key;
         }
     }

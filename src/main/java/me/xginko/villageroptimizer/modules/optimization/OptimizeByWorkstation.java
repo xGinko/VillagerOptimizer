@@ -1,11 +1,12 @@
 package me.xginko.villageroptimizer.modules.optimization;
 
+import io.papermc.paper.event.entity.EntityMoveEvent;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.enums.permissions.Bypass;
 import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.enums.permissions.Bypass;
 import me.xginko.villageroptimizer.enums.permissions.Optimize;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
@@ -13,7 +14,6 @@ import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -27,6 +27,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.concurrent.TimeUnit;
+
+import static me.xginko.villageroptimizer.utils.CommonUtil.getWorkstationProfession;
 
 public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener {
 
@@ -70,6 +72,15 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
     @Override
     public boolean shouldEnable() {
         return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.workstation-optimization.enable", false);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private void onVillagerMove(EntityMoveEvent event) {
+        if (!event.getEntity().getType().equals(EntityType.VILLAGER)) return;
+        Villager villager = (Villager) event.getEntity();
+        if (villager.getProfession().equals(Villager.Profession.NONE)) return;
+
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -188,24 +199,5 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         }
         if (log_enabled)
             VillagerOptimizer.getLog().info(player.getName() + " unoptimized a villager by breaking workstation: '" + broken.getType().toString().toLowerCase() + "'");
-    }
-
-    private Villager.Profession getWorkstationProfession(final Material workstation) {
-        return switch (workstation) {
-            case BARREL -> Villager.Profession.FISHERMAN;
-            case CARTOGRAPHY_TABLE -> Villager.Profession.CARTOGRAPHER;
-            case SMOKER -> Villager.Profession.BUTCHER;
-            case SMITHING_TABLE -> Villager.Profession.TOOLSMITH;
-            case GRINDSTONE -> Villager.Profession.WEAPONSMITH;
-            case BLAST_FURNACE -> Villager.Profession.ARMORER;
-            case CAULDRON -> Villager.Profession.LEATHERWORKER;
-            case BREWING_STAND -> Villager.Profession.CLERIC;
-            case COMPOSTER -> Villager.Profession.FARMER;
-            case FLETCHING_TABLE -> Villager.Profession.FLETCHER;
-            case LOOM -> Villager.Profession.SHEPHERD;
-            case LECTERN -> Villager.Profession.LIBRARIAN;
-            case STONECUTTER -> Villager.Profession.MASON;
-            default -> Villager.Profession.NONE;
-        };
     }
 }

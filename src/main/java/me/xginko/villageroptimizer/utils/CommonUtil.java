@@ -1,6 +1,7 @@
 package me.xginko.villageroptimizer.utils;
 
 import org.bukkit.Chunk;
+import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,5 +40,24 @@ public class CommonUtil {
         try {
             villager.shakeHead();
         } catch (NoSuchMethodError ignored) {}
+    }
+
+    public static Villager.Profession getWorkstationProfession(@NotNull Material workstation) {
+        return switch (workstation) {
+            case BARREL -> Villager.Profession.FISHERMAN;
+            case CARTOGRAPHY_TABLE -> Villager.Profession.CARTOGRAPHER;
+            case SMOKER -> Villager.Profession.BUTCHER;
+            case SMITHING_TABLE -> Villager.Profession.TOOLSMITH;
+            case GRINDSTONE -> Villager.Profession.WEAPONSMITH;
+            case BLAST_FURNACE -> Villager.Profession.ARMORER;
+            case CAULDRON -> Villager.Profession.LEATHERWORKER;
+            case BREWING_STAND -> Villager.Profession.CLERIC;
+            case COMPOSTER -> Villager.Profession.FARMER;
+            case FLETCHING_TABLE -> Villager.Profession.FLETCHER;
+            case LOOM -> Villager.Profession.SHEPHERD;
+            case LECTERN -> Villager.Profession.LIBRARIAN;
+            case STONECUTTER -> Villager.Profession.MASON;
+            default -> Villager.Profession.NONE;
+        };
     }
 }

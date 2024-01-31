@@ -22,7 +22,7 @@ public final class WrappedVillager {
     WrappedVillager(@NotNull Villager villager) {
         this.villager = villager;
         this.dataContainer = villager.getPersistentDataContainer();
-        this.parseOther = VillagerOptimizer.getConfiguration().support_other_plugins;
+        this.parseOther = me.xginko.villageroptimizer.VillagerOptimizer.getConfiguration().support_other_plugins;
     }
 
     /**
@@ -44,9 +44,9 @@ public final class WrappedVillager {
      */
     public boolean isOptimized() {
         if (!parseOther) {
-            return isOptimized(Keyring.Namespaces.VillagerOptimizer);
+            return isOptimized(Keyring.Spaces.VillagerOptimizer);
         }
-        for (Keyring.Namespaces pluginNamespaces : Keyring.Namespaces.values()) {
+        for (Keyring.Spaces pluginNamespaces : Keyring.Spaces.values()) {
             if (isOptimized(pluginNamespaces)) return true;
         }
         return false;
@@ -55,12 +55,12 @@ public final class WrappedVillager {
     /**
      * @return True if the villager is optimized by the supported plugin, otherwise false.
      */
-    public boolean isOptimized(Keyring.Namespaces namespaces) {
+    public boolean isOptimized(Keyring.Spaces namespaces) {
         return switch (namespaces) {
-            case VillagerOptimizer -> dataContainer.has(Keyring.Own.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING);
-            case AntiVillagerLag -> dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.key(), PersistentDataType.STRING)
-                    || dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.key(), PersistentDataType.STRING)
-                    || dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.key(), PersistentDataType.STRING);
+            case VillagerOptimizer -> dataContainer.has(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING);
+            case AntiVillagerLag -> dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey(), PersistentDataType.STRING)
+                    || dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey(), PersistentDataType.STRING)
+                    || dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey(), PersistentDataType.STRING);
         };
     }
 
@@ -71,8 +71,8 @@ public final class WrappedVillager {
     public boolean canOptimize(final long cooldown_millis) {
         if (parseOther) {
             if (
-                    dataContainer.has(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.key(), PersistentDataType.LONG)
-                    && System.currentTimeMillis() <= 1000 * dataContainer.get(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.key(), PersistentDataType.LONG)
+                    dataContainer.has(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)
+                    && System.currentTimeMillis() <= 1000 * dataContainer.get(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)
             ) {
                 return false;
             }
@@ -84,17 +84,17 @@ public final class WrappedVillager {
      * @param type OptimizationType the villager should be set to.
      */
     public void setOptimization(OptimizationType type) {
-        VillagerOptimizer.getFoliaLib().getImpl().runAtEntityTimer(villager, setOptimization -> {
+        me.xginko.villageroptimizer.VillagerOptimizer.getFoliaLib().getImpl().runAtEntityTimer(villager, setOptimization -> {
             // Keep repeating task until villager is no longer trading with a player
             if (villager.isTrading()) return;
 
             if (type.equals(OptimizationType.NONE) && isOptimized()) {
-                if (!parseOther || isOptimized(Keyring.Namespaces.VillagerOptimizer))
-                    dataContainer.remove(Keyring.Own.OPTIMIZATION_TYPE.key());
+                if (!parseOther || isOptimized(Keyring.Spaces.VillagerOptimizer))
+                    dataContainer.remove(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey());
                 villager.setAware(true);
                 villager.setAI(true); // Done for stability so villager is guaranteed to wake up
             } else {
-                dataContainer.set(Keyring.Own.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING, type.name());
+                dataContainer.set(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING, type.name());
                 villager.setAware(false);
             }
 
@@ -108,31 +108,31 @@ public final class WrappedVillager {
      */
     public @NotNull OptimizationType getOptimizationType() {
         if (!parseOther) {
-            return getOptimizationType(Keyring.Namespaces.VillagerOptimizer);
+            return getOptimizationType(Keyring.Spaces.VillagerOptimizer);
         }
-        OptimizationType optimizationType = getOptimizationType(Keyring.Namespaces.VillagerOptimizer);
+        OptimizationType optimizationType = getOptimizationType(Keyring.Spaces.VillagerOptimizer);
         if (optimizationType != OptimizationType.NONE) {
             return optimizationType;
         }
-        return getOptimizationType(Keyring.Namespaces.AntiVillagerLag);
+        return getOptimizationType(Keyring.Spaces.AntiVillagerLag);
     }
 
-    public @NotNull OptimizationType getOptimizationType(Keyring.Namespaces namespaces) {
+    public @NotNull OptimizationType getOptimizationType(Keyring.Spaces namespaces) {
         return switch (namespaces) {
             case VillagerOptimizer -> {
-                if (isOptimized(Keyring.Namespaces.VillagerOptimizer)) {
-                    yield OptimizationType.valueOf(dataContainer.get(Keyring.Own.OPTIMIZATION_TYPE.key(), PersistentDataType.STRING));
+                if (isOptimized(Keyring.Spaces.VillagerOptimizer)) {
+                    yield OptimizationType.valueOf(dataContainer.get(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING));
                 }
                 yield OptimizationType.NONE;
             }
             case AntiVillagerLag -> {
-                if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.key(), PersistentDataType.STRING)) {
+                if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey(), PersistentDataType.STRING)) {
                     yield OptimizationType.BLOCK;
                 }
-                if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.key(), PersistentDataType.STRING)) {
+                if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey(), PersistentDataType.STRING)) {
                     yield OptimizationType.WORKSTATION;
                 }
-                if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.key(), PersistentDataType.STRING)) {
+                if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey(), PersistentDataType.STRING)) {
                     yield OptimizationType.COMMAND; // Best we can do
                 }
                 yield OptimizationType.NONE;
@@ -144,15 +144,15 @@ public final class WrappedVillager {
      * Saves the system time in millis when the villager was last optimized.
      */
     public void saveOptimizeTime() {
-        dataContainer.set(Keyring.Own.LAST_OPTIMIZE.key(), PersistentDataType.LONG, System.currentTimeMillis());
+        dataContainer.set(Keyring.VillagerOptimizer.LAST_OPTIMIZE.getKey(), PersistentDataType.LONG, System.currentTimeMillis());
     }
 
     /**
      * @return The system time in millis when the villager was last optimized, 0L if the villager was never optimized.
      */
     public long getLastOptimize() {
-        if (dataContainer.has(Keyring.Own.LAST_OPTIMIZE.key(), PersistentDataType.LONG)) {
-            return dataContainer.get(Keyring.Own.LAST_OPTIMIZE.key(), PersistentDataType.LONG);
+        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_OPTIMIZE.getKey(), PersistentDataType.LONG)) {
+            return dataContainer.get(Keyring.VillagerOptimizer.LAST_OPTIMIZE.getKey(), PersistentDataType.LONG);
         }
         return 0L;
     }
@@ -169,15 +169,15 @@ public final class WrappedVillager {
         long remainingMillis = 0L;
 
         if (parseOther) {
-            if (dataContainer.has(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.key(), PersistentDataType.LONG)) {
-                remainingMillis = System.currentTimeMillis() - dataContainer.get(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.key(), PersistentDataType.LONG);
+            if (dataContainer.has(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)) {
+                remainingMillis = System.currentTimeMillis() - dataContainer.get(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG);
             }
         }
 
         if (remainingMillis > 0) return remainingMillis;
 
-        if (dataContainer.has(Keyring.Own.LAST_OPTIMIZE.key(), PersistentDataType.LONG)) {
-            return System.currentTimeMillis() - (dataContainer.get(Keyring.Own.LAST_OPTIMIZE.key(), PersistentDataType.LONG) + cooldown_millis);
+        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_OPTIMIZE.getKey(), PersistentDataType.LONG)) {
+            return System.currentTimeMillis() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_OPTIMIZE.getKey(), PersistentDataType.LONG) + cooldown_millis);
         }
 
         return cooldown_millis;
@@ -207,7 +207,7 @@ public final class WrappedVillager {
      * Saves the time of the in-game world when the entity was last restocked.
      */
     public void saveRestockTime() {
-        dataContainer.set(Keyring.Own.LAST_RESTOCK.key(), PersistentDataType.LONG, villager.getWorld().getFullTime());
+        dataContainer.set(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG, villager.getWorld().getFullTime());
     }
 
     /**
@@ -215,12 +215,12 @@ public final class WrappedVillager {
      */
     public long getLastRestock() {
         long lastRestock = 0L;
-        if (dataContainer.has(Keyring.Own.LAST_RESTOCK.key(), PersistentDataType.LONG)) {
-            lastRestock = dataContainer.get(Keyring.Own.LAST_RESTOCK.key(), PersistentDataType.LONG);
+        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG)) {
+            lastRestock = dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG);
         }
         if (parseOther) {
-            if (dataContainer.has(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.key(), PersistentDataType.LONG)) {
-                long lastAVLRestock = dataContainer.get(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.key(), PersistentDataType.LONG);
+            if (dataContainer.has(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG)) {
+                long lastAVLRestock = dataContainer.get(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG);
                 if (lastRestock < lastAVLRestock) {
                     lastRestock = lastAVLRestock;
                 }
@@ -230,7 +230,7 @@ public final class WrappedVillager {
     }
 
     public long getRestockCooldownMillis(final long cooldown_millis) {
-        return dataContainer.has(Keyring.Own.LAST_RESTOCK.key(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keyring.Own.LAST_RESTOCK.key(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
+        return dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
     }
 
     /**
@@ -256,8 +256,8 @@ public final class WrappedVillager {
         }
 
         if (parseOther) {
-            return !dataContainer.has(Keyring.AntiVillagerLag.NEXT_LEVELUP_SYSTIME_SECONDS.key(), PersistentDataType.LONG)
-                    || System.currentTimeMillis() > dataContainer.get(Keyring.AntiVillagerLag.NEXT_LEVELUP_SYSTIME_SECONDS.key(), PersistentDataType.LONG) * 1000;
+            return !dataContainer.has(Keyring.AntiVillagerLag.NEXT_LEVELUP_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)
+                    || System.currentTimeMillis() > dataContainer.get(Keyring.AntiVillagerLag.NEXT_LEVELUP_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG) * 1000;
         }
 
         return true;
@@ -267,7 +267,7 @@ public final class WrappedVillager {
      * Saves the time of the in-game world when the entity was last leveled up.
      */
     public void saveLastLevelUp() {
-        dataContainer.set(Keyring.Own.LAST_LEVELUP.key(), PersistentDataType.LONG, villager.getWorld().getFullTime());
+        dataContainer.set(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG, villager.getWorld().getFullTime());
     }
 
     /**
@@ -277,22 +277,22 @@ public final class WrappedVillager {
      * @return The time of the in-game world when the entity was last leveled up.
      */
     public long getLastLevelUpTime() {
-        return dataContainer.has(Keyring.Own.LAST_LEVELUP.key(), PersistentDataType.LONG) ? dataContainer.get(Keyring.Own.LAST_LEVELUP.key(), PersistentDataType.LONG) : 0L;
+        return dataContainer.has(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) ? dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) : 0L;
     }
 
     public long getLevelCooldownMillis(final long cooldown_millis) {
-        return dataContainer.has(Keyring.Own.LAST_LEVELUP.key(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keyring.Own.LAST_LEVELUP.key(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
+        return dataContainer.has(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
     }
 
     public void memorizeName(final Component customName) {
-        dataContainer.set(Keyring.Own.LAST_OPTIMIZE_NAME.key(), PersistentDataType.STRING, MiniMessage.miniMessage().serialize(customName));
+        dataContainer.set(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING, MiniMessage.miniMessage().serialize(customName));
     }
 
     public @Nullable Component getMemorizedName() {
-        return dataContainer.has(Keyring.Own.LAST_OPTIMIZE_NAME.key(), PersistentDataType.STRING) ? MiniMessage.miniMessage().deserialize(dataContainer.get(Keyring.Own.LAST_OPTIMIZE_NAME.key(), PersistentDataType.STRING)) : null;
+        return dataContainer.has(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING) ? MiniMessage.miniMessage().deserialize(dataContainer.get(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING)) : null;
     }
 
     public void forgetName() {
-        dataContainer.remove(Keyring.Own.LAST_OPTIMIZE_NAME.key());
+        dataContainer.remove(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey());
     }
 }
