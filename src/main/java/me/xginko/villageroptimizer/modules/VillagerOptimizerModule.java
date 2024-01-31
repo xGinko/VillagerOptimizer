@@ -1,6 +1,5 @@
 package me.xginko.villageroptimizer.modules;
 
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.modules.gameplay.*;
 import me.xginko.villageroptimizer.modules.optimization.OptimizeByBlock;
 import me.xginko.villageroptimizer.modules.optimization.OptimizeByNametag;
@@ -31,6 +30,7 @@ public interface VillagerOptimizerModule {
         modules.add(new PreventUnoptimizedTrading());
         modules.add(new PreventOptimizedTargeting());
         modules.add(new PreventOptimizedDamage());
+        modules.add(new EnableLeashingVillagers());
 
         modules.add(new VillagerChunkLimit());
 
