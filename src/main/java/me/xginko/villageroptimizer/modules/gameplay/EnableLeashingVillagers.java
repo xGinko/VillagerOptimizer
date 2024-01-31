@@ -24,13 +24,13 @@ import java.util.UUID;
 public class EnableLeashingVillagers implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
-    private final ExpiringSet<UUID> villagersGettingLeashed;
+    private final ExpiringSet<UUID> villagersThatShouldntOpenTradeView;
     private final boolean only_optimized;
 
     public EnableLeashingVillagers() {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
-        this.villagersGettingLeashed = new ExpiringSet<>(Duration.ofSeconds(1));
+        this.villagersThatShouldntOpenTradeView = new ExpiringSet<>(Duration.ofSeconds(1));
         Config config = VillagerOptimizer.getConfiguration();
         config.master().addComment("gameplay.villagers-can-be-leashed.enable", """
                 Enable leashing of villagers, enabling players to easily move villagers to where they want them to be.""");
@@ -62,7 +62,18 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         if (!player.getInventory().getItem(event.getHand()).getType().equals(Material.LEAD)) return;
 
         Villager villager = (Villager) event.getRightClicked();
-        if (villager.isLeashed()) return;
+
+        if (villager.isLeashed()) {
+            try {
+                // If player clicked villager when leashed, unleash.
+                if (villager.getLeashHolder().getUniqueId().equals(player.getUniqueId())) {
+                    villager.setLeashHolder(null);
+                    villagersThatShouldntOpenTradeView.add(villager.getUniqueId());
+                }
+            } catch (IllegalStateException ignored) {} // This shouldn't throw because we checked for isLeashed, but we shall catch it anyway.
+            return;
+        }
+
         if (only_optimized && !villagerCache.getOrAdd(villager).isOptimized()) return;
 
         // Call event for compatibility with plugins listening to leashing, constructing non deprecated if available.
@@ -78,7 +89,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         VillagerOptimizer.getFoliaLib().getImpl().runAtEntity(villager, leash -> {
             // Legitimate like this since values in PlayerLeashEntityEvent are final and can therefore never be changed by a plugin
             if (villager.setLeashHolder(player)) {
-                villagersGettingLeashed.add(villager.getUniqueId());
+                villagersThatShouldntOpenTradeView.add(villager.getUniqueId());
             }
         });
     }
@@ -88,7 +99,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         if (
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
                 && event.getInventory().getHolder() instanceof Villager villager
-                && villagersGettingLeashed.contains(villager.getUniqueId())
+                && villagersThatShouldntOpenTradeView.contains(villager.getUniqueId())
         ) {
             event.setCancelled(true);
         }
