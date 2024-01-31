@@ -6,7 +6,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Locale;
 
-public class Keys {
+public class KeyHolder {
     public enum Namespaces {
         VillagerOptimizer("VillagerOptimizer"),
         AntiVillagerLag("AntiVillagerLag");
@@ -46,7 +46,7 @@ public class Keys {
         private final NamespacedKey key;
 
         Own(String key) {
-            this.key = Keys.getKey(Namespaces.VillagerOptimizer.pluginName(), key);
+            this.key = KeyHolder.getKey(Namespaces.VillagerOptimizer.pluginName(), key);
         }
 
         public NamespacedKey key() {
@@ -65,7 +65,7 @@ public class Keys {
         private final NamespacedKey key;
 
         AntiVillagerLag(String avlKey) {
-            this.key = Keys.getKey(Namespaces.AntiVillagerLag.pluginName(), avlKey);
+            this.key = KeyHolder.getKey(Namespaces.AntiVillagerLag.pluginName(), avlKey);
         }
 
         public NamespacedKey key() {

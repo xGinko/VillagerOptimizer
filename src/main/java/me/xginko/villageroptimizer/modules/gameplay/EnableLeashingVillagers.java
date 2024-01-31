@@ -65,19 +65,23 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         Villager villager = (Villager) event.getRightClicked();
 
         if (villager.isLeashed()) {
+            // If player clicked leashed villager, unleash.
             try {
-                // If player clicked villager when leashed, unleash.
                 if (villager.getLeashHolder().getUniqueId().equals(player.getUniqueId())) {
                     villager.setLeashHolder(null);
                     villagersThatShouldntOpenTradeView.add(villager.getUniqueId());
                 }
-            } catch (IllegalStateException ignored) {} // This shouldn't throw because we checked for isLeashed, but we shall catch it anyway.
+            } catch (IllegalStateException ignored) {
+                // This shouldn't throw because we check LivingEntity#isLeashed(),
+                // but if for some reason it does, we catch it.
+            }
+            // Otherwise do not continue if already leashed
             return;
         }
 
         if (only_optimized && !villagerCache.getOrAdd(villager).isOptimized()) return;
 
-        // Call event for compatibility with plugins listening to leashing, constructing non deprecated if available.
+        // Call event for compatibility with other plugins, constructing non deprecated if available.
         PlayerLeashEntityEvent leashEvent;
         try {
             leashEvent = new PlayerLeashEntityEvent(villager, player, player, event.getHand());
@@ -85,10 +89,12 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
             leashEvent = new PlayerLeashEntityEvent(villager, player, player);
         }
 
+        // If canceled by any plugin, do nothing.
         if (!leashEvent.callEvent()) return;
 
         VillagerOptimizer.getFoliaLib().getImpl().runAtEntity(villager, leash -> {
-            // Legitimate like this since values in PlayerLeashEntityEvent are final and can therefore never be changed by a plugin
+            // Legitimate to not use entities from the event object since they are final in PlayerLeashEntityEvent
+            // and can therefore never be changed by a plugin.
             if (villager.setLeashHolder(player)) {
                 villagersThatShouldntOpenTradeView.add(villager.getUniqueId());
             }
