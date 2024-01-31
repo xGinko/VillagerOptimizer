@@ -6,7 +6,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Locale;
 
-public class KeyHolder {
+public class Keyring {
+
     public enum Namespaces {
         VillagerOptimizer("VillagerOptimizer"),
         AntiVillagerLag("AntiVillagerLag");
@@ -44,11 +45,9 @@ public class KeyHolder {
         LAST_OPTIMIZE_NAME("last-optimize-name");
 
         private final NamespacedKey key;
-
         Own(String key) {
-            this.key = KeyHolder.getKey(Namespaces.VillagerOptimizer.pluginName(), key);
+            this.key = Keyring.getKey(Namespaces.VillagerOptimizer.pluginName(), key);
         }
-
         public NamespacedKey key() {
             return key;
         }
@@ -63,11 +62,9 @@ public class KeyHolder {
         OPTIMIZED_WORKSTATION("disabledByWorkstation"); // Returns STRING -> key().toString()
 
         private final NamespacedKey key;
-
         AntiVillagerLag(String avlKey) {
-            this.key = KeyHolder.getKey(Namespaces.AntiVillagerLag.pluginName(), avlKey);
+            this.key = Keyring.getKey(Namespaces.AntiVillagerLag.pluginName(), avlKey);
         }
-
         public NamespacedKey key() {
             return key;
         }
