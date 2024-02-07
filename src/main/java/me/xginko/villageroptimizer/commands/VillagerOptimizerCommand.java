@@ -4,21 +4,17 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.optimizevillagers.OptVillagersRadius;
 import me.xginko.villageroptimizer.commands.unoptimizevillagers.UnOptVillagersRadius;
 import me.xginko.villageroptimizer.commands.villageroptimizer.VillagerOptimizerCmd;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
-import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.command.TabCompleter;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-public interface VillagerOptimizerCommand extends CommandExecutor {
+public interface VillagerOptimizerCommand extends CommandExecutor, TabCompleter {
 
     String label();
-    @Override
-    boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args);
 
     List<String> NO_TABCOMPLETES = Collections.emptyList();
     List<String> RADIUS_TABCOMPLETES = List.of("5", "10", "25", "50");

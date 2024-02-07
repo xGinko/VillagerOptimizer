@@ -23,6 +23,8 @@ public interface VillagerOptimizerModule {
         modules.add(new OptimizeByBlock());
         modules.add(new OptimizeByWorkstation());
 
+        modules.add(new EnableLeashingVillagers());
+        modules.add(new FixOptimisationAfterCure());
         modules.add(new RestockOptimizedTrades());
         modules.add(new LevelOptimizedProfession());
         modules.add(new RenameOptimizedVillagers());
@@ -30,7 +32,7 @@ public interface VillagerOptimizerModule {
         modules.add(new PreventUnoptimizedTrading());
         modules.add(new PreventOptimizedTargeting());
         modules.add(new PreventOptimizedDamage());
-        modules.add(new EnableLeashingVillagers());
+        modules.add(new UnoptimizeOnJobLoose());
 
         modules.add(new VillagerChunkLimit());
 

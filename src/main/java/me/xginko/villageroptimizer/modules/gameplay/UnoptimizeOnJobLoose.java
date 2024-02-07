@@ -1,0 +1,49 @@
+package me.xginko.villageroptimizer.modules.gameplay;
+
+import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.VillagerCareerChangeEvent;
+
+public class UnoptimizeOnJobLoose implements VillagerOptimizerModule, Listener {
+
+    private final VillagerCache villagerCache;
+
+    public UnoptimizeOnJobLoose() {
+        this.villagerCache = VillagerOptimizer.getCache();
+    }
+
+    @Override
+    public void enable() {
+        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    @Override
+    public void disable() {
+        HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    public boolean shouldEnable() {
+        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.unoptimize-on-job-loose.enable", true,
+                "Villagers that get their jobs reset will become unoptimized again. Highly recommended to leave on.");
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private void onJobReset(VillagerCareerChangeEvent event) {
+        if (!event.getReason().equals(VillagerCareerChangeEvent.ChangeReason.LOSING_JOB)) return;
+
+        WrappedVillager wrappedVillager = villagerCache.getOrAdd(event.getEntity());
+
+        if (wrappedVillager.isOptimized()) {
+            wrappedVillager.setOptimizationType(OptimizationType.NONE);
+        }
+    }
+}

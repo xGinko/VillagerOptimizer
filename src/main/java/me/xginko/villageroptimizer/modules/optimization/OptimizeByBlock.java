@@ -98,7 +98,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (!player.hasPermission(Optimize.BLOCK.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
-        final Location blockLoc = placed.getLocation();
+        final Location blockLoc = placed.getLocation().toCenterLocation();
         WrappedVillager closestOptimizableVillager = null;
         double closestDistance = Double.MAX_VALUE;
 
@@ -109,7 +109,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
 
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
-            final double distance = entity.getLocation().distance(blockLoc);
+            final double distance = entity.getLocation().distanceSquared(blockLoc);
 
             if (distance < closestDistance && wVillager.canOptimize(cooldown_millis)) {
                 closestOptimizableVillager = wVillager;
@@ -123,7 +123,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(closestOptimizableVillager, OptimizationType.BLOCK, player, event.isAsynchronous());
             if (!optimizeEvent.callEvent()) return;
 
-            closestOptimizableVillager.setOptimization(optimizeEvent.getOptimizationType());
+            closestOptimizableVillager.setOptimizationType(optimizeEvent.getOptimizationType());
             closestOptimizableVillager.saveOptimizeTime();
 
             if (notify_player) {
@@ -162,7 +162,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (!player.hasPermission(Optimize.BLOCK.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
-        final Location blockLoc = broken.getLocation();
+        final Location blockLoc = broken.getLocation().toCenterLocation();
         WrappedVillager closestOptimizedVillager = null;
         double closestDistance = Double.MAX_VALUE;
 
@@ -171,7 +171,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             Villager villager = (Villager) entity;
 
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
-            final double distance = entity.getLocation().distance(blockLoc);
+            final double distance = entity.getLocation().distanceSquared(blockLoc);
 
             if (distance < closestDistance && wVillager.isOptimized()) {
                 closestOptimizedVillager = wVillager;
@@ -184,7 +184,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(closestOptimizedVillager, player, OptimizationType.BLOCK, event.isAsynchronous());
         if (!unOptimizeEvent.callEvent()) return;
 
-        closestOptimizedVillager.setOptimization(OptimizationType.NONE);
+        closestOptimizedVillager.setOptimizationType(OptimizationType.NONE);
 
         if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()

@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
+import com.tcoded.folialib.impl.ServerImplementation;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
@@ -22,12 +23,14 @@ import java.util.concurrent.TimeUnit;
 
 public class LevelOptimizedProfession implements VillagerOptimizerModule, Listener {
 
+    private final ServerImplementation scheduler;
     private final VillagerCache villagerCache;
     private final boolean notify_player;
     private final long cooldown_millis;
 
     public LevelOptimizedProfession() {
         shouldEnable();
+        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.master().addComment("gameplay.level-optimized-profession", """
@@ -68,14 +71,15 @@ public class LevelOptimizedProfession implements VillagerOptimizerModule, Listen
 
             if (wVillager.canLevelUp(cooldown_millis)) {
                 if (wVillager.calculateLevel() > villager.getVillagerLevel()) {
-                    VillagerOptimizer.getFoliaLib().getImpl().runAtEntity(villager, enableAI -> {
+                    scheduler.runAtEntity(villager, enableAI -> {
                         villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 120, 120, false, false));
                         villager.setAware(true);
+
+                        scheduler.runAtEntityLater(villager, disableAI -> {
+                            villager.setAware(false);
+                            wVillager.saveLastLevelUp();
+                        }, 5, TimeUnit.SECONDS);
                     });
-                    VillagerOptimizer.getFoliaLib().getImpl().runAtEntityLater(villager, disableAI -> {
-                        villager.setAware(false);
-                        wVillager.saveLastLevelUp();
-                    }, 5, TimeUnit.SECONDS);
                 }
             } else {
                 if (notify_player) {

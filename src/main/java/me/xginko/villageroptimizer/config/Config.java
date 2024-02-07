@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
-@SuppressWarnings({"ALL", "EscapedSpace"})
 public class Config {
 
     private final @NotNull ConfigFile config;

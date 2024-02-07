@@ -11,12 +11,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerCommand {
+public class VillagerOptimizerCmd implements VillagerOptimizerCommand {
 
     private final List<SubCommand> subCommands;
     private final List<String> tabCompleter;
@@ -38,19 +37,19 @@ public class VillagerOptimizerCmd implements TabCompleter, VillagerOptimizerComm
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (args.length > 0) {
-            boolean cmdExists = false;
-            for (SubCommand subCommand : subCommands) {
-                if (args[0].equalsIgnoreCase(subCommand.getLabel())) {
-                    subCommand.perform(sender, args);
-                    cmdExists = true;
-                    break;
-                }
-            }
-            if (!cmdExists) sendCommandOverview(sender);
-        } else {
+        if (args.length == 0) {
             sendCommandOverview(sender);
+            return true;
         }
+
+        for (final SubCommand subCommand : subCommands) {
+            if (args[0].equalsIgnoreCase(subCommand.getLabel())) {
+                subCommand.perform(sender, args);
+                return true;
+            }
+        }
+
+        sendCommandOverview(sender);
         return true;
     }
 

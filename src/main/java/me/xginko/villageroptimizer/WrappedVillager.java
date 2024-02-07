@@ -83,7 +83,7 @@ public final class WrappedVillager {
     /**
      * @param type OptimizationType the villager should be set to.
      */
-    public void setOptimization(OptimizationType type) {
+    public void setOptimizationType(OptimizationType type) {
         me.xginko.villageroptimizer.VillagerOptimizer.getFoliaLib().getImpl().runAtEntityTimer(villager, setOptimization -> {
             // Keep repeating task until villager is no longer trading with a player
             if (villager.isTrading()) return;

@@ -4,8 +4,8 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
-import me.xginko.villageroptimizer.enums.permissions.Commands;
 import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.enums.permissions.Commands;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -13,7 +13,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -23,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabCompleter {
+public class UnOptVillagersRadius implements VillagerOptimizerCommand {
 
     private final int max_radius;
 
@@ -92,7 +91,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand, TabComple
                 if (wVillager.isOptimized()) {
                     VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager, player, OptimizationType.COMMAND);
                     if (unOptimizeEvent.callEvent()) {
-                        wVillager.setOptimization(OptimizationType.NONE);
+                        wVillager.setOptimizationType(OptimizationType.NONE);
                         successCount++;
                     }
                 }
