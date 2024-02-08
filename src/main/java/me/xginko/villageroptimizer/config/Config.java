@@ -59,11 +59,13 @@ public class Config {
         this.config.addDefault("optimization-methods.nametag-optimization.enable", true);
         this.createTitledSection("Villager Chunk Limit", "villager-chunk-limit");
         this.createTitledSection("Gameplay", "gameplay");
+        this.config.addDefault("gameplay.prevent-trading-with-unoptimized.enable", false);
         this.config.addDefault("gameplay.restock-optimized-trades", null);
         this.config.addDefault("gameplay.level-optimized-profession", null);
-        this.config.addDefault("gameplay.rename-optimized-villagers.enable", true);
+        this.config.addDefault("gameplay.unoptimize-on-job-loose.enable", true);
+        this.config.addDefault("gameplay.villagers-can-be-leashed.enable", true);
         this.config.addDefault("gameplay.villagers-spawn-as-adults.enable", false);
-        this.config.addDefault("gameplay.prevent-trading-with-unoptimized.enable", false);
+        this.config.addDefault("gameplay.rename-optimized-villagers.enable", false);
         this.config.addDefault("gameplay.prevent-entities-from-targeting-optimized.enable", true);
         this.config.addDefault("gameplay.prevent-damage-to-optimized.enable", true);
     }
