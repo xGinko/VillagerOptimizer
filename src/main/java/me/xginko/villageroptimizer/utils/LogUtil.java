@@ -7,7 +7,13 @@ import org.slf4j.event.Level;
 public class LogUtil {
 
     public static void moduleLog(Level logLevel, String path, String logMessage) {
-        VillagerOptimizer.getLog().atLevel(logLevel).log("(" + path + ") " + logMessage);
+        switch (logLevel) { // This is the safest way to do it while staying version compatible
+            case ERROR -> VillagerOptimizer.getLog().error("(" + path + ") " + logMessage);
+            case WARN -> VillagerOptimizer.getLog().warn("(" + path + ") " + logMessage);
+            case INFO -> VillagerOptimizer.getLog().info("(" + path + ") " + logMessage);
+            case DEBUG -> VillagerOptimizer.getLog().debug("(" + path + ") " + logMessage);
+            case TRACE -> VillagerOptimizer.getLog().trace("(" + path + ") " + logMessage);
+        }
     }
 
     public static void materialNotRecognized(String path, String material) {

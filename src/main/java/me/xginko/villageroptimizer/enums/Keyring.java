@@ -1,11 +1,11 @@
 package me.xginko.villageroptimizer.enums;
 
-import net.kyori.adventure.key.KeyPattern;
 import net.kyori.adventure.key.Namespaced;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
+import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
@@ -13,18 +13,19 @@ import java.util.Locale;
 public class Keyring {
 
     public enum Spaces implements Namespaced {
+
         VillagerOptimizer("VillagerOptimizer"),
         AntiVillagerLag("AntiVillagerLag");
 
-        @KeyPattern.Namespace
+        @Pattern("[a-z0-9_\\-.]+")
         private final @NotNull String namespace;
 
-        Spaces(@NotNull @KeyPattern.Namespace String pluginName) {
+        Spaces(@NotNull @Pattern("[a-z0-9_\\-.]+") String pluginName) {
             this.namespace = pluginName.toLowerCase(Locale.ROOT);
         }
 
         @Override
-        @KeyPattern.Namespace
+        @Pattern("[a-z0-9_\\-.]+")
         public @NotNull String namespace() {
             return namespace;
         }
@@ -42,11 +43,13 @@ public class Keyring {
      * @return a {@link NamespacedKey} that can be used to test for and read data stored by plugins
      * from a {@link PersistentDataContainer}
      */
+    @SuppressWarnings("deprecation")
     public static NamespacedKey getKey(@NotNull String pluginName, @NotNull String key) {
         return new NamespacedKey(pluginName.toLowerCase(Locale.ROOT), key);
     }
 
     public enum VillagerOptimizer implements Keyed {
+
         OPTIMIZATION_TYPE("optimization-type"),
         LAST_OPTIMIZE("last-optimize"),
         LAST_LEVELUP("last-levelup"),
@@ -55,6 +58,7 @@ public class Keyring {
 
         private final @NotNull NamespacedKey key;
 
+        @SuppressWarnings("deprecation")
         VillagerOptimizer(@NotNull String key) {
             this.key = new NamespacedKey(Spaces.VillagerOptimizer.namespace(), key);
         }
@@ -66,6 +70,7 @@ public class Keyring {
     }
 
     public enum AntiVillagerLag implements Keyed {
+
         NEXT_OPTIMIZATION_SYSTIME_SECONDS("cooldown"), // Returns LONG -> (System.currentTimeMillis() / 1000) + cooldown seconds
         LAST_RESTOCK_WORLDFULLTIME("time"), // Returns LONG -> villager.getWorld().getFullTime()
         NEXT_LEVELUP_SYSTIME_SECONDS("levelCooldown"), // Returns LONG -> (System.currentTimeMillis() / 1000) + cooldown seconds
@@ -75,6 +80,7 @@ public class Keyring {
 
         private final @NotNull NamespacedKey key;
 
+        @SuppressWarnings("deprecation")
         AntiVillagerLag(@NotNull String avlKey) {
             this.key = new NamespacedKey(Spaces.AntiVillagerLag.namespace(), avlKey);
         }

@@ -15,6 +15,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class EnableLeashingVillagers implements VillagerOptimizerModule, Listener {
 
@@ -54,7 +55,8 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
     private void onLeash(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
         final Player player = event.getPlayer();
-        if (!player.getInventory().getItem(event.getHand()).getType().equals(Material.LEAD)) return;
+        final ItemStack handItem = player.getInventory().getItem(event.getHand());
+        if (handItem == null || !handItem.getType().equals(Material.LEAD)) return;
 
         event.setCancelled(true); // Cancel the event, so we don't interact with the villager
         Villager villager = (Villager) event.getRightClicked();

@@ -1,7 +1,6 @@
 package me.xginko.villageroptimizer;
 
 import com.tcoded.folialib.FoliaLib;
-import com.tcoded.folialib.impl.ServerImplementation;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
@@ -20,7 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +42,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        logger = getComponentLogger();
+        logger = ComponentLogger.logger();
         foliaLib = new FoliaLib(this);
 
         logger.info(Component.text("╭────────────────────────────────────────────────────────────╮").style(plugin_style));
