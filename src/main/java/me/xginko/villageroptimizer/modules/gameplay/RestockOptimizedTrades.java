@@ -7,7 +7,9 @@ import me.xginko.villageroptimizer.enums.permissions.Bypass;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
+import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -73,8 +75,12 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
                         .build();
                 VillagerOptimizer.getLang(player.locale()).trades_restocked.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
             }
-            if (log_enabled)
-                VillagerOptimizer.getLog().info("Restocked optimized villager at "+ wVillager.villager().getLocation());
+            if (log_enabled) {
+                final Location location = wVillager.villager().getLocation();
+                VillagerOptimizer.getLog().info(Component.text("Restocked optimized villager at " +
+                        "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                        " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+            }
         }
     }
 }

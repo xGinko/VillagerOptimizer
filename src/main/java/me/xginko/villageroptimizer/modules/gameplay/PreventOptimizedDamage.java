@@ -5,7 +5,6 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.LogUtil;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -43,7 +42,9 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
             try {
                 return EntityDamageEvent.DamageCause.valueOf(configuredDamageCause);
             } catch (IllegalArgumentException e) {
-                LogUtil.damageCauseNotRecognized("prevent-damage-to-optimized", configuredDamageCause);
+                VillagerOptimizer.getLog().warn("(prevent-damage-to-optimized) DamageCause '"+configuredDamageCause +
+                        "' not recognized. Please use correct DamageCause enums from: " +
+                        "https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html");
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));

@@ -14,6 +14,7 @@ import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -107,8 +108,13 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
                 if (notify_player)
                     VillagerOptimizer.getLang(player.locale()).nametag_optimize_success.forEach(player::sendMessage);
-                if (log_enabled)
-                    VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using nametag: '" + name + "'");
+                if (log_enabled) {
+                    final Location location = wVillager.villager().getLocation();
+                    VillagerOptimizer.getLog().info(Component.text(player.getName() +
+                            " optimized villager by nametag '" + name + "' at " +
+                            "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                            " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                }
             } else {
                 event.setCancelled(true);
                 CommonUtil.shakeHead(villager);
@@ -129,8 +135,13 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
                 if (notify_player)
                     VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
-                if (log_enabled)
-                    VillagerOptimizer.getLog().info(event.getPlayer().getName() + " disabled optimizations for a villager using nametag: '" + name + "'");
+                if (log_enabled) {
+                    final Location location = wVillager.villager().getLocation();
+                    VillagerOptimizer.getLog().info(Component.text(player.getName() +
+                            " unoptimized villager by nametag '" + name + "' at " +
+                            "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                            " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                }
             }
         }
     }

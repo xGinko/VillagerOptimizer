@@ -5,6 +5,8 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -21,7 +23,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
     private final ServerImplementation scheduler;
     private final VillagerCache villagerCache;
-    private final boolean only_optimized;
+    private final boolean only_optimized, log_enabled;
 
     public EnableLeashingVillagers() {
         shouldEnable();
@@ -32,6 +34,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
                 Enable leashing of villagers, enabling players to easily move villagers to where they want them to be.""");
         this.only_optimized = config.getBoolean("gameplay.villagers-can-be-leashed.only-optimized", false,
                 "If set to true, only optimized villagers can be leashed.");
+        this.log_enabled = config.getBoolean("gameplay.villagers-can-be-leashed.log", false);
     }
 
     @Override
@@ -64,8 +67,16 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         if (villager.isLeashed()) {
             // If leash holder clicked leashed villager, unleash.
             try {
-                if (villager.getLeashHolder().getUniqueId().equals(player.getUniqueId()))
-                    villager.setLeashHolder(null);
+                if (
+                        villager.getLeashHolder().getUniqueId().equals(player.getUniqueId())
+                        && villager.setLeashHolder(null)
+                        && log_enabled
+                ) {
+                    final Location location = villager.getLocation();
+                    VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
+                            "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                            " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                }
             } catch (IllegalStateException ignored) {} // Shouldn't throw because we checked LivingEntity#isLeashed()
             // Otherwise do nothing. There should only ever be one leash holder
             return;
@@ -86,5 +97,12 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
         // Legitimate to not use entities from the event object since they are final in PlayerLeashEntityEvent
         scheduler.runAtEntity(villager, leash -> villager.setLeashHolder(player));
+
+        if (log_enabled) {
+            final Location location = villager.getLocation();
+            VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
+                    "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                    " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+        }
     }
 }

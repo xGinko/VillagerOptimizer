@@ -6,8 +6,9 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.utils.CommonUtil;
-import me.xginko.villageroptimizer.utils.LogUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -20,9 +21,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.event.Level;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
@@ -61,9 +64,9 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
             try {
                 return Villager.Profession.valueOf(configuredProfession);
             } catch (IllegalArgumentException e) {
-                LogUtil.moduleLog(Level.WARN, "villager-chunk-limit.unoptimized",
-                        "Villager profession '"+configuredProfession+"' not recognized. " +
-                                "Make sure you're using the correct profession enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
+                VillagerOptimizer.getLog().warn("(villager-chunk-limit.unoptimized) Villager profession '"+configuredProfession +
+                        "' not recognized. Make sure you're using the correct profession enums from " +
+                        "https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
                 return null;
             }
         }).filter(Objects::nonNull).toList();
@@ -76,9 +79,9 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
             try {
                 return Villager.Profession.valueOf(configuredProfession);
             } catch (IllegalArgumentException e) {
-                LogUtil.moduleLog(Level.WARN, "villager-chunk-limit.optimized",
-                        "Villager profession '"+configuredProfession+"' not recognized. " +
-                                "Make sure you're using the correct profession enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
+                VillagerOptimizer.getLog().warn("(villager-chunk-limit.optimized) Villager profession '"+configuredProfession +
+                        "' not recognized. Make sure you're using the correct profession enums from " +
+                        "https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
                 return null;
             }
         }).filter(Objects::nonNull).toList();
@@ -154,9 +157,13 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 Villager villager = not_optimized_villagers.get(i);
                 scheduler.runAtEntity(villager, kill -> {
                     villager.remove();
-                    if (log_enabled) LogUtil.moduleLog(Level.INFO, "villager-chunk-limit",
-                            "Removed unoptimized villager of profession type '" + villager.getProfession().name()
-                                    + "' at " + villager.getLocation());
+                    if (log_enabled) {
+                        final Location location = villager.getLocation();
+                        VillagerOptimizer.getLog().info(Component.text(
+                                "Removed unoptimized villager with profession '" + villager.getProfession().name() + "' at " +
+                                        "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                                        " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                    }
                 });
             }
         }
@@ -174,9 +181,14 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 Villager villager = optimized_villagers.get(i);
                 scheduler.runAtEntity(villager, kill -> {
                     villager.remove();
-                    if (log_enabled) LogUtil.moduleLog(Level.INFO, "villager-chunk-limit",
-                            "Removed optimized villager of profession type '" + villager.getProfession().name()
-                                    + "' at " + villager.getLocation());
+
+                    if (log_enabled) {
+                        final Location location = villager.getLocation();
+                        VillagerOptimizer.getLog().info(Component.text(
+                                "Removed optimized villager with profession '" + villager.getProfession().name() + "' at " +
+                                "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                                " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                    }
                 });
             }
         }

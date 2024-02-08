@@ -15,6 +15,7 @@ import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -159,8 +160,13 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 ));
             }
 
-            if (log_enabled) VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using workstation: '" +
-                    placed.getType().toString().toLowerCase() + "'");
+            if (log_enabled) {
+                final Location location = finalToOptimize.villager().getLocation();
+                VillagerOptimizer.getLog().info(Component.text(player.getName() +
+                        " optimized villager by workstation (" + placed.getType().toString().toLowerCase() + ") at " +
+                        "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                        " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+            }
         }, toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis, TimeUnit.MILLISECONDS));
     }
 
@@ -216,7 +222,13 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                     .replaceText(brokenWorkstation)
             ));
         }
-        if (log_enabled)
-            VillagerOptimizer.getLog().info(player.getName() + " unoptimized a villager by breaking workstation: '" + broken.getType().toString().toLowerCase() + "'");
+
+        if (log_enabled) {
+            final Location location = closestOptimizedVillager.villager().getLocation();
+            VillagerOptimizer.getLog().info(Component.text(player.getName() +
+                    " unoptimized villager by workstation (" + broken.getType().toString().toLowerCase() + ") at " +
+                    "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                    " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+        }
     }
 }

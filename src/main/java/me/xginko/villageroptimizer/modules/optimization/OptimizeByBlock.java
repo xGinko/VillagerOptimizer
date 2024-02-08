@@ -11,7 +11,7 @@ import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
-import me.xginko.villageroptimizer.utils.LogUtil;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -56,7 +56,9 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             try {
                 return Material.valueOf(configuredMaterial);
             } catch (IllegalArgumentException e) {
-                LogUtil.materialNotRecognized("block-optimization", configuredMaterial);
+                VillagerOptimizer.getLog().warn("(block-optimization) Material '"+configuredMaterial +
+                        "' not recognized. Please use correct Material enums from: " +
+                        "https://jd.papermc.io/paper/1.20/org/bukkit/Material.html");
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));
@@ -140,8 +142,12 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                         .replaceText(placedMaterial)
                 ));
             }
-            if (log_enabled)
-                VillagerOptimizer.getLog().info("Villager was optimized by block at "+closestOptimizableVillager.villager().getLocation());
+            if (log_enabled) {
+                final Location location = closestOptimizableVillager.villager().getLocation();
+                VillagerOptimizer.getLog().info(Component.text(player.getName() + " optimized villager by block at " +
+                        "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                        " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+            }
         } else {
             CommonUtil.shakeHead(closestOptimizableVillager.villager());
             if (notify_player) {
@@ -200,7 +206,11 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                     .replaceText(brokenMaterial)
             ));
         }
-        if (log_enabled)
-            VillagerOptimizer.getLog().info("Villager unoptimized because nearby optimization block broken at: "+closestOptimizedVillager.villager().getLocation());
+        if (log_enabled) {
+            final Location location = closestOptimizedVillager.villager().getLocation();
+            VillagerOptimizer.getLog().info(Component.text(player.getName() + " unoptimized villager by block at " +
+                    "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                    " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+        }
     }
 }
