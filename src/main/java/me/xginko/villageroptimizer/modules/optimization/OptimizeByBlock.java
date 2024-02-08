@@ -211,8 +211,8 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (log_enabled) {
             final Location location = closestOptimizedVillager.villager().getLocation();
             VillagerOptimizer.getLog().info(Component.text(player.getName() + " unoptimized villager by block at " +
-                    "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                    " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                    "x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ() +
+                    ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
         }
     }
 }

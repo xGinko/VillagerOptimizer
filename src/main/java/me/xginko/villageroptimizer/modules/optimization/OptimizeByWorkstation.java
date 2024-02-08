@@ -164,8 +164,8 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 final Location location = finalToOptimize.villager().getLocation();
                 VillagerOptimizer.getLog().info(Component.text(player.getName() +
                         " optimized villager by workstation (" + placed.getType().toString().toLowerCase() + ") at " +
-                        "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                        " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                        "x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ() +
+                        ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
             }
         }, toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis, TimeUnit.MILLISECONDS));
     }
@@ -227,8 +227,8 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
             final Location location = closestOptimizedVillager.villager().getLocation();
             VillagerOptimizer.getLog().info(Component.text(player.getName() +
                     " unoptimized villager by workstation (" + broken.getType().toString().toLowerCase() + ") at " +
-                    "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                    " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                    "x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ() +
+                    ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
         }
     }
 }

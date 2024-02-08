@@ -114,8 +114,8 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                     final Location location = wVillager.villager().getLocation();
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
                             " optimized villager by nametag '" + name + "' at " +
-                            "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                            " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                            "x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ() +
+                            ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
                 }
             } else {
                 event.setCancelled(true);
@@ -144,7 +144,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
                             " unoptimized villager by nametag '" + name + "' at " +
                             "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                            " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                            ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
                 }
             }
         }
