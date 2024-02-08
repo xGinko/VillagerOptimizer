@@ -63,25 +63,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
         event.setCancelled(true); // Cancel the event, so we don't interact with the villager
         Villager villager = (Villager) event.getRightClicked();
-
-        if (villager.isLeashed()) {
-            // If leash holder clicked leashed villager, unleash.
-            try {
-                if (
-                        villager.getLeashHolder().getUniqueId().equals(player.getUniqueId())
-                        && villager.setLeashHolder(null)
-                        && log_enabled
-                ) {
-                    final Location location = villager.getLocation();
-                    VillagerOptimizer.getLog().info(Component.text(player.getName() + " un-leashed a villager at " +
-                            "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                            " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
-                }
-            } catch (IllegalStateException ignored) {} // Shouldn't throw because we checked LivingEntity#isLeashed()
-            // Otherwise do nothing. There should only ever be one leash holder
-            return;
-        }
-
+        if (villager.isLeashed()) return;
         if (only_optimized && !villagerCache.getOrAdd(villager).isOptimized()) return;
 
         // Call event for compatibility with other plugins, constructing non deprecated if available
@@ -95,14 +77,17 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         // If canceled by any plugin, do nothing
         if (!leashEvent.callEvent()) return;
 
-        // Legitimate to not use entities from the event object since they are final in PlayerLeashEntityEvent
-        scheduler.runAtEntity(villager, leash -> villager.setLeashHolder(player));
-
-        if (log_enabled) {
-            final Location location = villager.getLocation();
-            VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
-                    "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                    " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
-        }
+        scheduler.runAtEntity(villager, leash -> {
+            // Legitimate to not use entities from the event object since they are final in PlayerLeashEntityEvent
+            if (villager.setLeashHolder(player)) {
+                handItem.subtract(1);
+                if (log_enabled) {
+                    final Location location = villager.getLocation();
+                    VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
+                            "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
+                            " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                }
+            }
+        });
     }
 }
