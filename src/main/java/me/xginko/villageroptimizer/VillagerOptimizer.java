@@ -42,7 +42,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        logger = ComponentLogger.logger();
+        logger = ComponentLogger.logger(this.getName());
         foliaLib = new FoliaLib(this);
 
         logger.info(Component.text("╭────────────────────────────────────────────────────────────╮").style(plugin_style));
