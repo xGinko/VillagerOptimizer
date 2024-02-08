@@ -47,7 +47,7 @@ public class RenameOptimizedVillagers implements VillagerOptimizerModule, Listen
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.rename-optimized-villagers.enable", true);
+        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.rename-optimized-villagers.enable", false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
