@@ -60,9 +60,4 @@ public class CommonUtil {
             default -> Villager.Profession.NONE;
         };
     }
-
-    public static boolean canLooseProfession(@NotNull Villager villager) {
-        // A villager with a level of 1 and no trading experience is liable to lose its profession.
-        return villager.getVillagerLevel() <= 1 && villager.getVillagerExperience() <= 0;
-    }
 }

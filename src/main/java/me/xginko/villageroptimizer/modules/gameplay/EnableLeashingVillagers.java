@@ -4,7 +4,7 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.ExpiringSet;
+import me.xginko.villageroptimizer.models.ExpiringSet;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -58,24 +58,23 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onLeash(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
-
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (!player.getInventory().getItem(event.getHand()).getType().equals(Material.LEAD)) return;
 
         Villager villager = (Villager) event.getRightClicked();
 
         if (villager.isLeashed()) {
-            // If player clicked leashed villager, unleash.
+            // If leash holder clicked leashed villager, unleash.
             try {
                 if (villager.getLeashHolder().getUniqueId().equals(player.getUniqueId())) {
                     villager.setLeashHolder(null);
                     villagersThatShouldntOpenTradeView.add(villager.getUniqueId());
                 }
             } catch (IllegalStateException ignored) {
-                // This shouldn't throw because we check LivingEntity#isLeashed(),
-                // but if for some reason it does, we catch it.
+                // This shouldn't throw because we check LivingEntity#isLeashed(), but if for some reason it does, we catch it.
             }
-            // Otherwise do not continue if already leashed
+
+            // Otherwise do nothing. There should only ever be one leash holder.
             return;
         }
 

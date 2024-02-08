@@ -5,11 +5,11 @@ import org.bukkit.permissions.PermissionDefault;
 
 public enum Commands {
     VERSION(new Permission("villageroptimizer.cmd.version",
-            "Permission get the plugin version", PermissionDefault.FALSE)),
+            "Permission get the plugin version", PermissionDefault.OP)),
     RELOAD(new Permission("villageroptimizer.cmd.reload",
-            "Permission to reload the plugin config", PermissionDefault.FALSE)),
+            "Permission to reload the plugin config", PermissionDefault.OP)),
     DISABLE(new Permission("villageroptimizer.cmd.disable",
-            "Permission to disable the plugin", PermissionDefault.FALSE)),
+            "Permission to disable the plugin", PermissionDefault.OP)),
     OPTIMIZE_RADIUS(new Permission("villageroptimizer.cmd.optimize",
             "Permission to optimize villagers in a radius", PermissionDefault.TRUE)),
     UNOPTIMIZE_RADIUS(new Permission("villageroptimizer.cmd.unoptimize",

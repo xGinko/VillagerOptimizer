@@ -33,7 +33,7 @@ public class UnoptimizeOnJobLoose implements VillagerOptimizerModule, Listener {
     @Override
     public boolean shouldEnable() {
         return VillagerOptimizer.getConfiguration().getBoolean("gameplay.unoptimize-on-job-loose.enable", true,
-                "Villagers that get their jobs reset will become unoptimized again. Highly recommended to leave on.");
+                "Villagers that get their jobs reset will become unoptimized again.");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

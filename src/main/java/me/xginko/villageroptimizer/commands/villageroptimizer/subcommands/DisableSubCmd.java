@@ -28,15 +28,16 @@ public class DisableSubCmd extends SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        if (sender.hasPermission(Commands.DISABLE.get())) {
-            sender.sendMessage(Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
-            VillagerOptimizerModule.modules.forEach(VillagerOptimizerModule::disable);
-            VillagerOptimizerModule.modules.clear();
-            VillagerOptimizer.getCache().cacheMap().clear();
-            sender.sendMessage(Component.text("Disabled all plugin listeners and tasks.").color(NamedTextColor.GREEN));
-            sender.sendMessage(Component.text("You can enable the plugin again using the reload command.").color(NamedTextColor.YELLOW));
-        } else {
+        if (!sender.hasPermission(Commands.DISABLE.get())) {
             sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
+            return;
         }
+
+        sender.sendMessage(Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
+        VillagerOptimizerModule.modules.forEach(VillagerOptimizerModule::disable);
+        VillagerOptimizerModule.modules.clear();
+        VillagerOptimizer.getCache().cacheMap().clear();
+        sender.sendMessage(Component.text("Disabled all plugin listeners and tasks.").color(NamedTextColor.GREEN));
+        sender.sendMessage(Component.text("You can enable the plugin again using the reload command.").color(NamedTextColor.YELLOW));
     }
 }

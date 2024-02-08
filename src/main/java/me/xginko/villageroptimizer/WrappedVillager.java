@@ -4,7 +4,9 @@ import me.xginko.villageroptimizer.enums.Keyring;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Location;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -13,16 +15,18 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("ALL")
 public final class WrappedVillager {
 
     private final @NotNull Villager villager;
     private final @NotNull PersistentDataContainer dataContainer;
+    private @Nullable CachedJobSite cachedJobSite;
     private final boolean parseOther;
 
     WrappedVillager(@NotNull Villager villager) {
         this.villager = villager;
         this.dataContainer = villager.getPersistentDataContainer();
-        this.parseOther = me.xginko.villageroptimizer.VillagerOptimizer.getConfiguration().support_other_plugins;
+        this.parseOther = VillagerOptimizer.getConfiguration().support_other_plugins;
     }
 
     /**
@@ -83,19 +87,31 @@ public final class WrappedVillager {
     /**
      * @param type OptimizationType the villager should be set to.
      */
-    public void setOptimizationType(OptimizationType type) {
-        me.xginko.villageroptimizer.VillagerOptimizer.getFoliaLib().getImpl().runAtEntityTimer(villager, setOptimization -> {
+    public void setOptimizationType(final OptimizationType type) {
+        VillagerOptimizer.getFoliaLib().getImpl().runAtEntityTimer(villager, setOptimization -> {
             // Keep repeating task until villager is no longer trading with a player
             if (villager.isTrading()) return;
 
-            if (type.equals(OptimizationType.NONE) && isOptimized()) {
-                if (!parseOther || isOptimized(Keyring.Spaces.VillagerOptimizer))
-                    dataContainer.remove(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey());
-                villager.setAware(true);
-                villager.setAI(true); // Done for stability so villager is guaranteed to wake up
-            } else {
-                dataContainer.set(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING, type.name());
-                villager.setAware(false);
+            switch (type) {
+                case NAMETAG, COMMAND, BLOCK, WORKSTATION -> {
+                    dataContainer.set(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING, type.name());
+                    villager.setAware(false);
+                }
+                case NONE -> {
+                    if (isOptimized(Keyring.Spaces.VillagerOptimizer)) {
+                        dataContainer.remove(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey());
+                    }
+                    if (parseOther) {
+                        if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey(), PersistentDataType.STRING))
+                            dataContainer.remove(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey());
+                        if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey(), PersistentDataType.STRING))
+                            dataContainer.remove(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey());
+                        if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey(), PersistentDataType.STRING))
+                            dataContainer.remove(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey());
+                    }
+                    villager.setAware(true);
+                    villager.setAI(true);
+                }
             }
 
             // End repeating task once logic is finished
@@ -230,7 +246,9 @@ public final class WrappedVillager {
     }
 
     public long getRestockCooldownMillis(final long cooldown_millis) {
-        return dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
+        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG))
+            return villager.getWorld().getFullTime() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG) + cooldown_millis);
+        return cooldown_millis;
     }
 
     /**
@@ -277,11 +295,15 @@ public final class WrappedVillager {
      * @return The time of the in-game world when the entity was last leveled up.
      */
     public long getLastLevelUpTime() {
-        return dataContainer.has(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) ? dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) : 0L;
+        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG))
+            return dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG);
+        return 0L;
     }
 
     public long getLevelCooldownMillis(final long cooldown_millis) {
-        return dataContainer.has(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) ? (villager.getWorld().getFullTime() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) + cooldown_millis)) : cooldown_millis;
+        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG))
+            return villager.getWorld().getFullTime() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) + cooldown_millis);
+        return cooldown_millis;
     }
 
     public void memorizeName(final Component customName) {
@@ -289,10 +311,40 @@ public final class WrappedVillager {
     }
 
     public @Nullable Component getMemorizedName() {
-        return dataContainer.has(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING) ? MiniMessage.miniMessage().deserialize(dataContainer.get(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING)) : null;
+        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING))
+            return MiniMessage.miniMessage().deserialize(dataContainer.get(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING));
+        return null;
     }
 
     public void forgetName() {
         dataContainer.remove(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey());
+    }
+
+    private static class CachedJobSite {
+        private @Nullable Location jobSite;
+        private long lastRefresh;
+        private CachedJobSite(Villager villager) {
+            this.jobSite = villager.getMemory(MemoryKey.JOB_SITE);
+            this.lastRefresh = System.currentTimeMillis();
+        }
+        private @Nullable Location getJobSite(Villager villager) {
+            final long now = System.currentTimeMillis();
+            if (now - lastRefresh > 1000L) {
+                this.jobSite = villager.getMemory(MemoryKey.JOB_SITE);
+                this.lastRefresh = now;
+            }
+            return jobSite;
+        }
+    }
+
+    public @Nullable Location getJobSite() {
+        if (cachedJobSite == null)
+            cachedJobSite = new CachedJobSite(villager);
+        return cachedJobSite.getJobSite(villager);
+    }
+
+    public boolean canLooseProfession() {
+        // A villager with a level of 1 and no trading experience is liable to lose its profession.
+        return villager.getVillagerLevel() <= 1 && villager.getVillagerExperience() <= 0;
     }
 }

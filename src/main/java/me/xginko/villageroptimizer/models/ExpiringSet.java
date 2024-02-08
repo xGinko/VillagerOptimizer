@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.utils;
+package me.xginko.villageroptimizer.models;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;

@@ -27,14 +27,15 @@ public class ReloadSubCmd extends SubCommand {
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        if (sender.hasPermission(Commands.RELOAD.get())) {
-            sender.sendMessage(Component.text("Reloading VillagerOptimizer...").color(NamedTextColor.WHITE));
-            VillagerOptimizer.getFoliaLib().getImpl().runNextTick(reload -> { // Reload in sync with the server
-                VillagerOptimizer.getInstance().reloadPlugin();
-                sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.GREEN));
-            });
-        } else {
+        if (!sender.hasPermission(Commands.RELOAD.get())) {
             sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
+            return;
         }
+
+        sender.sendMessage(Component.text("Reloading VillagerOptimizer...").color(NamedTextColor.WHITE));
+        VillagerOptimizer.getFoliaLib().getImpl().runNextTick(reload -> { // Reload in sync with the server
+            VillagerOptimizer.getInstance().reloadPlugin();
+            sender.sendMessage(Component.text("Reload complete.").color(NamedTextColor.GREEN));
+        });
     }
 }

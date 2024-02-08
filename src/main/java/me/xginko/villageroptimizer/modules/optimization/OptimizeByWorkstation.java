@@ -3,7 +3,7 @@ package me.xginko.villageroptimizer.modules.optimization;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.tcoded.folialib.impl.ServerImplementation;
-import io.papermc.paper.event.entity.EntityMoveEvent;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
@@ -22,44 +22,48 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
-import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.VillagerCareerChangeEvent;
-import org.jetbrains.annotations.Nullable;
+import org.bukkit.util.NumberConversions;
 
 import java.time.Duration;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener {
 
     private final ServerImplementation scheduler;
     private final VillagerCache villagerCache;
-    private final Cache<UUID, Location> cachedVillagerJobSites;
-    private final long cooldown_millis;
-    private final double search_radius;
+    private final Cache<Location, WrappedTask> pending_optimizations;
+    private final long cooldown_millis, delay_millis, resettable_delay_millis;
+    private final double search_radius, search_radius_squared;
     private final boolean only_while_sneaking, log_enabled, notify_player;
 
     public OptimizeByWorkstation() {
         shouldEnable();
         this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
-        this.cachedVillagerJobSites = Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(2)).build();
-
-        // Broken and unfinished, in progress
-
         Config config = VillagerOptimizer.getConfiguration();
         config.master().addComment("optimization-methods.workstation-optimization.enable", """
                 When enabled, villagers that have a job and have been traded with at least once will become optimized,\s
                 if near their workstation. If the workstation is broken, the villager will become unoptimized again.""");
+        this.delay_millis = Math.max(config.getInt("optimization-methods.workstation-optimization.delay.default-delay-in-ticks", 10, """
+                The delay in ticks the plugin should wait before trying to optimize the closest villager on workstation place.\s
+                Gives the villager time to claim the placed workstation. Minimum delay is 1 Tick (Not recommended)"""), 1) * 50L;
+        this.resettable_delay_millis = Math.max(config.getInt("optimization-methods.workstation-optimization.delay.resettable-delay-in-ticks", 60, """
+                The delay in ticks the plugin should wait before trying to optimize a villager that can loose its profession\s
+                by having their workstation destroyed.\s
+                Intended to fix issues while trade rolling."""), 1) * 50L;
+        this.pending_optimizations = Caffeine.newBuilder()
+                .expireAfterWrite(Duration.ofMillis(Math.max(resettable_delay_millis, delay_millis) + 500L))
+                .build();
         this.search_radius = config.getDouble("optimization-methods.workstation-optimization.search-radius-in-blocks", 2.0, """
                 The radius in blocks a villager can be away from the player when he places a workstation.\s
-                The closest unoptimized villager to the player will be optimized.""") / 2;
+                The closest unoptimized villager to the player will be optimized.""");
+        this.search_radius_squared = NumberConversions.square(search_radius);
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
                 config.getInt("optimization-methods.workstation-optimization.optimize-cooldown-seconds", 600, """
                 Cooldown in seconds until a villager can be optimized again using a workstation.\s
@@ -87,92 +91,56 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.workstation-optimization.enable", false);
     }
 
-    private @Nullable Location getJobSite(Villager villager) {
-        Location jobSite = cachedVillagerJobSites.getIfPresent(villager.getUniqueId());
-        if (jobSite == null) {
-            jobSite = villager.getMemory(MemoryKey.JOB_SITE);
-            cachedVillagerJobSites.put(villager.getUniqueId(), jobSite);
-        }
-        return jobSite;
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onVillagerMove(EntityMoveEvent event) {
-        if (!event.getEntityType().equals(EntityType.VILLAGER)) return;
-
-        final Villager villager = (Villager) event.getEntity();
-
-        if (villager.getProfession().equals(Villager.Profession.NONE)) return;
-        if (CommonUtil.canLooseProfession(villager)) return;
-
-        final Location jobSite = getJobSite(villager);
-        if (jobSite == null) return;
-        // Using distanceSquared is faster. 1*1=1 -> 1 block away from the workstation
-        if (!(villager.getLocation().distanceSquared(jobSite) <= 1)) return;
-
-        WrappedVillager wrappedVillager = villagerCache.getOrAdd(villager);
-
-        if (wrappedVillager.canOptimize(cooldown_millis)) {
-            wrappedVillager.setOptimizationType(OptimizationType.WORKSTATION);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onCareerChange(VillagerCareerChangeEvent event) {
-        if (!event.getReason().equals(VillagerCareerChangeEvent.ChangeReason.EMPLOYED)) return;
-        if (CommonUtil.canLooseProfession(event.getEntity())) return;
-
-        WrappedVillager wrappedVillager = villagerCache.getOrAdd(event.getEntity());
-
-        if (!wrappedVillager.isOptimized() && wrappedVillager.canOptimize(cooldown_millis)) {
-            wrappedVillager.setOptimizationType(OptimizationType.WORKSTATION);
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockPlace(BlockPlaceEvent event) {
-        Block placed = event.getBlock();
-        Villager.Profession workstationProfession = CommonUtil.getWorkstationProfession(placed.getType());
+        final Block placed = event.getBlock();
+        final Villager.Profession workstationProfession = CommonUtil.getWorkstationProfession(placed.getType());
         if (workstationProfession.equals(Villager.Profession.NONE)) return;
-
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (!player.hasPermission(Optimize.WORKSTATION.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
         final Location workstationLoc = placed.getLocation().toCenterLocation();
-        WrappedVillager villagerThatClaimedWorkstation = null;
+        WrappedVillager toOptimize = null;
 
         for (Entity entity : workstationLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
             if (!entity.getType().equals(EntityType.VILLAGER)) continue;
             Villager villager = (Villager) entity;
             if (!villager.getProfession().equals(workstationProfession)) continue;
-            // Ignore villagers that haven't been locked into a profession yet, so we don't disturb trade rollers
-            if (CommonUtil.canLooseProfession(villager)) continue;
-            Location jobSite = getJobSite(villager);
-            if (jobSite == null) continue;
-            if (!workstationLoc.equals(jobSite.toBlockLocation())) continue;
 
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
+            final Location jobSite = wVillager.getJobSite();
+            if (jobSite == null) continue;
+            if (jobSite.distanceSquared(workstationLoc) > search_radius_squared) continue;
+
             if (wVillager.canOptimize(cooldown_millis)) {
-                villagerThatClaimedWorkstation = wVillager;
+                toOptimize = wVillager;
                 break;
             }
         }
 
-        if (villagerThatClaimedWorkstation == null) return;
+        if (toOptimize == null) return;
+        WrappedVillager finalToOptimize = toOptimize;
 
-        if (villagerThatClaimedWorkstation.canOptimize(cooldown_millis) || player.hasPermission(Bypass.WORKSTATION_COOLDOWN.get())) {
-            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(villagerThatClaimedWorkstation, OptimizationType.WORKSTATION, player, event.isAsynchronous());
+        pending_optimizations.put(placed.getLocation(), scheduler.runAtLocationLater(workstationLoc,
+                () -> optimize(finalToOptimize, player, placed, event.isAsynchronous()),
+                toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis,
+                TimeUnit.MILLISECONDS));
+    }
+
+    private void optimize(WrappedVillager toOptimize, Player player, Block placed, boolean async) {
+        if (toOptimize.canOptimize(cooldown_millis) || player.hasPermission(Bypass.WORKSTATION_COOLDOWN.get())) {
+            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(toOptimize, OptimizationType.WORKSTATION, player, async);
             if (!optimizeEvent.callEvent()) return;
 
-            villagerThatClaimedWorkstation.setOptimizationType(optimizeEvent.getOptimizationType());
-            villagerThatClaimedWorkstation.saveOptimizeTime();
+            toOptimize.setOptimizationType(optimizeEvent.getOptimizationType());
+            toOptimize.saveOptimizeTime();
 
             if (notify_player) {
                 final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                         .matchLiteral("%vil_profession%")
-                        .replacement(villagerThatClaimedWorkstation.villager().getProfession().toString().toLowerCase())
+                        .replacement(toOptimize.villager().getProfession().toString().toLowerCase())
                         .build();
                 final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
                         .matchLiteral("%workstation%")
@@ -183,14 +151,16 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                         .replaceText(placedWorkstation)
                 ));
             }
+
             if (log_enabled)
-                VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using workstation: '" + placed.getType().toString().toLowerCase() + "'");
+                VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using workstation: '" +
+                        placed.getType().toString().toLowerCase() + "'");
         } else {
-            CommonUtil.shakeHead(villagerThatClaimedWorkstation.villager());
+            CommonUtil.shakeHead(toOptimize.villager());
             if (notify_player) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
-                        .replacement(CommonUtil.formatTime(villagerThatClaimedWorkstation.getOptimizeCooldownMillis(cooldown_millis)))
+                        .replacement(CommonUtil.formatTime(toOptimize.getOptimizeCooldownMillis(cooldown_millis)))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                         .replaceText(timeLeft)
@@ -201,10 +171,14 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockBreak(BlockBreakEvent event) {
-        Block broken = event.getBlock();
-        Villager.Profession workstationProfession = CommonUtil.getWorkstationProfession(broken.getType());
+        final Block broken = event.getBlock();
+        // Cancel any pending optimization for this block
+        WrappedTask pendingOpt = pending_optimizations.getIfPresent(broken.getLocation());
+        if (pendingOpt != null) pendingOpt.cancel();
+
+        final Villager.Profession workstationProfession = CommonUtil.getWorkstationProfession(broken.getType());
         if (workstationProfession.equals(Villager.Profession.NONE)) return;
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (!player.hasPermission(Optimize.WORKSTATION.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
@@ -218,9 +192,9 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
             if (!villager.getProfession().equals(workstationProfession)) continue;
 
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
-            final double distance = entity.getLocation().distance(workstationLoc);
+            final double distance = entity.getLocation().distanceSquared(workstationLoc);
 
-            if (distance < closestDistance && wVillager.canOptimize(cooldown_millis)) {
+            if (distance < closestDistance && wVillager.isOptimized()) {
                 closestOptimizedVillager = wVillager;
                 closestDistance = distance;
             }
