@@ -124,32 +124,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         WrappedVillager finalToOptimize = toOptimize;
 
         pending_optimizations.put(placed.getLocation(), scheduler.runAtLocationLater(workstationLoc, () -> {
-            if (finalToOptimize.canOptimize(cooldown_millis) || player.hasPermission(Bypass.WORKSTATION_COOLDOWN.get())) {
-                VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(finalToOptimize, OptimizationType.WORKSTATION, player, event.isAsynchronous());
-                if (!optimizeEvent.callEvent()) return;
-
-                finalToOptimize.setOptimizationType(optimizeEvent.getOptimizationType());
-                finalToOptimize.saveOptimizeTime();
-
-                if (notify_player) {
-                    final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
-                            .matchLiteral("%vil_profession%")
-                            .replacement(finalToOptimize.villager().getProfession().toString().toLowerCase())
-                            .build();
-                    final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
-                            .matchLiteral("%workstation%")
-                            .replacement(placed.getType().toString().toLowerCase())
-                            .build();
-                    VillagerOptimizer.getLang(player.locale()).workstation_optimize_success.forEach(line -> player.sendMessage(line
-                            .replaceText(vilProfession)
-                            .replaceText(placedWorkstation)
-                    ));
-                }
-
-                if (log_enabled)
-                    VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using workstation: '" +
-                            placed.getType().toString().toLowerCase() + "'");
-            } else {
+            if (!finalToOptimize.canOptimize(cooldown_millis) && !player.hasPermission(Bypass.WORKSTATION_COOLDOWN.get())) {
                 CommonUtil.shakeHead(finalToOptimize.villager());
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
@@ -160,7 +135,32 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                             .replaceText(timeLeft)
                     ));
                 }
+                return;
             }
+
+            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(finalToOptimize, OptimizationType.WORKSTATION, player, event.isAsynchronous());
+            if (!optimizeEvent.callEvent()) return;
+
+            finalToOptimize.setOptimizationType(optimizeEvent.getOptimizationType());
+            finalToOptimize.saveOptimizeTime();
+
+            if (notify_player) {
+                final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
+                        .matchLiteral("%vil_profession%")
+                        .replacement(finalToOptimize.villager().getProfession().toString().toLowerCase())
+                        .build();
+                final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
+                        .matchLiteral("%workstation%")
+                        .replacement(placed.getType().toString().toLowerCase())
+                        .build();
+                VillagerOptimizer.getLang(player.locale()).workstation_optimize_success.forEach(line -> player.sendMessage(line
+                        .replaceText(vilProfession)
+                        .replaceText(placedWorkstation)
+                ));
+            }
+
+            if (log_enabled) VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using workstation: '" +
+                    placed.getType().toString().toLowerCase() + "'");
         }, toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis, TimeUnit.MILLISECONDS));
     }
 
