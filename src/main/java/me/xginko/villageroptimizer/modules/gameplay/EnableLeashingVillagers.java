@@ -61,9 +61,9 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         final ItemStack handItem = player.getInventory().getItem(event.getHand());
         if (handItem == null || !handItem.getType().equals(Material.LEAD)) return;
 
-        event.setCancelled(true); // Cancel the event, so we don't interact with the villager
         Villager villager = (Villager) event.getRightClicked();
         if (villager.isLeashed()) return;
+        event.setCancelled(true); // Cancel the event, so we don't interact with the villager
         if (only_optimized && !villagerCache.getOrAdd(villager).isOptimized()) return;
 
         // Call event for compatibility with other plugins, constructing non deprecated if available
