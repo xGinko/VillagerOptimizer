@@ -123,50 +123,45 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (toOptimize == null) return;
         WrappedVillager finalToOptimize = toOptimize;
 
-        pending_optimizations.put(placed.getLocation(), scheduler.runAtLocationLater(workstationLoc,
-                () -> optimize(finalToOptimize, player, placed, event.isAsynchronous()),
-                toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis,
-                TimeUnit.MILLISECONDS));
-    }
+        pending_optimizations.put(placed.getLocation(), scheduler.runAtLocationLater(workstationLoc, () -> {
+            if (finalToOptimize.canOptimize(cooldown_millis) || player.hasPermission(Bypass.WORKSTATION_COOLDOWN.get())) {
+                VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(finalToOptimize, OptimizationType.WORKSTATION, player, event.isAsynchronous());
+                if (!optimizeEvent.callEvent()) return;
 
-    private void optimize(WrappedVillager toOptimize, Player player, Block placed, boolean async) {
-        if (toOptimize.canOptimize(cooldown_millis) || player.hasPermission(Bypass.WORKSTATION_COOLDOWN.get())) {
-            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(toOptimize, OptimizationType.WORKSTATION, player, async);
-            if (!optimizeEvent.callEvent()) return;
+                finalToOptimize.setOptimizationType(optimizeEvent.getOptimizationType());
+                finalToOptimize.saveOptimizeTime();
 
-            toOptimize.setOptimizationType(optimizeEvent.getOptimizationType());
-            toOptimize.saveOptimizeTime();
+                if (notify_player) {
+                    final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
+                            .matchLiteral("%vil_profession%")
+                            .replacement(finalToOptimize.villager().getProfession().toString().toLowerCase())
+                            .build();
+                    final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
+                            .matchLiteral("%workstation%")
+                            .replacement(placed.getType().toString().toLowerCase())
+                            .build();
+                    VillagerOptimizer.getLang(player.locale()).workstation_optimize_success.forEach(line -> player.sendMessage(line
+                            .replaceText(vilProfession)
+                            .replaceText(placedWorkstation)
+                    ));
+                }
 
-            if (notify_player) {
-                final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
-                        .matchLiteral("%vil_profession%")
-                        .replacement(toOptimize.villager().getProfession().toString().toLowerCase())
-                        .build();
-                final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
-                        .matchLiteral("%workstation%")
-                        .replacement(placed.getType().toString().toLowerCase())
-                        .build();
-                VillagerOptimizer.getLang(player.locale()).workstation_optimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(vilProfession)
-                        .replaceText(placedWorkstation)
-                ));
+                if (log_enabled)
+                    VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using workstation: '" +
+                            placed.getType().toString().toLowerCase() + "'");
+            } else {
+                CommonUtil.shakeHead(finalToOptimize.villager());
+                if (notify_player) {
+                    final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
+                            .matchLiteral("%time%")
+                            .replacement(CommonUtil.formatTime(finalToOptimize.getOptimizeCooldownMillis(cooldown_millis)))
+                            .build();
+                    VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
+                            .replaceText(timeLeft)
+                    ));
+                }
             }
-
-            if (log_enabled)
-                VillagerOptimizer.getLog().info(player.getName() + " optimized a villager using workstation: '" +
-                        placed.getType().toString().toLowerCase() + "'");
-        } else {
-            CommonUtil.shakeHead(toOptimize.villager());
-            if (notify_player) {
-                final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
-                        .matchLiteral("%time%")
-                        .replacement(CommonUtil.formatTime(toOptimize.getOptimizeCooldownMillis(cooldown_millis)))
-                        .build();
-                VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                        .replaceText(timeLeft)
-                ));
-            }
-        }
+        }, toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis, TimeUnit.MILLISECONDS));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
