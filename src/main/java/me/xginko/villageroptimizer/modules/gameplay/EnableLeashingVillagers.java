@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
+import com.tcoded.folialib.impl.ServerImplementation;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
@@ -17,11 +18,13 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class EnableLeashingVillagers implements VillagerOptimizerModule, Listener {
 
+    private final ServerImplementation scheduler;
     private final VillagerCache villagerCache;
     private final boolean only_optimized;
 
     public EnableLeashingVillagers() {
         shouldEnable();
+        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.master().addComment("gameplay.villagers-can-be-leashed.enable", """
@@ -80,6 +83,6 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         if (!leashEvent.callEvent()) return;
 
         // Legitimate to not use entities from the event object since they are final in PlayerLeashEntityEvent
-        VillagerOptimizer.getFoliaLib().getImpl().runAtEntity(villager, leash -> villager.setLeashHolder(player));
+        scheduler.runAtEntity(villager, leash -> villager.setLeashHolder(player));
     }
 }
