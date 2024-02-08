@@ -73,7 +73,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
                         && log_enabled
                 ) {
                     final Location location = villager.getLocation();
-                    VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
+                    VillagerOptimizer.getLog().info(Component.text(player.getName() + " un-leashed a villager at " +
                             "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
                             " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
                 }

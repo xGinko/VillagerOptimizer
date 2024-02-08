@@ -106,8 +106,10 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 wVillager.setOptimizationType(optimizeEvent.getOptimizationType());
                 wVillager.saveOptimizeTime();
 
-                if (notify_player)
+                if (notify_player) {
                     VillagerOptimizer.getLang(player.locale()).nametag_optimize_success.forEach(player::sendMessage);
+                }
+
                 if (log_enabled) {
                     final Location location = wVillager.villager().getLocation();
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
@@ -133,8 +135,10 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
                 wVillager.setOptimizationType(OptimizationType.NONE);
 
-                if (notify_player)
+                if (notify_player) {
                     VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success.forEach(player::sendMessage);
+                }
+
                 if (log_enabled) {
                     final Location location = wVillager.villager().getLocation();
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +

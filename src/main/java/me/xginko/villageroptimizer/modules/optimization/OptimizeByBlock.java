@@ -142,6 +142,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                         .replaceText(placedMaterial)
                 ));
             }
+
             if (log_enabled) {
                 final Location location = closestOptimizableVillager.villager().getLocation();
                 VillagerOptimizer.getLog().info(Component.text(player.getName() + " optimized villager by block at " +
@@ -206,6 +207,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                     .replaceText(brokenMaterial)
             ));
         }
+
         if (log_enabled) {
             final Location location = closestOptimizedVillager.villager().getLocation();
             VillagerOptimizer.getLog().info(Component.text(player.getName() + " unoptimized villager by block at " +
