@@ -31,8 +31,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
     private final ServerImplementation scheduler;
     private final VillagerCache villagerCache;
     private WrappedTask periodic_chunk_check;
-    private final List<Villager.Profession> non_optimized_removal_priority;
-    private final List<Villager.Profession> optimized_removal_priority;
+    private final List<Villager.Profession> non_optimized_removal_priority, optimized_removal_priority;
     private final long check_period;
     private final int non_optimized_max_per_chunk, optimized_max_per_chunk;
     private final boolean log_enabled, skip_unloaded_entity_chunks;
@@ -50,7 +49,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 A larger delay is less resource intense but could become inefficient.""");
         this.skip_unloaded_entity_chunks = config.getBoolean("villager-chunk-limit.skip-if-chunk-has-not-loaded-entities", true,
                 "Does not check chunks that don't have their entities loaded.");
-        this.log_enabled = config.getBoolean("villager-chunk-limit.log-removals", false);
+        this.log_enabled = config.getBoolean("villager-chunk-limit.log-removals", true);
         this.non_optimized_max_per_chunk = config.getInt("villager-chunk-limit.unoptimized.max-per-chunk", 20,
                 "The maximum amount of unoptimized villagers per chunk.");
         this.non_optimized_removal_priority = config.getList("villager-chunk-limit.unoptimized.removal-priority", List.of(
@@ -95,8 +94,9 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         this.periodic_chunk_check = scheduler.runTimer(() -> {
             for (World world : server.getWorlds()) {
                 for (Chunk chunk : world.getLoadedChunks()) {
-                    if (skip_unloaded_entity_chunks && !CommonUtil.isEntitiesLoaded(chunk)) continue;
-                    this.manageVillagerCount(chunk);
+                    if (!skip_unloaded_entity_chunks || CommonUtil.isEntitiesLoaded(chunk)) {
+                        this.manageVillagerCount(chunk);
+                    }
                 }
             }
         }, check_period, check_period);
