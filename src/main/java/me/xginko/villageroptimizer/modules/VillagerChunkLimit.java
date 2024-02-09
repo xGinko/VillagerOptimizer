@@ -8,7 +8,6 @@ import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -158,11 +157,9 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 scheduler.runAtEntity(villager, kill -> {
                     villager.remove();
                     if (log_enabled) {
-                        final Location location = villager.getLocation();
                         VillagerOptimizer.getLog().info(Component.text(
                                 "Removed unoptimized villager with profession '" + villager.getProfession().name() + "' at " +
-                                        "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                                        " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.plugin_style.color()));
                     }
                 });
             }
@@ -183,11 +180,9 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                     villager.remove();
 
                     if (log_enabled) {
-                        final Location location = villager.getLocation();
-                        VillagerOptimizer.getLog().info(Component.text(
-                                "Removed optimized villager with profession '" + villager.getProfession().name() + "' at " +
-                                "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                                " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                        VillagerOptimizer.getLog().info(Component.text("Removed optimized villager with profession '" +
+                                villager.getProfession().name() + "' at " +
+                                CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.plugin_style.color()));
                     }
                 });
             }

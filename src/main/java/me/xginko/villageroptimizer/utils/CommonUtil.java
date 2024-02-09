@@ -1,6 +1,7 @@
 package me.xginko.villageroptimizer.utils;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
@@ -8,8 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 
 public class CommonUtil {
-    public static @NotNull String formatTime(final long millis) {
-        Duration duration = Duration.ofMillis(millis);
+    public static @NotNull String formatDuration(Duration duration) {
         final int seconds = duration.toSecondsPart();
         final int minutes = duration.toMinutesPart();
         final int hours = duration.toHoursPart();
@@ -21,6 +21,10 @@ public class CommonUtil {
         } else {
             return String.format("%02ds", seconds);
         }
+    }
+
+    public static String formatLocation(@NotNull Location location) {
+        return "[" + location.getWorld().getName() + "] x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ();
     }
 
     private static boolean specificChunkLoadedMethodAvailable = true;

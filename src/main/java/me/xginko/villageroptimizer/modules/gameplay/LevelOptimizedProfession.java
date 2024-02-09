@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public class LevelOptimizedProfession implements VillagerOptimizerModule, Listener {
@@ -86,7 +87,7 @@ public class LevelOptimizedProfession implements VillagerOptimizerModule, Listen
                     Player player = (Player) event.getPlayer();
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
-                            .replacement(CommonUtil.formatTime(wVillager.getLevelCooldownMillis(cooldown_millis)))
+                            .replacement(CommonUtil.formatDuration(Duration.ofMillis(wVillager.getLevelCooldownMillis(cooldown_millis))))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).villager_leveling_up.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
                 }

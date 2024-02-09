@@ -27,6 +27,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -144,17 +145,15 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             }
 
             if (log_enabled) {
-                final Location location = closestOptimizableVillager.villager().getLocation();
                 VillagerOptimizer.getLog().info(Component.text(player.getName() + " optimized villager by block at " +
-                        "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                        " in world " + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                        CommonUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
             }
         } else {
             CommonUtil.shakeHead(closestOptimizableVillager.villager());
             if (notify_player) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
-                        .replacement(CommonUtil.formatTime(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown_millis)))
+                        .replacement(CommonUtil.formatDuration(Duration.ofMillis(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown_millis))))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
             }
@@ -209,10 +208,8 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         }
 
         if (log_enabled) {
-            final Location location = closestOptimizedVillager.villager().getLocation();
             VillagerOptimizer.getLog().info(Component.text(player.getName() + " unoptimized villager by block at " +
-                    "x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ() +
-                    ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
         }
     }
 }

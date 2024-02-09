@@ -19,6 +19,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
+import java.time.Duration;
+
 public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener {
 
     private final VillagerCache villagerCache;
@@ -71,7 +73,7 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
             if (notify_player && !player_bypassing) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
-                        .replacement(CommonUtil.formatTime(wVillager.getRestockCooldownMillis(restock_delay_millis)))
+                        .replacement(CommonUtil.formatDuration(Duration.ofMillis(wVillager.getRestockCooldownMillis(restock_delay_millis))))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).trades_restocked.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
             }

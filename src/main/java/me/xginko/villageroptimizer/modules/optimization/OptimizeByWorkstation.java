@@ -130,7 +130,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
-                            .replacement(CommonUtil.formatTime(finalToOptimize.getOptimizeCooldownMillis(cooldown_millis)))
+                            .replacement(CommonUtil.formatDuration(Duration.ofMillis(finalToOptimize.getOptimizeCooldownMillis(cooldown_millis))))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
                             .replaceText(timeLeft)
@@ -161,11 +161,9 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
             }
 
             if (log_enabled) {
-                final Location location = finalToOptimize.villager().getLocation();
                 VillagerOptimizer.getLog().info(Component.text(player.getName() +
                         " optimized villager by workstation (" + placed.getType().toString().toLowerCase() + ") at " +
-                        "x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ() +
-                        ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                        CommonUtil.formatLocation(finalToOptimize.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
             }
         }, toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis, TimeUnit.MILLISECONDS));
     }
@@ -224,11 +222,9 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         }
 
         if (log_enabled) {
-            final Location location = closestOptimizedVillager.villager().getLocation();
             VillagerOptimizer.getLog().info(Component.text(player.getName() +
                     " unoptimized villager by workstation (" + broken.getType().toString().toLowerCase() + ") at " +
-                    "x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ() +
-                    ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
         }
     }
 }

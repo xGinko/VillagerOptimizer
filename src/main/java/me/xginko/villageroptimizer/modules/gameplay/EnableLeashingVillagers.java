@@ -5,8 +5,9 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Location;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -79,14 +80,13 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
         scheduler.runAtEntity(villager, leash -> {
             // Legitimate to not use entities from the event object since they are final in PlayerLeashEntityEvent
-            if (villager.setLeashHolder(player)) {
-                handItem.subtract(1);
-                if (log_enabled) {
-                    final Location location = villager.getLocation();
-                    VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
-                            "x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ() +
-                            ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
-                }
+            if (!villager.setLeashHolder(player)) return;
+            if (player.getGameMode().equals(GameMode.SURVIVAL))
+                handItem.subtract(1); // Manually consume for survival players
+
+            if (log_enabled) {
+                VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
+                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.plugin_style.color()));
             }
         });
     }

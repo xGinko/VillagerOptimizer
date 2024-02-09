@@ -4,8 +4,8 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.enums.permissions.Bypass;
 import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.enums.permissions.Bypass;
 import me.xginko.villageroptimizer.enums.permissions.Optimize;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
@@ -14,7 +14,6 @@ import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -27,6 +26,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,11 +111,9 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 }
 
                 if (log_enabled) {
-                    final Location location = wVillager.villager().getLocation();
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
                             " optimized villager by nametag '" + name + "' at " +
-                            "x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ() +
-                            ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                            CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
                 }
             } else {
                 event.setCancelled(true);
@@ -123,7 +121,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
-                            .replacement(CommonUtil.formatTime(wVillager.getOptimizeCooldownMillis(cooldown)))
+                            .replacement(CommonUtil.formatDuration(Duration.ofMillis(wVillager.getOptimizeCooldownMillis(cooldown))))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
                 }
@@ -140,11 +138,9 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 }
 
                 if (log_enabled) {
-                    final Location location = wVillager.villager().getLocation();
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
                             " unoptimized villager by nametag '" + name + "' at " +
-                            "x=" + location.getX() + ", y=" + location.getY() + ", z=" + location.getZ() +
-                            ", world=" + location.getWorld().getName()).style(VillagerOptimizer.plugin_style));
+                            CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
                 }
             }
         }
