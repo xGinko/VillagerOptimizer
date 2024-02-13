@@ -207,7 +207,7 @@ public final class WrappedVillager {
      * @return True if the villager has been loaded long enough.
      */
     public boolean canRestock(final long cooldown_millis) {
-        return getLastRestock() + cooldown_millis <= villager.getWorld().getFullTime();
+        return getLastRestock() + cooldown_millis <= System.currentTimeMillis();
     }
 
     /**
@@ -223,7 +223,7 @@ public final class WrappedVillager {
      * Saves the time of the in-game world when the entity was last restocked.
      */
     public void saveRestockTime() {
-        dataContainer.set(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG, villager.getWorld().getFullTime());
+        dataContainer.set(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG, System.currentTimeMillis());
     }
 
     /**
@@ -247,7 +247,7 @@ public final class WrappedVillager {
 
     public long getRestockCooldownMillis(final long cooldown_millis) {
         if (dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG))
-            return villager.getWorld().getFullTime() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG) + cooldown_millis);
+            return System.currentTimeMillis() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK.getKey(), PersistentDataType.LONG) + cooldown_millis);
         return cooldown_millis;
     }
 
@@ -269,7 +269,7 @@ public final class WrappedVillager {
      * @return Whether the villager can be leveled up or not with the checked milliseconds
      */
     public boolean canLevelUp(final long cooldown_millis) {
-        if (villager.getWorld().getFullTime() < getLastLevelUpTime() + cooldown_millis) {
+        if (System.currentTimeMillis() < getLastLevelUpTime() + cooldown_millis) {
             return false;
         }
 
@@ -285,7 +285,7 @@ public final class WrappedVillager {
      * Saves the time of the in-game world when the entity was last leveled up.
      */
     public void saveLastLevelUp() {
-        dataContainer.set(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG, villager.getWorld().getFullTime());
+        dataContainer.set(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG, System.currentTimeMillis());
     }
 
     /**
@@ -302,7 +302,7 @@ public final class WrappedVillager {
 
     public long getLevelCooldownMillis(final long cooldown_millis) {
         if (dataContainer.has(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG))
-            return villager.getWorld().getFullTime() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) + cooldown_millis);
+            return System.currentTimeMillis() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP.getKey(), PersistentDataType.LONG) + cooldown_millis);
         return cooldown_millis;
     }
 

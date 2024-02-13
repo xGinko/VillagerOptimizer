@@ -10,6 +10,8 @@ import java.time.Duration;
 
 public class CommonUtil {
     public static @NotNull String formatDuration(Duration duration) {
+        if (duration.isNegative()) duration = duration.negated();
+
         final int seconds = duration.toSecondsPart();
         final int minutes = duration.toMinutesPart();
         final int hours = duration.toHoursPart();

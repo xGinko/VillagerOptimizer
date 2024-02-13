@@ -1,10 +1,10 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.permissions.Bypass;
-import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
 import net.kyori.adventure.text.Component;
@@ -57,7 +57,7 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
         return true;
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onInteract(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
 
