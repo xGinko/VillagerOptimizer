@@ -14,7 +14,7 @@
     <url>https://github.com/xGinko/VillagerOptimizer</url>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>16</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -52,6 +52,10 @@
                                 <relocation>
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>me.xginko.villageroptimizer.libs.bstats</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.kyori</pattern>
+                                    <shadedPattern>me.xginko.villageroptimizer.libs.kyori</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
