@@ -38,6 +38,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     private static Config config;
     private static BukkitAudiences audiences;
     private static ComponentLogger logger;
+    private Metrics metrics;
 
     @Override
     public void onEnable() {
@@ -45,6 +46,7 @@ public final class VillagerOptimizer extends JavaPlugin {
         foliaLib = new FoliaLib(this);
         audiences = BukkitAudiences.create(this);
         logger = ComponentLogger.logger(this.getName());
+        metrics = new Metrics(this, 19954);
 
         logger.info(Component.text("╭────────────────────────────────────────────────────────────╮").style(STYLE));
         logger.info(Component.text("│                                                            │").style(STYLE));
@@ -79,8 +81,6 @@ public final class VillagerOptimizer extends JavaPlugin {
         logger.info(Component.text("│                                                            │").style(STYLE));
         logger.info(Component.text("│                                                            │").style(STYLE));
         logger.info(Component.text("╰────────────────────────────────────────────────────────────╯").style(STYLE));
-
-        new Metrics(this, 19954);
     }
 
     @Override
@@ -94,6 +94,10 @@ public final class VillagerOptimizer extends JavaPlugin {
         if (audiences != null) {
             audiences.close();
             audiences = null;
+        }
+        if (metrics != null) {
+            metrics.shutdown();
+            metrics = null;
         }
     }
 
