@@ -21,10 +21,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
@@ -41,23 +39,23 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("villager-chunk-limit.enable", """
-                Checks chunks for too many villagers and removes excess villagers based on priority.""");
-        this.check_period = config.getInt("villager-chunk-limit.check-period-in-ticks", 600, """
-                Check all loaded chunks every X ticks. 1 second = 20 ticks\s
-                A shorter delay in between checks is more efficient but is also more resource intense.\s
-                A larger delay is less resource intense but could become inefficient.""");
+        config.master().addComment("villager-chunk-limit.enable",
+                "Checks chunks for too many villagers and removes excess villagers based on priority.");
+        this.check_period = config.getInt("villager-chunk-limit.check-period-in-ticks", 600,
+                "Check all loaded chunks every X ticks. 1 second = 20 ticks\n" +
+                "A shorter delay in between checks is more efficient but is also more resource intense.\n" +
+                "A larger delay is less resource intense but could become inefficient.");
         this.skip_unloaded_entity_chunks = config.getBoolean("villager-chunk-limit.skip-if-chunk-has-not-loaded-entities", true,
                 "Does not check chunks that don't have their entities loaded.");
         this.log_enabled = config.getBoolean("villager-chunk-limit.log-removals", true);
         this.non_optimized_max_per_chunk = config.getInt("villager-chunk-limit.unoptimized.max-per-chunk", 20,
                 "The maximum amount of unoptimized villagers per chunk.");
-        this.non_optimized_removal_priority = config.getList("villager-chunk-limit.unoptimized.removal-priority", List.of(
+        this.non_optimized_removal_priority = config.getList("villager-chunk-limit.unoptimized.removal-priority", Arrays.asList(
                         "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
                         "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN"
-        ), """
-                Professions that are in the top of the list are going to be scheduled for removal first.\s
-                Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html"""
+                ),
+                "Professions that are in the top of the list are going to be scheduled for removal first.\n" +
+                "Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html"
         ).stream().map(configuredProfession -> {
             try {
                 return Villager.Profession.valueOf(configuredProfession);
@@ -67,10 +65,10 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                         "https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
                 return null;
             }
-        }).filter(Objects::nonNull).toList();
+        }).filter(Objects::nonNull).collect(Collectors.toList());
         this.optimized_max_per_chunk = config.getInt("villager-chunk-limit.optimized.max-per-chunk", 60,
                 "The maximum amount of optimized villagers per chunk.");
-        this.optimized_removal_priority = config.getList("villager-chunk-limit.optimized.removal-priority", List.of(
+        this.optimized_removal_priority = config.getList("villager-chunk-limit.optimized.removal-priority", Arrays.asList(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
                 "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN"
         )).stream().map(configuredProfession -> {
@@ -82,7 +80,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                         "https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
                 return null;
             }
-        }).filter(Objects::nonNull).toList();
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     @Override
@@ -159,7 +157,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                     if (log_enabled) {
                         VillagerOptimizer.getLog().info(Component.text(
                                 "Removed unoptimized villager with profession '" + villager.getProfession().name() + "' at " +
-                                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.plugin_style.color()));
+                                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.STYLE.color()));
                     }
                 });
             }
@@ -182,7 +180,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                     if (log_enabled) {
                         VillagerOptimizer.getLog().info(Component.text("Removed optimized villager with profession '" +
                                 villager.getProfession().name() + "' at " +
-                                CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.plugin_style.color()));
+                                CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.STYLE.color()));
                     }
                 });
             }

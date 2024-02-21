@@ -17,7 +17,12 @@ public class VillagerOptimizeEvent extends Event implements Cancellable {
     private final @Nullable Player whoOptimised;
     private boolean isCancelled = false;
 
-    public VillagerOptimizeEvent(@NotNull WrappedVillager wrappedVillager, @NotNull OptimizationType optimizationType, @Nullable Player whoOptimised, boolean isAsync) throws IllegalArgumentException {
+    public VillagerOptimizeEvent(
+            @NotNull WrappedVillager wrappedVillager,
+            @NotNull OptimizationType optimizationType,
+            @Nullable Player whoOptimised,
+            boolean isAsync
+    ) throws IllegalArgumentException {
         super(isAsync);
         this.wrappedVillager = wrappedVillager;
         this.whoOptimised = whoOptimised;
@@ -28,7 +33,11 @@ public class VillagerOptimizeEvent extends Event implements Cancellable {
         }
     }
 
-    public VillagerOptimizeEvent(@NotNull WrappedVillager wrappedVillager, @NotNull OptimizationType optimizationType, @Nullable Player whoOptimised) throws IllegalArgumentException {
+    public VillagerOptimizeEvent(
+            @NotNull WrappedVillager wrappedVillager,
+            @NotNull OptimizationType optimizationType,
+            @Nullable Player whoOptimised
+    ) throws IllegalArgumentException {
         this.wrappedVillager = wrappedVillager;
         this.whoOptimised = whoOptimised;
         if (optimizationType.equals(OptimizationType.NONE)) {

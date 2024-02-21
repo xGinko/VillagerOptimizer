@@ -7,6 +7,7 @@ import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -34,13 +35,13 @@ public class LevelOptimizedProfession implements VillagerOptimizerModule, Listen
         this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("gameplay.level-optimized-profession", """
-                This is needed to allow optimized villagers to level up.\s
-                Temporarily enables the villagers AI to allow it to level up and then disables it again.""");
+        config.master().addComment("gameplay.level-optimized-profession",
+                "This is needed to allow optimized villagers to level up.\n" +
+                "Temporarily enables the villagers AI to allow it to level up and then disables it again.");
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
-                config.getInt("gameplay.level-optimized-profession.level-check-cooldown-seconds", 5, """
-                Cooldown in seconds until the level of a villager will be checked and updated again.\s
-                Recommended to leave as is."""));
+                config.getInt("gameplay.level-optimized-profession.level-check-cooldown-seconds", 5,
+                "Cooldown in seconds until the level of a villager will be checked and updated again.\n" +
+                "Recommended to leave as is."));
         this.notify_player = config.getBoolean("gameplay.level-optimized-profession.notify-player", true,
                 "Tell players to wait when a villager is leveling up.");
     }
@@ -61,12 +62,13 @@ public class LevelOptimizedProfession implements VillagerOptimizerModule, Listen
         return true;
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onTradeScreenClose(InventoryCloseEvent event) {
         if (
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
-                && event.getInventory().getHolder() instanceof Villager villager
+                && event.getInventory().getHolder() instanceof Villager
         ) {
+            Villager villager = (Villager) event.getInventory().getHolder();
             WrappedVillager wVillager = villagerCache.getOrAdd(villager);
             if (!wVillager.isOptimized()) return;
 
@@ -89,7 +91,8 @@ public class LevelOptimizedProfession implements VillagerOptimizerModule, Listen
                             .matchLiteral("%time%")
                             .replacement(CommonUtil.formatDuration(Duration.ofMillis(wVillager.getLevelCooldownMillis(cooldown_millis))))
                             .build();
-                    VillagerOptimizer.getLang(player.locale()).villager_leveling_up.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
+                    VillagerOptimizer.getLang(player.locale()).villager_leveling_up
+                            .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
                 }
             }
         }

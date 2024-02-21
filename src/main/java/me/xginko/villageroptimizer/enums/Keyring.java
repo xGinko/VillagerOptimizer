@@ -43,7 +43,6 @@ public class Keyring {
      * @return a {@link NamespacedKey} that can be used to test for and read data stored by plugins
      * from a {@link PersistentDataContainer}
      */
-    @SuppressWarnings("deprecation")
     public static NamespacedKey getKey(@NotNull String pluginName, @NotNull String key) {
         return new NamespacedKey(pluginName.toLowerCase(Locale.ROOT), key);
     }
@@ -58,7 +57,6 @@ public class Keyring {
 
         private final @NotNull NamespacedKey key;
 
-        @SuppressWarnings("deprecation")
         VillagerOptimizer(@NotNull String key) {
             this.key = new NamespacedKey(Spaces.VillagerOptimizer.namespace(), key);
         }
@@ -80,7 +78,6 @@ public class Keyring {
 
         private final @NotNull NamespacedKey key;
 
-        @SuppressWarnings("deprecation")
         AntiVillagerLag(@NotNull String avlKey) {
             this.key = new NamespacedKey(Spaces.AntiVillagerLag.namespace(), avlKey);
         }

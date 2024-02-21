@@ -23,7 +23,7 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
 
     private final VillagerCache villagerCache;
     private final Set<EntityDamageEvent.DamageCause> damage_causes_to_cancel;
-    private final boolean cancelKnockback;
+    private final boolean cancel_knockback;
 
     public PreventOptimizedDamage() {
         shouldEnable();
@@ -31,13 +31,13 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
         Config config = VillagerOptimizer.getConfiguration();
         config.master().addComment("gameplay.prevent-damage-to-optimized.enable",
                 "Configure what kind of damage you want to cancel for optimized villagers here.");
-        this.cancelKnockback = config.getBoolean("gameplay.prevent-damage-to-optimized.prevent-knockback-from-entity", true,
+        this.cancel_knockback = config.getBoolean("gameplay.prevent-damage-to-optimized.prevent-knockback-from-entity", true,
                 "Prevents optimized villagers from getting knocked back by an attacking entity");
         this.damage_causes_to_cancel = config.getList("gameplay.prevent-damage-to-optimized.damage-causes-to-cancel",
-                Arrays.stream(EntityDamageEvent.DamageCause.values()).map(Enum::name).sorted().toList(), """
-                These are all current entries in the game. Remove what you do not need blocked.\s
-                If you want a description or need to add a previously removed type, refer to:\s
-                https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html"""
+                Arrays.stream(EntityDamageEvent.DamageCause.values()).map(Enum::name).sorted().collect(Collectors.toList()),
+                "These are all current entries in the game. Remove what you do not need blocked.\n" +
+                "If you want a description or need to add a previously removed type, refer to:\n" +
+                "https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html"
         ).stream().map(configuredDamageCause -> {
             try {
                 return EntityDamageEvent.DamageCause.valueOf(configuredDamageCause);
@@ -80,7 +80,7 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onKnockbackByEntity(EntityKnockbackByEntityEvent event) {
         if (
-                cancelKnockback
+                cancel_knockback
                 && event.getEntityType().equals(EntityType.VILLAGER)
                 && villagerCache.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {

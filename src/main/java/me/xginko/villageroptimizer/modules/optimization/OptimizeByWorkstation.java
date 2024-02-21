@@ -15,6 +15,7 @@ import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
@@ -48,27 +49,27 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("optimization-methods.workstation-optimization.enable", """
-                When enabled, villagers that have a job and have been traded with at least once will become optimized,\s
-                if near their workstation. If the workstation is broken, the villager will become unoptimized again.""");
-        this.delay_millis = Math.max(config.getInt("optimization-methods.workstation-optimization.delay.default-delay-in-ticks", 10, """
-                The delay in ticks the plugin should wait before trying to optimize the closest villager on workstation place.\s
-                Gives the villager time to claim the placed workstation. Minimum delay is 1 Tick (Not recommended)"""), 1) * 50L;
-        this.resettable_delay_millis = Math.max(config.getInt("optimization-methods.workstation-optimization.delay.resettable-delay-in-ticks", 60, """
-                The delay in ticks the plugin should wait before trying to optimize a villager that can loose its profession\s
-                by having their workstation destroyed.\s
-                Intended to fix issues while trade rolling."""), 1) * 50L;
+        config.master().addComment("optimization-methods.workstation-optimization.enable",
+                "When enabled, villagers that have a job and have been traded with at least once will become optimized,\n" +
+                "if near their workstation. If the workstation is broken, the villager will become unoptimized again.");
+        this.delay_millis = Math.max(config.getInt("optimization-methods.workstation-optimization.delay.default-delay-in-ticks", 10,
+                "The delay in ticks the plugin should wait before trying to optimize the closest villager on workstation place.\n" +
+                "Gives the villager time to claim the placed workstation. Minimum delay is 1 Tick (Not recommended)"), 1) * 50L;
+        this.resettable_delay_millis = Math.max(config.getInt("optimization-methods.workstation-optimization.delay.resettable-delay-in-ticks", 60,
+                "The delay in ticks the plugin should wait before trying to optimize a villager that can loose its profession\n" +
+                "by having their workstation destroyed.\n" +
+                "Intended to fix issues while trade rolling."), 1) * 50L;
         this.pending_optimizations = Caffeine.newBuilder()
                 .expireAfterWrite(Duration.ofMillis(Math.max(resettable_delay_millis, delay_millis) + 500L))
                 .build();
-        this.search_radius = config.getDouble("optimization-methods.workstation-optimization.search-radius-in-blocks", 2.0, """
-                The radius in blocks a villager can be away from the player when he places a workstation.\s
-                The closest unoptimized villager to the player will be optimized.""");
+        this.search_radius = config.getDouble("optimization-methods.workstation-optimization.search-radius-in-blocks", 2.0,
+                "The radius in blocks a villager can be away from the player when he places a workstation.\n" +
+                "The closest unoptimized villager to the player will be optimized.");
         this.search_radius_squared = NumberConversions.square(search_radius);
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
-                config.getInt("optimization-methods.workstation-optimization.optimize-cooldown-seconds", 600, """
-                Cooldown in seconds until a villager can be optimized again using a workstation.\s
-                Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior."""));
+                config.getInt("optimization-methods.workstation-optimization.optimize-cooldown-seconds", 600,
+                "Cooldown in seconds until a villager can be optimized again using a workstation.\n" +
+                "Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior."));
         this.only_while_sneaking = config.getBoolean("optimization-methods.workstation-optimization.only-when-sneaking", true,
                 "Only optimize/unoptimize by workstation when player is sneaking during place or break");
         this.notify_player = config.getBoolean("optimization-methods.workstation-optimization.notify-player", true,
@@ -132,14 +133,19 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                             .matchLiteral("%time%")
                             .replacement(CommonUtil.formatDuration(Duration.ofMillis(finalToOptimize.getOptimizeCooldownMillis(cooldown_millis))))
                             .build();
-                    VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown.forEach(line -> player.sendMessage(line
-                            .replaceText(timeLeft)
-                    ));
+                    VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
+                            .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
                 }
                 return;
             }
 
-            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(finalToOptimize, OptimizationType.WORKSTATION, player, event.isAsynchronous());
+            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(
+                    finalToOptimize,
+                    OptimizationType.WORKSTATION,
+                    player,
+                    event.isAsynchronous()
+            );
+
             if (!optimizeEvent.callEvent()) return;
 
             finalToOptimize.setOptimizationType(optimizeEvent.getOptimizationType());
@@ -154,16 +160,14 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                         .matchLiteral("%workstation%")
                         .replacement(placed.getType().toString().toLowerCase())
                         .build();
-                VillagerOptimizer.getLang(player.locale()).workstation_optimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(vilProfession)
-                        .replaceText(placedWorkstation)
-                ));
+                VillagerOptimizer.getLang(player.locale()).workstation_optimize_success
+                        .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedWorkstation)));
             }
 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text(player.getName() +
                         " optimized villager by workstation (" + placed.getType().toString().toLowerCase() + ") at " +
-                        CommonUtil.formatLocation(finalToOptimize.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
+                        CommonUtil.formatLocation(finalToOptimize.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
             }
         }, toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis, TimeUnit.MILLISECONDS));
     }
@@ -201,7 +205,13 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
         if (closestOptimizedVillager == null) return;
 
-        VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(closestOptimizedVillager, player, OptimizationType.WORKSTATION, event.isAsynchronous());
+        VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(
+                closestOptimizedVillager,
+                player,
+                OptimizationType.WORKSTATION,
+                event.isAsynchronous()
+        );
+
         if (!unOptimizeEvent.callEvent()) return;
 
         closestOptimizedVillager.setOptimizationType(OptimizationType.NONE);
@@ -215,16 +225,14 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                     .matchLiteral("%workstation%")
                     .replacement(broken.getType().toString().toLowerCase())
                     .build();
-            VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success.forEach(line -> player.sendMessage(line
-                    .replaceText(vilProfession)
-                    .replaceText(brokenWorkstation)
-            ));
+            VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success
+                    .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(brokenWorkstation)));
         }
 
         if (log_enabled) {
             VillagerOptimizer.getLog().info(Component.text(player.getName() +
                     " unoptimized villager by workstation (" + broken.getType().toString().toLowerCase() + ") at " +
-                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
+                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
         }
     }
 }

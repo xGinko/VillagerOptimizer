@@ -4,6 +4,7 @@ import io.papermc.paper.plugin.configuration.PluginMeta;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.SubCommand;
 import me.xginko.villageroptimizer.enums.permissions.Commands;
+import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -25,14 +26,14 @@ public class VersionSubCmd extends SubCommand {
 
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer version").color(VillagerOptimizer.plugin_style.color());
+        return Component.text("/villageroptimizer version").color(VillagerOptimizer.STYLE.color());
     }
 
     @Override
     @SuppressWarnings({"deprecation", "UnstableApiUsage"})
     public void perform(CommandSender sender, String[] args) {
         if (!sender.hasPermission(Commands.VERSION.get())) {
-            sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
+            KyoriUtil.sendMessage(sender, VillagerOptimizer.getLang(sender).no_permission);
             return;
         }
 
@@ -52,10 +53,10 @@ public class VersionSubCmd extends SubCommand {
             author = pluginYML.getAuthors().get(0);
         }
 
-        sender.sendMessage(Component.newline()
+        KyoriUtil.sendMessage(sender, Component.newline()
                 .append(
                         Component.text(name + " " + version)
-                                .style(VillagerOptimizer.plugin_style)
+                                .style(VillagerOptimizer.STYLE)
                                 .clickEvent(ClickEvent.openUrl(website))
                 )
                 .append(Component.text(" by ").color(NamedTextColor.GRAY))

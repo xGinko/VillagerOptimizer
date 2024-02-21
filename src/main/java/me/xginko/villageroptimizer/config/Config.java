@@ -33,16 +33,16 @@ public class Config {
                 "If set to true, will display messages based on client language");
         this.cache_keep_time_seconds = getInt("general.cache-keep-time-seconds", 30,
                 "The amount of time in seconds a villager will be kept in the plugin's cache.");
-        this.support_other_plugins = getBoolean("general.support-avl-villagers", false, """
-                Enable if you have previously used AntiVillagerLag (https://www.spigotmc.org/resources/antivillagerlag.102949/).\s
-                Tries to read pre-existing info like optimization state so players don't need to reoptimize their villagers.""");
+        this.support_other_plugins = getBoolean("general.support-avl-villagers", false,
+                "Enable if you have previously used AntiVillagerLag (https://www.spigotmc.org/resources/antivillagerlag.102949/).\n" +
+                "Tries to read pre-existing info like optimization state so players don't need to reoptimize their villagers.");
     }
 
     public void saveConfig() {
         try {
             this.config.save();
-        } catch (Exception e) {
-            VillagerOptimizer.getLog().error("Failed to save config file! - " + e.getLocalizedMessage());
+        } catch (Throwable throwable) {
+            VillagerOptimizer.getLog().error("Failed to save config file!", throwable);
         }
     }
 
@@ -51,11 +51,10 @@ public class Config {
         this.createTitledSection("General", "general");
         this.createTitledSection("Optimization", "optimization-methods");
         this.config.addDefault("optimization-methods.commands.unoptimizevillagers", null);
-        this.config.addComment("optimization-methods.commands", """
-                If you want to disable commands, negate the following permissions:\s
-                villageroptimizer.cmd.optimize\s
-                villageroptimizer.cmd.unoptimize
-                """);
+        this.config.addComment("optimization-methods.commands",
+                "If you want to disable commands, negate the following permissions:\n" +
+                "villageroptimizer.cmd.optimize\n" +
+                "villageroptimizer.cmd.unoptimize");
         this.config.addDefault("optimization-methods.nametag-optimization.enable", true);
         this.createTitledSection("Villager Chunk Limit", "villager-chunk-limit");
         this.createTitledSection("Gameplay", "gameplay");

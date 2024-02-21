@@ -42,11 +42,10 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onTarget(EntityTargetEvent event) {
-        // Yes, instanceof checks would look way more beautiful here but checking type is much faster
         Entity target = event.getTarget();
         if (
                 target != null
-                && target.getType() == EntityType.VILLAGER
+                && target.getType().equals(EntityType.VILLAGER)
                 && villagerCache.getOrAdd((Villager) target).isOptimized()
         ) {
             event.setTarget(null);
@@ -59,7 +58,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
         Entity target = event.getTargetEntity();
         if (
                 target != null
-                && target.getType() == EntityType.VILLAGER
+                && target.getType().equals(EntityType.VILLAGER)
                 && villagerCache.getOrAdd((Villager) target).isOptimized()
         ) {
             event.setCancelled(true);
@@ -69,11 +68,11 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onEntityAttackVillager(EntityDamageByEntityEvent event) {
         if (
-                event.getEntityType() == EntityType.VILLAGER
-                && event.getDamager() instanceof Mob attacker
+                event.getEntityType().equals(EntityType.VILLAGER)
+                && event.getDamager() instanceof Mob
                 && villagerCache.getOrAdd((Villager) event.getEntity()).isOptimized()
         ) {
-            attacker.setTarget(null);
+            ((Mob) event.getDamager()).setTarget(null);
         }
     }
  }

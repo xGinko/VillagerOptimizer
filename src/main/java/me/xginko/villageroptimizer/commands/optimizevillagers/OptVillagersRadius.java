@@ -9,6 +9,7 @@ import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.permissions.Bypass;
 import me.xginko.villageroptimizer.enums.permissions.Commands;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
+import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -32,9 +33,9 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
     public OptVillagersRadius() {
         Config config = VillagerOptimizer.getConfiguration();
         this.max_radius = config.getInt("optimization-methods.commands.optimizevillagers.max-block-radius", 100);
-        this.cooldown = config.getInt("optimization-methods.commands.optimizevillagers.cooldown-seconds", 600, """
-                Cooldown in seconds until a villager can be optimized again using the command.\s
-                Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.""") * 1000L;
+        this.cooldown = config.getInt("optimization-methods.commands.optimizevillagers.cooldown-seconds", 600,
+                "Cooldown in seconds until a villager can be optimized again using the command.\n" +
+                "Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.") * 1000L;
     }
 
     @Override
@@ -50,18 +51,21 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!sender.hasPermission(Commands.OPTIMIZE_RADIUS.get())) {
-            sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
+            KyoriUtil.sendMessage(sender, VillagerOptimizer.getLang(sender).no_permission);
             return true;
         }
 
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("This command can only be executed by a player.")
+        if (!(sender instanceof Player)) {
+            KyoriUtil.sendMessage(sender, Component.text("This command can only be executed by a player.")
                     .color(NamedTextColor.RED).decorate(TextDecoration.BOLD));
             return true;
         }
 
+        Player player = (Player) sender;
+
         if (args.length != 1) {
-            VillagerOptimizer.getLang(player.locale()).command_specify_radius.forEach(player::sendMessage);
+            VillagerOptimizer.getLang(player.locale()).command_specify_radius
+                    .forEach(line -> KyoriUtil.sendMessage(sender, line));
             return true;
         }
 
@@ -71,7 +75,8 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
             final int safeRadius = (int) Math.sqrt(specifiedRadius * specifiedRadius);
 
             if (safeRadius == 0) {
-                VillagerOptimizer.getLang(player.locale()).command_radius_invalid.forEach(player::sendMessage);
+                VillagerOptimizer.getLang(player.locale()).command_radius_invalid
+                        .forEach(line -> KyoriUtil.sendMessage(sender, line));
                 return true;
             }
 
@@ -80,7 +85,8 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
                         .matchLiteral("%distance%")
                         .replacement(Integer.toString(max_radius))
                         .build();
-                VillagerOptimizer.getLang(player.locale()).command_radius_limit_exceed.forEach(line -> player.sendMessage(line.replaceText(limit)));
+                VillagerOptimizer.getLang(player.locale()).command_radius_limit_exceed
+                        .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(limit)));
                 return true;
             }
 
@@ -114,7 +120,8 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
                         .matchLiteral("%radius%")
                         .replacement(Integer.toString(safeRadius))
                         .build();
-                VillagerOptimizer.getLang(player.locale()).command_no_villagers_nearby.forEach(line -> player.sendMessage(line.replaceText(radius)));
+                VillagerOptimizer.getLang(player.locale()).command_no_villagers_nearby
+                        .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(radius)));
                 return true;
             }
 
@@ -127,20 +134,20 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
                         .matchLiteral("%radius%")
                         .replacement(Integer.toString(safeRadius))
                         .build();
-                VillagerOptimizer.getLang(player.locale()).command_optimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(success_amount)
-                        .replaceText(radius)
-                ));
+                VillagerOptimizer.getLang(player.locale()).command_optimize_success
+                        .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(success_amount).replaceText(radius)));
             }
             if (failCount > 0) {
                 final TextReplacementConfig alreadyOptimized = TextReplacementConfig.builder()
                         .matchLiteral("%amount%")
                         .replacement(Integer.toString(failCount))
                         .build();
-                VillagerOptimizer.getLang(player.locale()).command_optimize_fail.forEach(line -> player.sendMessage(line.replaceText(alreadyOptimized)));
+                VillagerOptimizer.getLang(player.locale()).command_optimize_fail
+                        .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(alreadyOptimized)));
             }
         } catch (NumberFormatException e) {
-            VillagerOptimizer.getLang(player.locale()).command_radius_invalid.forEach(player::sendMessage);
+            VillagerOptimizer.getLang(player.locale()).command_radius_invalid
+                    .forEach(line -> KyoriUtil.sendMessage(player, line));
         }
 
         return true;

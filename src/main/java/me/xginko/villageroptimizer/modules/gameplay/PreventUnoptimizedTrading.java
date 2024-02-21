@@ -5,6 +5,7 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.permissions.Bypass;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import me.xginko.villageroptimizer.utils.KyoriUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -24,10 +25,10 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("gameplay.prevent-trading-with-unoptimized.enable", """
-                Will prevent players from selecting and using trades of unoptimized villagers.\s
-                Use this if you have a lot of villagers and therefore want to force your players to optimize them.\s
-                Inventories can still be opened so players can move villagers around.""");
+        config.master().addComment("gameplay.prevent-trading-with-unoptimized.enable",
+                "Will prevent players from selecting and using trades of unoptimized villagers.\n" +
+                "Use this if you have a lot of villagers and therefore want to force your players to optimize them.\n" +
+                "Inventories can still be opened so players can move villagers around.");
         this.notify_player = config.getBoolean("gameplay.prevent-trading-with-unoptimized.notify-player", true,
                 "Sends players a message when they try to trade with an unoptimized villager.");
     }
@@ -48,36 +49,38 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
         return VillagerOptimizer.getConfiguration().getBoolean("gameplay.prevent-trading-with-unoptimized.enable", false);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onTradeOpen(TradeSelectEvent event) {
+        if (!event.getInventory().getType().equals(InventoryType.MERCHANT)) return;
         if (event.getWhoClicked().hasPermission(Bypass.TRADE_PREVENTION.get())) return;
+        if (!(event.getInventory().getHolder() instanceof Villager)) return;
 
-        if (
-                event.getInventory().getType().equals(InventoryType.MERCHANT)
-                && event.getInventory().getHolder() instanceof Villager villager
-                && !villagerCache.getOrAdd(villager).isOptimized()
-        ) {
+        Villager villager = (Villager) event.getInventory().getHolder();
+
+        if (!villagerCache.getOrAdd(villager).isOptimized()) {
             event.setCancelled(true);
             if (notify_player) {
                 Player player = (Player) event.getWhoClicked();
-                VillagerOptimizer.getLang(player.locale()).optimize_for_trading.forEach(player::sendMessage);
+                VillagerOptimizer.getLang(player.locale()).optimize_for_trading
+                        .forEach(line -> KyoriUtil.sendMessage(player, line));
             }
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onInventoryClick(InventoryClickEvent event) {
+        if (!event.getInventory().getType().equals(InventoryType.MERCHANT)) return;
         if (event.getWhoClicked().hasPermission(Bypass.TRADE_PREVENTION.get())) return;
+        if (!(event.getInventory().getHolder() instanceof Villager)) return;
 
-        if (
-                event.getInventory().getType().equals(InventoryType.MERCHANT)
-                && event.getInventory().getHolder() instanceof Villager villager
-                && !villagerCache.getOrAdd(villager).isOptimized()
-        ) {
+        Villager villager = (Villager) event.getInventory().getHolder();
+
+        if (!villagerCache.getOrAdd(villager).isOptimized()) {
             event.setCancelled(true);
             if (notify_player) {
                 Player player = (Player) event.getWhoClicked();
-                VillagerOptimizer.getLang(player.locale()).optimize_for_trading.forEach(player::sendMessage);
+                VillagerOptimizer.getLang(player.locale()).optimize_for_trading
+                        .forEach(line -> KyoriUtil.sendMessage(player, line));
             }
         }
     }

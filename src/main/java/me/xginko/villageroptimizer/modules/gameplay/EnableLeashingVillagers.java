@@ -31,8 +31,8 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("gameplay.villagers-can-be-leashed.enable", """
-                Enable leashing of villagers, enabling players to easily move villagers to where they want them to be.""");
+        config.master().addComment("gameplay.villagers-can-be-leashed.enable",
+                "Enable leashing of villagers, enabling players to easily move villagers to where they want them to be.");
         this.only_optimized = config.getBoolean("gameplay.villagers-can-be-leashed.only-optimized", false,
                 "If set to true, only optimized villagers can be leashed.");
         this.log_enabled = config.getBoolean("gameplay.villagers-can-be-leashed.log", false);
@@ -86,7 +86,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
-                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.plugin_style.color()));
+                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.STYLE.color()));
             }
         });
     }

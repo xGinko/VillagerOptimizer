@@ -25,10 +25,11 @@ public class RenameOptimizedVillagers implements VillagerOptimizerModule, Listen
         shouldEnable();
         this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("gameplay.rename-optimized-villagers.enable", """
-                Will change a villager's name to the name configured below when they are optimized.\s
-                These names will be removed when unoptimized again if they were not changed in the meantime.""");
-        this.optimized_name = MiniMessage.miniMessage().deserialize(config.getString("gameplay.rename-optimized-villagers.optimized-name", "<green>Optimized",
+        config.master().addComment("gameplay.rename-optimized-villagers.enable",
+                "Will change a villager's name to the name configured below when they are optimized.\n" +
+                "These names will be removed when unoptimized again if they were not changed in the meantime.");
+        this.optimized_name = MiniMessage.miniMessage().deserialize(
+                config.getString("gameplay.rename-optimized-villagers.optimized-name", "<green>Optimized",
                 "The name that will be used to mark optimized villagers. Uses MiniMessage format."));
         this.overwrite_previous_name = config.getBoolean("gameplay.rename-optimized-villagers.overwrite-existing-name", false,
                 "If set to true, will rename even if the villager has already been named.");

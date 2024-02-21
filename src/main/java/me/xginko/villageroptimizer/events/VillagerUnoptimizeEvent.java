@@ -17,14 +17,23 @@ public class VillagerUnoptimizeEvent extends Event implements Cancellable {
     private final @Nullable Player whoUnoptimized;
     private boolean isCancelled = false;
 
-    public VillagerUnoptimizeEvent(@NotNull WrappedVillager wrappedVillager, @Nullable Player whoUnoptimized, @NotNull OptimizationType unOptimizeType, boolean isAsync) {
+    public VillagerUnoptimizeEvent(
+            @NotNull WrappedVillager wrappedVillager,
+            @Nullable Player whoUnoptimized,
+            @NotNull OptimizationType unOptimizeType,
+            boolean isAsync
+    ) {
         super(isAsync);
         this.wrappedVillager = wrappedVillager;
         this.whoUnoptimized = whoUnoptimized;
         this.unOptimizeType = unOptimizeType;
     }
 
-    public VillagerUnoptimizeEvent(@NotNull WrappedVillager wrappedVillager, @Nullable Player whoUnoptimized, @NotNull OptimizationType unOptimizeType) {
+    public VillagerUnoptimizeEvent(
+            @NotNull WrappedVillager wrappedVillager,
+            @Nullable Player whoUnoptimized,
+            @NotNull OptimizationType unOptimizeType
+    ) {
         this.wrappedVillager = wrappedVillager;
         this.whoUnoptimized = whoUnoptimized;
         this.unOptimizeType = unOptimizeType;

@@ -2,10 +2,8 @@ package me.xginko.villageroptimizer;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -21,11 +19,6 @@ public final class VillagerCache {
 
     public @NotNull ConcurrentMap<UUID, WrappedVillager> cacheMap() {
         return this.villagerCache.asMap();
-    }
-
-    public @Nullable WrappedVillager get(@NotNull UUID uuid) {
-        WrappedVillager wrappedVillager = this.villagerCache.getIfPresent(uuid);
-        return wrappedVillager == null && Bukkit.getEntity(uuid) instanceof Villager villager ? this.add(villager) : wrappedVillager;
     }
 
     public @NotNull WrappedVillager getOrAdd(@NotNull Villager villager) {

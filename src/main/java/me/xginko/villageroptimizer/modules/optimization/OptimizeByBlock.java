@@ -11,6 +11,7 @@ import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
@@ -28,8 +29,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -47,10 +48,10 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("optimization-methods.block-optimization.enable", """
-                When enabled, the closest villager standing near a configured block being placed will be optimized.\s
-                If a configured block is broken nearby, the closest villager will become unoptimized again.""");
-        this.blocks_that_disable = config.getList("optimization-methods.block-optimization.materials", List.of(
+        config.master().addComment("optimization-methods.block-optimization.enable",
+                "When enabled, the closest villager standing near a configured block being placed will be optimized.\n" +
+                "If a configured block is broken nearby, the closest villager will become unoptimized again.");
+        this.blocks_that_disable = config.getList("optimization-methods.block-optimization.materials", Arrays.asList(
                 "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
         ), "Values here need to be valid bukkit Material enums for your server version."
         ).stream().map(configuredMaterial -> {
@@ -64,12 +65,12 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             }
         }).filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
-                config.getInt("optimization-methods.block-optimization.optimize-cooldown-seconds", 600, """
-                Cooldown in seconds until a villager can be optimized again by using specific blocks.\s
-                Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior."""));
-        this.search_radius = config.getDouble("optimization-methods.block-optimization.search-radius-in-blocks", 2.0, """
-                The radius in blocks a villager can be away from the player when he places an optimize block.\s
-                The closest unoptimized villager to the player will be optimized.""") / 2;
+                config.getInt("optimization-methods.block-optimization.optimize-cooldown-seconds", 600,
+                "Cooldown in seconds until a villager can be optimized again by using specific blocks.\n" +
+                "Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior."));
+        this.search_radius = config.getDouble("optimization-methods.block-optimization.search-radius-in-blocks", 2.0,
+                "The radius in blocks a villager can be away from the player when he places an optimize block.\n" +
+                "The closest unoptimized villager to the player will be optimized.") / 2;
         this.only_while_sneaking = config.getBoolean("optimization-methods.block-optimization.only-when-sneaking", true,
                 "Only optimize/unoptimize by workstation when player is sneaking during place or break.");
         this.notify_player = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
@@ -123,7 +124,13 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (closestOptimizableVillager == null) return;
 
         if (closestOptimizableVillager.canOptimize(cooldown_millis) || player.hasPermission(Bypass.BLOCK_COOLDOWN.get())) {
-            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(closestOptimizableVillager, OptimizationType.BLOCK, player, event.isAsynchronous());
+            VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(
+                    closestOptimizableVillager,
+                    OptimizationType.BLOCK,
+                    player,
+                    event.isAsynchronous()
+            );
+
             if (!optimizeEvent.callEvent()) return;
 
             closestOptimizableVillager.setOptimizationType(optimizeEvent.getOptimizationType());
@@ -138,15 +145,13 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                         .matchLiteral("%blocktype%")
                         .replacement(placed.getType().toString().toLowerCase())
                         .build();
-                VillagerOptimizer.getLang(player.locale()).block_optimize_success.forEach(line -> player.sendMessage(line
-                        .replaceText(vilProfession)
-                        .replaceText(placedMaterial)
-                ));
+                VillagerOptimizer.getLang(player.locale()).block_optimize_success
+                        .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedMaterial)));
             }
 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text(player.getName() + " optimized villager by block at " +
-                        CommonUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
+                        CommonUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
             }
         } else {
             CommonUtil.shakeHead(closestOptimizableVillager.villager());
@@ -155,7 +160,8 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                         .matchLiteral("%time%")
                         .replacement(CommonUtil.formatDuration(Duration.ofMillis(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown_millis))))
                         .build();
-                VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown.forEach(line -> player.sendMessage(line.replaceText(timeLeft)));
+                VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown
+                        .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
             }
         }
     }
@@ -187,7 +193,13 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
         if (closestOptimizedVillager == null) return;
 
-        VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(closestOptimizedVillager, player, OptimizationType.BLOCK, event.isAsynchronous());
+        VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(
+                closestOptimizedVillager,
+                player,
+                OptimizationType.BLOCK,
+                event.isAsynchronous()
+        );
+
         if (!unOptimizeEvent.callEvent()) return;
 
         closestOptimizedVillager.setOptimizationType(OptimizationType.NONE);
@@ -201,15 +213,13 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                     .matchLiteral("%blocktype%")
                     .replacement(broken.getType().toString().toLowerCase())
                     .build();
-            VillagerOptimizer.getLang(player.locale()).block_unoptimize_success.forEach(line -> player.sendMessage(line
-                    .replaceText(vilProfession)
-                    .replaceText(brokenMaterial)
-            ));
+            VillagerOptimizer.getLang(player.locale()).block_unoptimize_success
+                    .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(brokenMaterial)));
         }
 
         if (log_enabled) {
             VillagerOptimizer.getLog().info(Component.text(player.getName() + " unoptimized villager by block at " +
-                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.plugin_style.color()));
+                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
         }
     }
 }

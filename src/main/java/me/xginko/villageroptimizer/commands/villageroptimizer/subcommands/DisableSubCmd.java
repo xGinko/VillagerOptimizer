@@ -4,6 +4,7 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.SubCommand;
 import me.xginko.villageroptimizer.enums.permissions.Commands;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -23,21 +24,21 @@ public class DisableSubCmd extends SubCommand {
 
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer disable").color(VillagerOptimizer.plugin_style.color());
+        return Component.text("/villageroptimizer disable").color(VillagerOptimizer.STYLE.color());
     }
 
     @Override
     public void perform(CommandSender sender, String[] args) {
         if (!sender.hasPermission(Commands.DISABLE.get())) {
-            sender.sendMessage(VillagerOptimizer.getLang(sender).no_permission);
+            KyoriUtil.sendMessage(sender, VillagerOptimizer.getLang(sender).no_permission);
             return;
         }
 
-        sender.sendMessage(Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
+        KyoriUtil.sendMessage(sender, Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
         VillagerOptimizerModule.modules.forEach(VillagerOptimizerModule::disable);
         VillagerOptimizerModule.modules.clear();
         VillagerOptimizer.getCache().cacheMap().clear();
-        sender.sendMessage(Component.text("Disabled all plugin listeners and tasks.").color(NamedTextColor.GREEN));
-        sender.sendMessage(Component.text("You can enable the plugin again using the reload command.").color(NamedTextColor.YELLOW));
+        KyoriUtil.sendMessage(sender, Component.text("Disabled all plugin listeners and tasks.").color(NamedTextColor.GREEN));
+        KyoriUtil.sendMessage(sender, Component.text("You can enable the plugin again using the reload command.").color(NamedTextColor.YELLOW));
     }
 }

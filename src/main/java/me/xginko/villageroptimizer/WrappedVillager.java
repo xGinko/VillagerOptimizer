@@ -59,13 +59,14 @@ public final class WrappedVillager {
     /**
      * @return True if the villager is optimized by the supported plugin, otherwise false.
      */
-    public boolean isOptimized(Keyring.Spaces namespaces) {
-        return switch (namespaces) {
-            case VillagerOptimizer -> dataContainer.has(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING);
-            case AntiVillagerLag -> dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey(), PersistentDataType.STRING)
-                    || dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey(), PersistentDataType.STRING)
-                    || dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey(), PersistentDataType.STRING);
-        };
+    public boolean isOptimized(Keyring.Spaces namespace) {
+        if (namespace == Keyring.Spaces.VillagerOptimizer) {
+            return dataContainer.has(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING);
+        } else {
+            return dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey(), PersistentDataType.STRING)
+            || dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey(), PersistentDataType.STRING)
+            || dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey(), PersistentDataType.STRING);
+        }
     }
 
     /**
@@ -92,26 +93,23 @@ public final class WrappedVillager {
             // Keep repeating task until villager is no longer trading with a player
             if (villager.isTrading()) return;
 
-            switch (type) {
-                case NAMETAG, COMMAND, BLOCK, WORKSTATION -> {
-                    dataContainer.set(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING, type.name());
-                    villager.setAware(false);
+            if (type == OptimizationType.NONE) {
+                if (isOptimized(Keyring.Spaces.VillagerOptimizer)) {
+                    dataContainer.remove(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey());
                 }
-                case NONE -> {
-                    if (isOptimized(Keyring.Spaces.VillagerOptimizer)) {
-                        dataContainer.remove(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey());
-                    }
-                    if (parseOther) {
-                        if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey(), PersistentDataType.STRING))
-                            dataContainer.remove(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey());
-                        if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey(), PersistentDataType.STRING))
-                            dataContainer.remove(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey());
-                        if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey(), PersistentDataType.STRING))
-                            dataContainer.remove(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey());
-                    }
-                    villager.setAware(true);
-                    villager.setAI(true);
+                if (parseOther) {
+                    if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey(), PersistentDataType.STRING))
+                        dataContainer.remove(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey());
+                    if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey(), PersistentDataType.STRING))
+                        dataContainer.remove(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey());
+                    if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey(), PersistentDataType.STRING))
+                        dataContainer.remove(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey());
                 }
+                villager.setAware(true);
+                villager.setAI(true);
+            } else {
+                dataContainer.set(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING, type.name());
+                villager.setAware(false);
             }
 
             // End repeating task once logic is finished
@@ -134,26 +132,26 @@ public final class WrappedVillager {
     }
 
     public @NotNull OptimizationType getOptimizationType(Keyring.Spaces namespaces) {
-        return switch (namespaces) {
-            case VillagerOptimizer -> {
-                if (isOptimized(Keyring.Spaces.VillagerOptimizer)) {
-                    yield OptimizationType.valueOf(dataContainer.get(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING));
-                }
-                yield OptimizationType.NONE;
+        if (namespaces == Keyring.Spaces.VillagerOptimizer) {
+            if (!isOptimized(Keyring.Spaces.VillagerOptimizer)) {
+                return OptimizationType.valueOf(dataContainer.get(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING));
+            } else {
+                return OptimizationType.NONE;
             }
-            case AntiVillagerLag -> {
-                if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey(), PersistentDataType.STRING)) {
-                    yield OptimizationType.BLOCK;
-                }
-                if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey(), PersistentDataType.STRING)) {
-                    yield OptimizationType.WORKSTATION;
-                }
-                if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey(), PersistentDataType.STRING)) {
-                    yield OptimizationType.COMMAND; // Best we can do
-                }
-                yield OptimizationType.NONE;
+        }
+        if (namespaces == Keyring.Spaces.AntiVillagerLag) {
+            if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_BLOCK.getKey(), PersistentDataType.STRING)) {
+                return OptimizationType.BLOCK;
             }
-        };
+            if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_WORKSTATION.getKey(), PersistentDataType.STRING)) {
+                return OptimizationType.WORKSTATION;
+            }
+            if (dataContainer.has(Keyring.AntiVillagerLag.OPTIMIZED_ANY.getKey(), PersistentDataType.STRING)) {
+                return OptimizationType.COMMAND; // Best we can do
+            }
+            return OptimizationType.NONE;
+        }
+        return OptimizationType.NONE;
     }
 
     /**

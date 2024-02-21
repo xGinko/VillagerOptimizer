@@ -7,13 +7,16 @@ import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.Disabl
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.ReloadSubCmd;
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.VersionSubCmd;
 import me.xginko.villageroptimizer.enums.permissions.Commands;
+import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VillagerOptimizerCmd implements VillagerOptimizerCommand {
 
@@ -21,8 +24,8 @@ public class VillagerOptimizerCmd implements VillagerOptimizerCommand {
     private final List<String> tabCompleter;
 
     public VillagerOptimizerCmd() {
-        subCommands = List.of(new ReloadSubCmd(), new VersionSubCmd(), new DisableSubCmd());
-        tabCompleter = subCommands.stream().map(SubCommand::getLabel).toList();
+        subCommands = Arrays.asList(new ReloadSubCmd(), new VersionSubCmd(), new DisableSubCmd());
+        tabCompleter = subCommands.stream().map(SubCommand::getLabel).collect(Collectors.toList());
     }
 
     @Override
@@ -55,21 +58,21 @@ public class VillagerOptimizerCmd implements VillagerOptimizerCommand {
 
     private void sendCommandOverview(CommandSender sender) {
         if (!sender.hasPermission(Commands.RELOAD.get()) && !sender.hasPermission(Commands.VERSION.get())) return;
-        sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
-        sender.sendMessage(Component.text("VillagerOptimizer Commands").color(VillagerOptimizer.plugin_style.color()));
-        sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
-        subCommands.forEach(subCommand -> sender.sendMessage(
+        KyoriUtil.sendMessage(sender, Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
+        KyoriUtil.sendMessage(sender, Component.text("VillagerOptimizer Commands").color(VillagerOptimizer.STYLE.color()));
+        KyoriUtil.sendMessage(sender, Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
+        subCommands.forEach(subCommand -> KyoriUtil.sendMessage(sender,
                 subCommand.getSyntax().append(Component.text(" - ").color(NamedTextColor.DARK_GRAY)).append(subCommand.getDescription())));
-        sender.sendMessage(
-                Component.text("/optimizevillagers <blockradius>").color(VillagerOptimizer.plugin_style.color())
+        KyoriUtil.sendMessage(sender,
+                Component.text("/optimizevillagers <blockradius>").color(VillagerOptimizer.STYLE.color())
                 .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text("Optimize villagers in a radius").color(NamedTextColor.GRAY))
         );
-        sender.sendMessage(
-                Component.text("/unoptmizevillagers <blockradius>").color(VillagerOptimizer.plugin_style.color())
+        KyoriUtil.sendMessage(sender,
+                Component.text("/unoptmizevillagers <blockradius>").color(VillagerOptimizer.STYLE.color())
                 .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text("Unoptimize villagers in a radius").color(NamedTextColor.GRAY))
         );
-        sender.sendMessage(Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
+        KyoriUtil.sendMessage(sender, Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
     }
 }
