@@ -119,7 +119,13 @@
             <artifactId>adventure-text-minimessage</artifactId>
             <version>4.16.0</version>
         </dependency>
-        <!-- Adventure ComponentLogger for colorful logging -->
+        <!-- Needed to actually display colors in ComponentLogger -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-ansi</artifactId>
+            <version>4.16.0</version>
+        </dependency>
+        <!-- Adventure ComponentLogger for colorful slf4j logging -->
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-logger-slf4j</artifactId>
