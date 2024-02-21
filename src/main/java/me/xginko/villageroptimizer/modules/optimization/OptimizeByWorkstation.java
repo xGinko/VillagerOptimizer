@@ -167,7 +167,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text(player.getName() +
                         " optimized villager by workstation (" + placed.getType().toString().toLowerCase() + ") at " +
-                        CommonUtil.formatLocation(finalToOptimize.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
+                        CommonUtil.formatLocation(finalToOptimize.villager().getLocation())).color(VillagerOptimizer.COLOR));
             }
         }, toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis, TimeUnit.MILLISECONDS));
     }
@@ -232,7 +232,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (log_enabled) {
             VillagerOptimizer.getLog().info(Component.text(player.getName() +
                     " unoptimized villager by workstation (" + broken.getType().toString().toLowerCase() + ") at " +
-                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
+                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
         }
     }
 }

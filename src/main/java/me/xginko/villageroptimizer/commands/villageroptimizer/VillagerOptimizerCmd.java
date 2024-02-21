@@ -59,17 +59,17 @@ public class VillagerOptimizerCmd implements VillagerOptimizerCommand {
     private void sendCommandOverview(CommandSender sender) {
         if (!sender.hasPermission(Commands.RELOAD.get()) && !sender.hasPermission(Commands.VERSION.get())) return;
         KyoriUtil.sendMessage(sender, Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
-        KyoriUtil.sendMessage(sender, Component.text("VillagerOptimizer Commands").color(VillagerOptimizer.STYLE.color()));
+        KyoriUtil.sendMessage(sender, Component.text("VillagerOptimizer Commands").color(VillagerOptimizer.COLOR));
         KyoriUtil.sendMessage(sender, Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
         subCommands.forEach(subCommand -> KyoriUtil.sendMessage(sender,
                 subCommand.getSyntax().append(Component.text(" - ").color(NamedTextColor.DARK_GRAY)).append(subCommand.getDescription())));
         KyoriUtil.sendMessage(sender,
-                Component.text("/optimizevillagers <blockradius>").color(VillagerOptimizer.STYLE.color())
+                Component.text("/optimizevillagers <blockradius>").color(VillagerOptimizer.COLOR)
                 .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text("Optimize villagers in a radius").color(NamedTextColor.GRAY))
         );
         KyoriUtil.sendMessage(sender,
-                Component.text("/unoptmizevillagers <blockradius>").color(VillagerOptimizer.STYLE.color())
+                Component.text("/unoptmizevillagers <blockradius>").color(VillagerOptimizer.COLOR)
                 .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text("Unoptimize villagers in a radius").color(NamedTextColor.GRAY))
         );

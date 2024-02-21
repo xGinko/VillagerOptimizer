@@ -82,7 +82,7 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text("Restocked optimized villager at " +
-                        CommonUtil.formatLocation(wVillager.villager().getLocation())).style(VillagerOptimizer.STYLE));
+                        CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
             }
         }
     }

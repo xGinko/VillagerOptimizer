@@ -23,7 +23,7 @@ public class ReloadSubCmd extends SubCommand {
 
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer reload").color(VillagerOptimizer.STYLE.color());
+        return Component.text("/villageroptimizer reload").color(VillagerOptimizer.COLOR);
     }
 
     @Override

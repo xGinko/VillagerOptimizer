@@ -126,7 +126,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 if (log_enabled) {
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
                             " optimized villager by nametag '" + name + "' at " +
-                            CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
+                            CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
                 }
             } else {
                 event.setCancelled(true);
@@ -155,7 +155,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 if (log_enabled) {
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
                             " unoptimized villager by nametag '" + name + "' at " +
-                            CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
+                            CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
                 }
             }
         }

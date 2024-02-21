@@ -151,7 +151,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text(player.getName() + " optimized villager by block at " +
-                        CommonUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
+                        CommonUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
             }
         } else {
             CommonUtil.shakeHead(closestOptimizableVillager.villager());
@@ -219,7 +219,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
         if (log_enabled) {
             VillagerOptimizer.getLog().info(Component.text(player.getName() + " unoptimized villager by block at " +
-                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.STYLE.color()));
+                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
         }
     }
 }

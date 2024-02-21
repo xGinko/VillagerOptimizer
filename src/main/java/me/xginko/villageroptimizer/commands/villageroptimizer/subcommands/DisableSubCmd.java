@@ -24,7 +24,7 @@ public class DisableSubCmd extends SubCommand {
 
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer disable").color(VillagerOptimizer.STYLE.color());
+        return Component.text("/villageroptimizer disable").color(VillagerOptimizer.COLOR);
     }
 
     @Override

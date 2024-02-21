@@ -157,7 +157,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                     if (log_enabled) {
                         VillagerOptimizer.getLog().info(Component.text(
                                 "Removed unoptimized villager with profession '" + villager.getProfession().name() + "' at " +
-                                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.STYLE.color()));
+                                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.COLOR));
                     }
                 });
             }
@@ -180,7 +180,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                     if (log_enabled) {
                         VillagerOptimizer.getLog().info(Component.text("Removed optimized villager with profession '" +
                                 villager.getProfession().name() + "' at " +
-                                CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.STYLE.color()));
+                                CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.COLOR));
                     }
                 });
             }

@@ -29,7 +29,8 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 public final class VillagerOptimizer extends JavaPlugin {
-    public static final Style STYLE = Style.style(TextColor.color(102,255,230), TextDecoration.BOLD);
+    public static final TextColor COLOR = TextColor.color(102,255,230);
+    public static final Style STYLE = Style.style(COLOR, TextDecoration.BOLD);
 
     private static VillagerOptimizer instance;
     private static VillagerCache villagerCache;
