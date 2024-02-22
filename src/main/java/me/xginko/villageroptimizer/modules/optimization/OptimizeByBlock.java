@@ -72,7 +72,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                 "The radius in blocks a villager can be away from the player when he places an optimize block.\n" +
                 "The closest unoptimized villager to the player will be optimized.") / 2;
         this.only_while_sneaking = config.getBoolean("optimization-methods.block-optimization.only-when-sneaking", true,
-                "Only optimize/unoptimize by workstation when player is sneaking during place or break.");
+                "Only optimize/unoptimize by block when player is sneaking during place or break.");
         this.notify_player = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
                 "Sends players a message when they successfully optimized or unoptimized a villager.");
         this.log_enabled = config.getBoolean("optimization-methods.block-optimization.log", false);
