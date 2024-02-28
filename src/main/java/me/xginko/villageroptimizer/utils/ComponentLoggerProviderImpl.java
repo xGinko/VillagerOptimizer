@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.logging;
+package me.xginko.villageroptimizer.utils;
 
 import com.google.auto.service.AutoService;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
@@ -22,4 +22,3 @@ public final class ComponentLoggerProviderImpl implements ComponentLoggerProvide
         return helper.delegating(LoggerFactory.getLogger(name), SERIALIZER::serialize);
     }
 }
-

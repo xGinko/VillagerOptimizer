@@ -54,16 +54,14 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
         if (!event.getInventory().getType().equals(InventoryType.MERCHANT)) return;
         if (event.getWhoClicked().hasPermission(Bypass.TRADE_PREVENTION.get())) return;
         if (!(event.getInventory().getHolder() instanceof Villager)) return;
+        if (villagerCache.getOrAdd((Villager) event.getInventory().getHolder()).isOptimized()) return;
 
-        Villager villager = (Villager) event.getInventory().getHolder();
+        event.setCancelled(true);
 
-        if (!villagerCache.getOrAdd(villager).isOptimized()) {
-            event.setCancelled(true);
-            if (notify_player) {
-                Player player = (Player) event.getWhoClicked();
-                VillagerOptimizer.getLang(player.locale()).optimize_for_trading
-                        .forEach(line -> KyoriUtil.sendMessage(player, line));
-            }
+        if (notify_player) {
+            Player player = (Player) event.getWhoClicked();
+            VillagerOptimizer.getLang(player.locale()).optimize_for_trading
+                    .forEach(line -> KyoriUtil.sendMessage(player, line));
         }
     }
 
@@ -72,16 +70,14 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
         if (!event.getInventory().getType().equals(InventoryType.MERCHANT)) return;
         if (event.getWhoClicked().hasPermission(Bypass.TRADE_PREVENTION.get())) return;
         if (!(event.getInventory().getHolder() instanceof Villager)) return;
+        if (villagerCache.getOrAdd((Villager) event.getInventory().getHolder()).isOptimized()) return;
 
-        Villager villager = (Villager) event.getInventory().getHolder();
+        event.setCancelled(true);
 
-        if (!villagerCache.getOrAdd(villager).isOptimized()) {
-            event.setCancelled(true);
-            if (notify_player) {
-                Player player = (Player) event.getWhoClicked();
-                VillagerOptimizer.getLang(player.locale()).optimize_for_trading
-                        .forEach(line -> KyoriUtil.sendMessage(player, line));
-            }
+        if (notify_player) {
+            Player player = (Player) event.getWhoClicked();
+            VillagerOptimizer.getLang(player.locale()).optimize_for_trading
+                    .forEach(line -> KyoriUtil.sendMessage(player, line));
         }
     }
 }

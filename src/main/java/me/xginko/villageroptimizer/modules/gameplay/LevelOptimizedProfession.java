@@ -68,22 +68,21 @@ public class LevelOptimizedProfession implements VillagerOptimizerModule, Listen
                 event.getInventory().getType().equals(InventoryType.MERCHANT)
                 && event.getInventory().getHolder() instanceof Villager
         ) {
-            Villager villager = (Villager) event.getInventory().getHolder();
-            WrappedVillager wVillager = villagerCache.getOrAdd(villager);
+            final Villager villager = (Villager) event.getInventory().getHolder();
+            final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
             if (!wVillager.isOptimized()) return;
 
             if (wVillager.canLevelUp(cooldown_millis)) {
-                if (wVillager.calculateLevel() > villager.getVillagerLevel()) {
-                    scheduler.runAtEntity(villager, enableAI -> {
-                        villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 120, 120, false, false));
-                        villager.setAware(true);
+                if (wVillager.calculateLevel() <= villager.getVillagerLevel()) return;
 
-                        scheduler.runAtEntityLater(villager, disableAI -> {
-                            villager.setAware(false);
-                            wVillager.saveLastLevelUp();
-                        }, 5, TimeUnit.SECONDS);
-                    });
-                }
+                scheduler.runAtEntity(villager, enableAI -> {
+                    villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 120, 120, false, false));
+                    villager.setAware(true);
+                    scheduler.runAtEntityLater(villager, disableAI -> {
+                        villager.setAware(false);
+                        wVillager.saveLastLevelUp();
+                    }, 5, TimeUnit.SECONDS);
+                });
             } else {
                 if (notify_player) {
                     Player player = (Player) event.getPlayer();

@@ -37,7 +37,7 @@ public class MakeVillagersSpawnAdult implements VillagerOptimizerModule, Listene
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onVillagerSpawn(CreatureSpawnEvent event) {
         if (event.getEntityType().equals(EntityType.VILLAGER)) {
-            Villager villager = (Villager) event.getEntity();
+            final Villager villager = (Villager) event.getEntity();
             if (!villager.isAdult()) villager.setAdult();
         }
     }

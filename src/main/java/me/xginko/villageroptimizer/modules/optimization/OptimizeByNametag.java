@@ -14,7 +14,6 @@ import me.xginko.villageroptimizer.utils.CommonUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 
 public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
-    private final PlainTextComponentSerializer plainTextSerializer;
     private final VillagerCache villagerCache;
     private final Set<String> nametags;
     private final long cooldown;
@@ -44,7 +42,6 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
     public OptimizeByNametag() {
         shouldEnable();
-        this.plainTextSerializer = PlainTextComponentSerializer.plainText();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
         config.master().addComment("optimization-methods.nametag-optimization.enable",
@@ -83,23 +80,23 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (!player.hasPermission(Optimize.NAMETAG.get())) return;
 
-        ItemStack usedItem = player.getInventory().getItem(event.getHand());
+        final ItemStack usedItem = player.getInventory().getItem(event.getHand());
         if (usedItem != null && !usedItem.getType().equals(Material.NAME_TAG)) return;
         if (!usedItem.hasItemMeta()) return;
-        ItemMeta meta = usedItem.getItemMeta();
+        final ItemMeta meta = usedItem.getItemMeta();
         if (!meta.hasDisplayName()) return;
 
         // Get component name first, so we can manually name the villager when canceling the event to avoid item consumption.
-        Component newVillagerName = meta.displayName();
+        final Component newVillagerName = meta.displayName();
         assert newVillagerName != null; // Legitimate since we checked for hasDisplayName()
-        final String name = plainTextSerializer.serialize(newVillagerName);
-        Villager villager = (Villager) event.getRightClicked();
-        WrappedVillager wVillager = villagerCache.getOrAdd(villager);
+        final String nameTagPlainText = CommonUtil.plainTextSerializer.serialize(newVillagerName);
+        final Villager villager = (Villager) event.getRightClicked();
+        final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
-        if (nametags.contains(name.toLowerCase())) {
+        if (nametags.contains(nameTagPlainText.toLowerCase())) {
             if (wVillager.canOptimize(cooldown) || player.hasPermission(Bypass.NAMETAG_COOLDOWN.get())) {
                 VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(
                         wVillager,
@@ -125,12 +122,12 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
                 if (log_enabled) {
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
-                            " optimized villager by nametag '" + name + "' at " +
+                            " optimized villager by nametag '" + nameTagPlainText + "' at " +
                             CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
                 }
             } else {
                 event.setCancelled(true);
-                CommonUtil.shakeHead(villager);
+                wVillager.sayNo();
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
@@ -142,9 +139,14 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
             }
         } else {
             if (wVillager.isOptimized()) {
-                VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager, player, OptimizationType.NAMETAG, event.isAsynchronous());
-                if (!unOptimizeEvent.callEvent()) return;
+                VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(
+                        wVillager,
+                        player,
+                        OptimizationType.NAMETAG,
+                        event.isAsynchronous()
+                );
 
+                if (!unOptimizeEvent.callEvent()) return;
                 wVillager.setOptimizationType(OptimizationType.NONE);
 
                 if (notify_player) {
@@ -154,7 +156,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
                 if (log_enabled) {
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
-                            " unoptimized villager by nametag '" + name + "' at " +
+                            " unoptimized villager by nametag '" + nameTagPlainText + "' at " +
                             CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
                 }
             }

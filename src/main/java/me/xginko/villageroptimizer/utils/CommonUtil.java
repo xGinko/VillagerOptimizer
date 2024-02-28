@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.utils;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 
 public class CommonUtil {
+    public static final PlainTextComponentSerializer plainTextSerializer = PlainTextComponentSerializer.plainText();
+
     public static @NotNull String formatDuration(Duration duration) {
         if (duration.isNegative()) duration = duration.negated();
 
@@ -40,12 +43,6 @@ public class CommonUtil {
             specificChunkLoadedMethodAvailable = false;
             return chunk.isLoaded();
         }
-    }
-
-    public static void shakeHead(@NotNull Villager villager) {
-        try {
-            villager.shakeHead();
-        } catch (NoSuchMethodError ignored) {}
     }
 
     public static Villager.Profession getWorkstationProfession(@NotNull Material workstation) {

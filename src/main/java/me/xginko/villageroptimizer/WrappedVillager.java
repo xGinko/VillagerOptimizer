@@ -2,9 +2,8 @@ package me.xginko.villageroptimizer;
 
 import me.xginko.villageroptimizer.enums.Keyring;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.inventory.MerchantRecipe;
@@ -263,6 +262,14 @@ public final class WrappedVillager {
     }
 
     /**
+     * @return true if the villager can loose his acquired profession by having their workstation destroyed.
+     */
+    public boolean canLooseProfession() {
+        // A villager with a level of 1 and no trading experience is liable to lose its profession.
+        return villager.getVillagerLevel() <= 1 && villager.getVillagerExperience() <= 0;
+    }
+
+    /**
      * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
      * @return Whether the villager can be leveled up or not with the checked milliseconds
      */
@@ -304,28 +311,23 @@ public final class WrappedVillager {
         return cooldown_millis;
     }
 
-    public void memorizeName(final Component customName) {
-        dataContainer.set(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING, MiniMessage.miniMessage().serialize(customName));
-    }
-
-    public @Nullable Component getMemorizedName() {
-        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING))
-            return MiniMessage.miniMessage().deserialize(dataContainer.get(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey(), PersistentDataType.STRING));
-        return null;
-    }
-
-    public void forgetName() {
-        dataContainer.remove(Keyring.VillagerOptimizer.LAST_OPTIMIZE_NAME.getKey());
+    public void sayNo() {
+        try {
+            villager.shakeHead();
+        } catch (NoSuchMethodError e) {
+            villager.getWorld().playSound(villager.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.0F);
+        }
     }
 
     private static class CachedJobSite {
+        private final @NotNull Villager villager;
         private @Nullable Location jobSite;
         private long lastRefresh;
-        private CachedJobSite(Villager villager) {
-            this.jobSite = villager.getMemory(MemoryKey.JOB_SITE);
-            this.lastRefresh = System.currentTimeMillis();
+        private CachedJobSite(@NotNull Villager villager) {
+            this.villager = villager;
+            this.jobSite = getJobSite();
         }
-        private @Nullable Location getJobSite(Villager villager) {
+        private @Nullable Location getJobSite() {
             final long now = System.currentTimeMillis();
             if (now - lastRefresh > 1000L) {
                 this.jobSite = villager.getMemory(MemoryKey.JOB_SITE);
@@ -338,11 +340,6 @@ public final class WrappedVillager {
     public @Nullable Location getJobSite() {
         if (cachedJobSite == null)
             cachedJobSite = new CachedJobSite(villager);
-        return cachedJobSite.getJobSite(villager);
-    }
-
-    public boolean canLooseProfession() {
-        // A villager with a level of 1 and no trading experience is liable to lose its profession.
-        return villager.getVillagerLevel() <= 1 && villager.getVillagerExperience() <= 0;
+        return cachedJobSite.getJobSite();
     }
 }

@@ -62,10 +62,11 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         final ItemStack handItem = player.getInventory().getItem(event.getHand());
         if (handItem == null || !handItem.getType().equals(Material.LEAD)) return;
 
-        Villager villager = (Villager) event.getRightClicked();
+        final Villager villager = (Villager) event.getRightClicked();
         if (villager.isLeashed()) return;
-        event.setCancelled(true); // Cancel the event, so we don't interact with the villager
         if (only_optimized && !villagerCache.getOrAdd(villager).isOptimized()) return;
+
+        event.setCancelled(true); // Cancel the event, so we don't interact with the villager
 
         // Call event for compatibility with other plugins, constructing non deprecated if available
         PlayerLeashEntityEvent leashEvent;
@@ -86,7 +87,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
-                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.STYLE.color()));
+                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.COLOR));
             }
         });
     }

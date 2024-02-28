@@ -61,10 +61,10 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
     private void onInteract(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
 
-        WrappedVillager wVillager = villagerCache.getOrAdd((Villager) event.getRightClicked());
+        final WrappedVillager wVillager = villagerCache.getOrAdd((Villager) event.getRightClicked());
         if (!wVillager.isOptimized()) return;
-        Player player = event.getPlayer();
 
+        final Player player = event.getPlayer();
         final boolean player_bypassing = player.hasPermission(Bypass.RESTOCK_COOLDOWN.get());
 
         if (wVillager.canRestock(restock_delay_millis) || player_bypassing) {

@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.logging;
+package me.xginko.villageroptimizer.utils;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;

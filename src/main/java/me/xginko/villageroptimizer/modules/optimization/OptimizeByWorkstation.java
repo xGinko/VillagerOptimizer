@@ -30,6 +30,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.VillagerCareerChangeEvent;
 import org.bukkit.util.NumberConversions;
 
 import java.time.Duration;
@@ -93,6 +94,20 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.workstation-optimization.enable", false);
     }
 
+    // Place block -> Remember what and where
+    // Wait for villager to claim jobsite
+    // Do optimization on that villager
+
+    // Destroy workstation -> look for nearby villager that claimed it
+    // Do unoptimization immediately
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private void onCareerChange(VillagerCareerChangeEvent event) {
+        if (!event.getReason().equals(VillagerCareerChangeEvent.ChangeReason.EMPLOYED)) return;
+
+
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockPlace(BlockPlaceEvent event) {
         final Block placed = event.getBlock();
@@ -127,7 +142,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
         pending_optimizations.put(placed.getLocation(), scheduler.runAtLocationLater(workstationLoc, () -> {
             if (!finalToOptimize.canOptimize(cooldown_millis) && !player.hasPermission(Bypass.WORKSTATION_COOLDOWN.get())) {
-                CommonUtil.shakeHead(finalToOptimize.villager());
+               finalToOptimize.sayNo();
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")

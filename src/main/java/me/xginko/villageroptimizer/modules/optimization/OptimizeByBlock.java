@@ -17,8 +17,6 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -58,7 +56,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             try {
                 return Material.valueOf(configuredMaterial);
             } catch (IllegalArgumentException e) {
-                VillagerOptimizer.getLog().warn("(block-optimization) Material '"+configuredMaterial +
+                VillagerOptimizer.getLog().warn("(block-optimization) Material '" + configuredMaterial +
                         "' not recognized. Please use correct Material enums from: " +
                         "https://jd.papermc.io/paper/1.20/org/bukkit/Material.html");
                 return null;
@@ -96,9 +94,9 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockPlace(BlockPlaceEvent event) {
-        Block placed = event.getBlock();
+        final Block placed = event.getBlock();
         if (!blocks_that_disable.contains(placed.getType())) return;
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (!player.hasPermission(Optimize.BLOCK.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
@@ -106,16 +104,14 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         WrappedVillager closestOptimizableVillager = null;
         double closestDistance = Double.MAX_VALUE;
 
-        for (Entity entity : blockLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
-            if (!entity.getType().equals(EntityType.VILLAGER)) continue;
-            Villager villager = (Villager) entity;
+        for (Villager villager : blockLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
             final Villager.Profession profession = villager.getProfession();
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
+            final double distance = villager.getLocation().distanceSquared(blockLoc);
+            if (distance >= closestDistance) continue;
 
-            WrappedVillager wVillager = villagerCache.getOrAdd(villager);
-            final double distance = entity.getLocation().distanceSquared(blockLoc);
-
-            if (distance < closestDistance && wVillager.canOptimize(cooldown_millis)) {
+            final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
+            if (wVillager.canOptimize(cooldown_millis)) {
                 closestOptimizableVillager = wVillager;
                 closestDistance = distance;
             }
@@ -132,7 +128,6 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             );
 
             if (!optimizeEvent.callEvent()) return;
-
             closestOptimizableVillager.setOptimizationType(optimizeEvent.getOptimizationType());
             closestOptimizableVillager.saveOptimizeTime();
 
@@ -154,7 +149,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                         CommonUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
             }
         } else {
-            CommonUtil.shakeHead(closestOptimizableVillager.villager());
+            closestOptimizableVillager.sayNo();
             if (notify_player) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
@@ -168,9 +163,9 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockBreak(BlockBreakEvent event) {
-        Block broken = event.getBlock();
+        final Block broken = event.getBlock();
         if (!blocks_that_disable.contains(broken.getType())) return;
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (!player.hasPermission(Optimize.BLOCK.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
@@ -178,14 +173,12 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         WrappedVillager closestOptimizedVillager = null;
         double closestDistance = Double.MAX_VALUE;
 
-        for (Entity entity : blockLoc.getNearbyEntities(search_radius, search_radius, search_radius)) {
-            if (!entity.getType().equals(EntityType.VILLAGER)) continue;
-            Villager villager = (Villager) entity;
+        for (Villager villager : blockLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
+            final double distance = villager.getLocation().distanceSquared(blockLoc);
+            if (distance >= closestDistance) continue;
 
-            WrappedVillager wVillager = villagerCache.getOrAdd(villager);
-            final double distance = entity.getLocation().distanceSquared(blockLoc);
-
-            if (distance < closestDistance && wVillager.isOptimized()) {
+            final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
+            if (wVillager.isOptimized()) {
                 closestOptimizedVillager = wVillager;
                 closestDistance = distance;
             }
@@ -201,7 +194,6 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         );
 
         if (!unOptimizeEvent.callEvent()) return;
-
         closestOptimizedVillager.setOptimizationType(OptimizationType.NONE);
 
         if (notify_player) {

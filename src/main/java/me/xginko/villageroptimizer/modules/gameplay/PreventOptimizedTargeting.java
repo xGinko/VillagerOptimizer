@@ -42,7 +42,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onTarget(EntityTargetEvent event) {
-        Entity target = event.getTarget();
+        final Entity target = event.getTarget();
         if (
                 target != null
                 && target.getType().equals(EntityType.VILLAGER)
@@ -55,7 +55,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onEntityTargetVillager(EntityPathfindEvent event) {
-        Entity target = event.getTargetEntity();
+        final Entity target = event.getTargetEntity();
         if (
                 target != null
                 && target.getType().equals(EntityType.VILLAGER)

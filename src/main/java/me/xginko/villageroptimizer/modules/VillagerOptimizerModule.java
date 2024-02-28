@@ -27,7 +27,7 @@ public interface VillagerOptimizerModule {
         modules.add(new FixOptimisationAfterCure());
         modules.add(new RestockOptimizedTrades());
         modules.add(new LevelOptimizedProfession());
-        modules.add(new RenameOptimizedVillagers());
+        modules.add(new VisuallyHighlightOptimized());
         modules.add(new MakeVillagersSpawnAdult());
         modules.add(new PreventUnoptimizedTrading());
         modules.add(new PreventOptimizedTargeting());
