@@ -154,7 +154,7 @@ public final class VillagerOptimizer extends JavaPlugin {
             File langDirectory = new File(getDataFolder() + File.separator + "lang");
             Files.createDirectories(langDirectory.toPath());
             for (String fileName : getDefaultLanguageFiles()) {
-                final String localeString = fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.lastIndexOf('.'));
+                final String localeString = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
                 if (startup) logger.info(
                         Component.text("│                       ").style(STYLE)
                                 .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
@@ -190,7 +190,7 @@ public final class VillagerOptimizer extends JavaPlugin {
         try (final JarFile pluginJarFile = new JarFile(this.getFile())) {
             return pluginJarFile.stream()
                     .map(ZipEntry::getName)
-                    .filter(name -> name.startsWith("lang" + File.separator) && name.endsWith(".yml"))
+                    .filter(name -> name.startsWith("lang/") && name.endsWith(".yml"))
                     .collect(Collectors.toSet());
         } catch (IOException ioException) {
             logger.error("Failed getting default lang files!", ioException);
