@@ -57,6 +57,10 @@
                                     <pattern>net.kyori</pattern>
                                     <shadedPattern>me.xginko.villageroptimizer.libs.kyori</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>io.github.thatsmusic99.configurationmaster</pattern>
+                                    <shadedPattern>me.xginko.villageroptimizer.libs.configmaster</shadedPattern>
+                                </relocation>
                             </relocations>
                             <filters>
                                 <filter>

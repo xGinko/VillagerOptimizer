@@ -182,7 +182,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                     Component.text("│                      ").style(STYLE)
                             .append(Component.text("LANG ERROR").color(NamedTextColor.RED).decorate(TextDecoration.BOLD))
                             .append(Component.text("                            │").style(STYLE)), e);
-            else logger.error("Error loading language files! Language files will not reload to avoid errors, make sure to correct this before restarting the server!", e);
+            else logger.error("Error loading language files!", e);
         }
     }
 
@@ -192,8 +192,8 @@ public final class VillagerOptimizer extends JavaPlugin {
                     .map(ZipEntry::getName)
                     .filter(name -> name.startsWith("lang/") && name.endsWith(".yml"))
                     .collect(Collectors.toSet());
-        } catch (IOException ioException) {
-            logger.error("Failed getting default lang files!", ioException);
+        } catch (IOException e) {
+            logger.error("Failed getting default lang files!", e);
             return Collections.emptySet();
         }
     }
