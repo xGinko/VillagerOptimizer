@@ -88,6 +88,10 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void onDisable() {
         VillagerOptimizerModule.modules.forEach(VillagerOptimizerModule::disable);
         VillagerOptimizerModule.modules.clear();
+        if (foliaLib != null) {
+            foliaLib.getImpl().cancelAllTasks();
+            foliaLib = null;
+        }
         if (villagerCache != null) {
             villagerCache.cacheMap().clear();
             villagerCache = null;
@@ -100,6 +104,10 @@ public final class VillagerOptimizer extends JavaPlugin {
             metrics.shutdown();
             metrics = null;
         }
+        config = null;
+        languageCacheMap = null;
+        logger = null;
+        instance = null;
     }
 
     public static @NotNull VillagerOptimizer getInstance()  {
