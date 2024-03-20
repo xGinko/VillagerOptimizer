@@ -18,7 +18,7 @@ public class GenericUtil {
     public static final @NotNull Style STYLE = Style.style(COLOR, TextDecoration.BOLD);
     public static final @NotNull PlainTextComponentSerializer plainTextSerializer = PlainTextComponentSerializer.plainText();
 
-    public static @NotNull String formatDuration(Duration duration) {
+    public static @NotNull String formatDuration(@NotNull Duration duration) {
         if (duration.isNegative()) duration = duration.negated();
 
         final int seconds = (int) (duration.getSeconds() % 60);
