@@ -4,27 +4,28 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
 public class KyoriUtil {
 
-    public static void sendMessage(CommandSender sender, Component message) {
+    public static void sendMessage(@NotNull CommandSender sender, @NotNull Component message) {
         VillagerOptimizer.getAudiences().sender(sender).sendMessage(message);
     }
 
-    public static void sendActionBar(CommandSender sender, Component message) {
+    public static void sendActionBar(@NotNull CommandSender sender, @NotNull Component message) {
         VillagerOptimizer.getAudiences().sender(sender).sendActionBar(message);
     }
 
-    public static Component toUpperCase(Component input, Locale locale) {
+    public static @NotNull Component toUpperCase(@NotNull Component input, @NotNull Locale locale) {
         return input.replaceText(TextReplacementConfig.builder()
                 .match("(?s).*")
                 .replacement((result, builder) -> builder.content(result.group(0).toUpperCase(locale)))
                 .build());
     }
 
-    public static String translateChatColor(String string) {
+    public static @NotNull String translateChatColor(@NotNull String string) {
         string = string.replace("&0", "<black>");
         string = string.replace("&1", "<dark_blue>");
         string = string.replace("&2", "<dark_green>");

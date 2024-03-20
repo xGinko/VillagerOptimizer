@@ -14,9 +14,9 @@ import java.time.Duration;
 
 public class GenericUtil {
 
-    public static final TextColor COLOR = TextColor.color(102,255,230);
-    public static final Style STYLE = Style.style(COLOR, TextDecoration.BOLD);
-    public static final PlainTextComponentSerializer plainTextSerializer = PlainTextComponentSerializer.plainText();
+    public static final @NotNull TextColor COLOR = TextColor.color(102,255,230);
+    public static final @NotNull Style STYLE = Style.style(COLOR, TextDecoration.BOLD);
+    public static final @NotNull PlainTextComponentSerializer plainTextSerializer = PlainTextComponentSerializer.plainText();
 
     public static @NotNull String formatDuration(Duration duration) {
         if (duration.isNegative()) duration = duration.negated();
@@ -34,7 +34,7 @@ public class GenericUtil {
         }
     }
 
-    public static String formatLocation(@NotNull Location location) {
+    public static @NotNull String formatLocation(@NotNull Location location) {
         return "[" + location.getWorld().getName() + "] x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ();
     }
 
@@ -51,7 +51,7 @@ public class GenericUtil {
         }
     }
 
-    public static Villager.Profession getWorkstationProfession(@NotNull Material workstation) {
+    public static @NotNull Villager.Profession getWorkstationProfession(@NotNull Material workstation) {
         switch (workstation) {
             case BARREL:
                 return Villager.Profession.FISHERMAN;

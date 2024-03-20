@@ -6,6 +6,7 @@ import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -15,14 +16,14 @@ import java.util.function.Consumer;
 public enum TranslatableMapper implements BiConsumer<TranslatableComponent, Consumer<Component>> {
     INSTANCE;
 
-    public static final ComponentFlattener FLATTENER = ComponentFlattener.basic().toBuilder()
+    public static final @NotNull ComponentFlattener FLATTENER = ComponentFlattener.basic().toBuilder()
             .complexMapper(TranslatableComponent.class, TranslatableMapper.INSTANCE)
             .build();
 
     @Override
     public void accept(
-            final TranslatableComponent translatableComponent,
-            final Consumer<Component> componentConsumer
+            final @NotNull TranslatableComponent translatableComponent,
+            final @NotNull Consumer<Component> componentConsumer
     ) {
         for (final Translator source : GlobalTranslator.translator().sources()) {
             if (source instanceof TranslationRegistry && ((TranslationRegistry) source).contains(translatableComponent.key())) {
