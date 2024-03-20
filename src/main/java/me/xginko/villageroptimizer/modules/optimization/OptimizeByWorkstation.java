@@ -28,6 +28,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener {
@@ -91,10 +92,11 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
 
         final Location workstationLoc = placed.getLocation();
+        final AtomicBoolean done = new AtomicBoolean(false);
         final AtomicInteger taskAliveTicks = new AtomicInteger(check_duration_ticks);
 
         scheduler.runAtLocationTimer(workstationLoc, lingeringRepeatingCheck -> {
-            if (taskAliveTicks.getAndAdd(-10) <= 0) {
+            if (done.get() || taskAliveTicks.getAndAdd(-10) <= 0) {
                 lingeringRepeatingCheck.cancel();
                 return;
             }
@@ -121,6 +123,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                         VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
                                 .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
                     }
+                    done.set(true);
                     return;
                 }
 
@@ -142,7 +145,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                             .replacement(wrapped.villager().getProfession().toString().toLowerCase())
                             .build();
                     final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
-                            .matchLiteral("%workstation%")
+                            .matchLiteral("%blocktype%")
                             .replacement(placed.getType().toString().toLowerCase())
                             .build();
                     VillagerOptimizer.getLang(player.locale()).workstation_optimize_success
@@ -155,8 +158,8 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                             GenericUtil.formatLocation(wrapped.villager().getLocation())).color(GenericUtil.COLOR));
                 }
 
-                lingeringRepeatingCheck.cancel();
-                break;
+                done.set(true);
+                return;
             }
         }, 1L, 10L);
     }
@@ -207,7 +210,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                     .replacement(closestOptimized.villager().getProfession().toString().toLowerCase())
                     .build();
             final TextReplacementConfig brokenWorkstation = TextReplacementConfig.builder()
-                    .matchLiteral("%workstation%")
+                    .matchLiteral("%blocktype%")
                     .replacement(broken.getType().toString().toLowerCase())
                     .build();
             VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success

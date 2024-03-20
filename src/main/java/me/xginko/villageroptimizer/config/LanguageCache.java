@@ -62,11 +62,11 @@ public class LanguageCache {
                 "<green>Successfully unoptimized %villagertype% villager by removing %blocktype%.");
         // Workstation
         this.workstation_optimize_success = getListTranslation("messages.workstation.optimize-success",
-                "<green>%villagertype% villager successfully optimized using workstation %workstation%.");
+                "<green>%villagertype% villager successfully optimized using workstation %blocktype%.");
         this.workstation_on_optimize_cooldown = getListTranslation("messages.workstation.optimize-on-cooldown",
                 "<gray>You need to wait %time% until you can optimize this villager again.");
         this.workstation_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success",
-                "<green>Successfully unoptimized %villagertype% villager by removing workstation block %workstation%.");
+                "<green>Successfully unoptimized %villagertype% villager by removing workstation block %blocktype%.");
         // Command
         this.command_optimize_success = getListTranslation("messages.command.optimize-success",
                 "<green>Successfully optimized %amount% villager(s) in a radius of %radius% blocks.");
