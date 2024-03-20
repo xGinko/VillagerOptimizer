@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 
@@ -51,7 +52,7 @@ public class GenericUtil {
         }
     }
 
-    public static @NotNull Villager.Profession getWorkstationProfession(@NotNull Material workstation) {
+    public static @Nullable Villager.Profession getWorkstationProfession(@NotNull Material workstation) {
         switch (workstation) {
             case BARREL:
                 return Villager.Profession.FISHERMAN;
@@ -80,7 +81,7 @@ public class GenericUtil {
             case STONECUTTER:
                 return Villager.Profession.MASON;
             default:
-                return Villager.Profession.NONE;
+                return null;
         }
     }
 }

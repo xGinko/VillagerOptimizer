@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer;
 import me.xginko.villageroptimizer.enums.Keyring;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.memory.MemoryKey;
@@ -19,7 +20,6 @@ public final class WrappedVillager {
 
     private final @NotNull Villager villager;
     private final @NotNull PersistentDataContainer dataContainer;
-    private @Nullable CachedJobSite cachedJobSite;
     private final boolean parseOther;
 
     WrappedVillager(@NotNull Villager villager) {
@@ -316,30 +316,11 @@ public final class WrappedVillager {
             villager.shakeHead();
         } catch (NoSuchMethodError e) {
             villager.getWorld().playSound(villager.getEyeLocation(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.0F);
-        }
-    }
-
-    private static class CachedJobSite {
-        private final @NotNull Villager villager;
-        private @Nullable Location jobSite;
-        private long lastRefresh;
-        private CachedJobSite(@NotNull Villager villager) {
-            this.villager = villager;
-            this.jobSite = getJobSite();
-        }
-        private @Nullable Location getJobSite() {
-            final long now = System.currentTimeMillis();
-            if (now - lastRefresh > 1000L) {
-                this.jobSite = villager.getMemory(MemoryKey.JOB_SITE);
-                this.lastRefresh = now;
-            }
-            return jobSite;
+            villager.getWorld().spawnParticle(Particle.CLOUD, villager.getEyeLocation(), 4);
         }
     }
 
     public @Nullable Location getJobSite() {
-        if (cachedJobSite == null)
-            cachedJobSite = new CachedJobSite(villager);
-        return cachedJobSite.getJobSite();
+        return villager.getMemory(MemoryKey.JOB_SITE);
     }
 }
