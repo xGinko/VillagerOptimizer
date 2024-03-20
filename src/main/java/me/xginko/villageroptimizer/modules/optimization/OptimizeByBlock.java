@@ -5,12 +5,11 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.enums.permissions.Bypass;
-import me.xginko.villageroptimizer.enums.permissions.Optimize;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -97,7 +96,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         final Block placed = event.getBlock();
         if (!blocks_that_disable.contains(placed.getType())) return;
         final Player player = event.getPlayer();
-        if (!player.hasPermission(Optimize.BLOCK.get())) return;
+        if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
         final Location blockLoc = placed.getLocation().toCenterLocation();
@@ -119,7 +118,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
         if (closestOptimizableVillager == null) return;
 
-        if (closestOptimizableVillager.canOptimize(cooldown_millis) || player.hasPermission(Bypass.BLOCK_COOLDOWN.get())) {
+        if (closestOptimizableVillager.canOptimize(cooldown_millis) || player.hasPermission(Permissions.Bypass.BLOCK_COOLDOWN.get())) {
             VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(
                     closestOptimizableVillager,
                     OptimizationType.BLOCK,
@@ -146,14 +145,14 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text(player.getName() + " optimized villager by block at " +
-                        CommonUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
+                        GenericUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(GenericUtil.COLOR));
             }
         } else {
             closestOptimizableVillager.sayNo();
             if (notify_player) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
-                        .replacement(CommonUtil.formatDuration(Duration.ofMillis(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown_millis))))
+                        .replacement(GenericUtil.formatDuration(Duration.ofMillis(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown_millis))))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown
                         .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
@@ -166,7 +165,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         final Block broken = event.getBlock();
         if (!blocks_that_disable.contains(broken.getType())) return;
         final Player player = event.getPlayer();
-        if (!player.hasPermission(Optimize.BLOCK.get())) return;
+        if (!player.hasPermission(Permissions.Optimize.BLOCK.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
         final Location blockLoc = broken.getLocation().toCenterLocation();
@@ -211,7 +210,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
         if (log_enabled) {
             VillagerOptimizer.getLog().info(Component.text(player.getName() + " unoptimized villager by block at " +
-                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
+                    GenericUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(GenericUtil.COLOR));
         }
     }
 }

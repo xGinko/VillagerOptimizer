@@ -5,12 +5,11 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.enums.permissions.Bypass;
-import me.xginko.villageroptimizer.enums.permissions.Optimize;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -81,7 +80,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
         final Player player = event.getPlayer();
-        if (!player.hasPermission(Optimize.NAMETAG.get())) return;
+        if (!player.hasPermission(Permissions.Optimize.NAMETAG.get())) return;
 
         final ItemStack usedItem = player.getInventory().getItem(event.getHand());
         if (usedItem != null && !usedItem.getType().equals(Material.NAME_TAG)) return;
@@ -92,12 +91,12 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         // Get component name first, so we can manually name the villager when canceling the event to avoid item consumption.
         final Component newVillagerName = meta.displayName();
         assert newVillagerName != null; // Legitimate since we checked for hasDisplayName()
-        final String nameTagPlainText = CommonUtil.plainTextSerializer.serialize(newVillagerName);
+        final String nameTagPlainText = GenericUtil.plainTextSerializer.serialize(newVillagerName);
         final Villager villager = (Villager) event.getRightClicked();
         final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
         if (nametags.contains(nameTagPlainText.toLowerCase())) {
-            if (wVillager.canOptimize(cooldown) || player.hasPermission(Bypass.NAMETAG_COOLDOWN.get())) {
+            if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
                 VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(
                         wVillager,
                         OptimizationType.NAMETAG,
@@ -123,7 +122,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 if (log_enabled) {
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
                             " optimized villager by nametag '" + nameTagPlainText + "' at " +
-                            CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
+                            GenericUtil.formatLocation(wVillager.villager().getLocation())).color(GenericUtil.COLOR));
                 }
             } else {
                 event.setCancelled(true);
@@ -131,7 +130,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
-                            .replacement(CommonUtil.formatDuration(Duration.ofMillis(wVillager.getOptimizeCooldownMillis(cooldown))))
+                            .replacement(GenericUtil.formatDuration(Duration.ofMillis(wVillager.getOptimizeCooldownMillis(cooldown))))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
                             .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
@@ -157,7 +156,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 if (log_enabled) {
                     VillagerOptimizer.getLog().info(Component.text(player.getName() +
                             " unoptimized villager by nametag '" + nameTagPlainText + "' at " +
-                            CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
+                            GenericUtil.formatLocation(wVillager.villager().getLocation())).color(GenericUtil.COLOR));
                 }
             }
         }

@@ -3,7 +3,7 @@ package me.xginko.villageroptimizer.modules.gameplay;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.enums.permissions.Bypass;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import org.bukkit.entity.Player;
@@ -52,7 +52,7 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onTradeOpen(TradeSelectEvent event) {
         if (!event.getInventory().getType().equals(InventoryType.MERCHANT)) return;
-        if (event.getWhoClicked().hasPermission(Bypass.TRADE_PREVENTION.get())) return;
+        if (event.getWhoClicked().hasPermission(Permissions.Bypass.TRADE_PREVENTION.get())) return;
         if (!(event.getInventory().getHolder() instanceof Villager)) return;
         if (villagerCache.getOrAdd((Villager) event.getInventory().getHolder()).isOptimized()) return;
 
@@ -68,7 +68,7 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onInventoryClick(InventoryClickEvent event) {
         if (!event.getInventory().getType().equals(InventoryType.MERCHANT)) return;
-        if (event.getWhoClicked().hasPermission(Bypass.TRADE_PREVENTION.get())) return;
+        if (event.getWhoClicked().hasPermission(Permissions.Bypass.TRADE_PREVENTION.get())) return;
         if (!(event.getInventory().getHolder() instanceof Villager)) return;
         if (villagerCache.getOrAdd((Villager) event.getInventory().getHolder()).isOptimized()) return;
 

@@ -4,9 +4,9 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.enums.permissions.Bypass;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -65,7 +65,7 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
         if (!wVillager.isOptimized()) return;
 
         final Player player = event.getPlayer();
-        final boolean player_bypassing = player.hasPermission(Bypass.RESTOCK_COOLDOWN.get());
+        final boolean player_bypassing = player.hasPermission(Permissions.Bypass.RESTOCK_COOLDOWN.get());
 
         if (wVillager.canRestock(restock_delay_millis) || player_bypassing) {
             wVillager.restock();
@@ -74,7 +74,7 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
             if (notify_player && !player_bypassing) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
-                        .replacement(CommonUtil.formatDuration(Duration.ofMillis(wVillager.getRestockCooldownMillis(restock_delay_millis))))
+                        .replacement(GenericUtil.formatDuration(Duration.ofMillis(wVillager.getRestockCooldownMillis(restock_delay_millis))))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).trades_restocked
                         .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
@@ -82,7 +82,7 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text("Restocked optimized villager at " +
-                        CommonUtil.formatLocation(wVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
+                        GenericUtil.formatLocation(wVillager.villager().getLocation())).color(GenericUtil.COLOR));
             }
         }
     }

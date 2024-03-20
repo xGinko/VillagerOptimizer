@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public class Keyring {
+public final class Keyring {
 
     public enum Spaces implements Namespaced {
 
@@ -52,8 +52,7 @@ public class Keyring {
         OPTIMIZATION_TYPE("optimization-type"),
         LAST_OPTIMIZE("last-optimize"),
         LAST_LEVELUP("last-levelup"),
-        LAST_RESTOCK("last-restock"),
-        LAST_OPTIMIZE_NAME("last-optimize-name");
+        LAST_RESTOCK("last-restock");
 
         private final @NotNull NamespacedKey key;
 

@@ -2,6 +2,7 @@ package me.xginko.villageroptimizer.config;
 
 import io.github.thatsmusic99.configurationmaster.api.ConfigFile;
 import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
@@ -91,11 +92,11 @@ public class LanguageCache {
 
     public @NotNull Component getTranslation(@NotNull String path, @NotNull String defaultTranslation) {
         this.lang.addDefault(path, defaultTranslation);
-        return MiniMessage.miniMessage().deserialize(this.lang.getString(path, defaultTranslation));
+        return MiniMessage.miniMessage().deserialize(KyoriUtil.translateChatColor(this.lang.getString(path, defaultTranslation)));
     }
 
     public @NotNull List<Component> getListTranslation(@NotNull String path, @NotNull String... defaultTranslation) {
         this.lang.addDefault(path, Arrays.asList(defaultTranslation));
-        return this.lang.getStringList(path).stream().map(MiniMessage.miniMessage()::deserialize).collect(Collectors.toList());
+        return this.lang.getStringList(path).stream().map(KyoriUtil::translateChatColor).map(MiniMessage.miniMessage()::deserialize).collect(Collectors.toList());
     }
 }

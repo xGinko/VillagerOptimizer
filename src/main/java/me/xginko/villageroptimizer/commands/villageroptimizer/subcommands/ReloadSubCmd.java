@@ -2,7 +2,8 @@ package me.xginko.villageroptimizer.commands.villageroptimizer.subcommands;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.SubCommand;
-import me.xginko.villageroptimizer.enums.permissions.Commands;
+import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -23,12 +24,12 @@ public class ReloadSubCmd extends SubCommand {
 
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer reload").color(VillagerOptimizer.COLOR);
+        return Component.text("/villageroptimizer reload").color(GenericUtil.COLOR);
     }
 
     @Override
     public void perform(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(Commands.RELOAD.get())) {
+        if (!sender.hasPermission(Permissions.Commands.RELOAD.get())) {
             KyoriUtil.sendMessage(sender, VillagerOptimizer.getLang(sender).no_permission);
             return;
         }

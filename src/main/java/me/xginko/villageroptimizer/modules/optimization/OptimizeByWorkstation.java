@@ -9,12 +9,11 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.enums.permissions.Bypass;
-import me.xginko.villageroptimizer.enums.permissions.Optimize;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -111,10 +110,10 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockPlace(BlockPlaceEvent event) {
         final Block placed = event.getBlock();
-        final Villager.Profession workstationProfession = CommonUtil.getWorkstationProfession(placed.getType());
+        final Villager.Profession workstationProfession = GenericUtil.getWorkstationProfession(placed.getType());
         if (workstationProfession.equals(Villager.Profession.NONE)) return;
         final Player player = event.getPlayer();
-        if (!player.hasPermission(Optimize.WORKSTATION.get())) return;
+        if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
         final Location workstationLoc = placed.getLocation().toCenterLocation();
@@ -141,12 +140,12 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         WrappedVillager finalToOptimize = toOptimize;
 
         pending_optimizations.put(placed.getLocation(), scheduler.runAtLocationLater(workstationLoc, () -> {
-            if (!finalToOptimize.canOptimize(cooldown_millis) && !player.hasPermission(Bypass.WORKSTATION_COOLDOWN.get())) {
+            if (!finalToOptimize.canOptimize(cooldown_millis) && !player.hasPermission(Permissions.Bypass.WORKSTATION_COOLDOWN.get())) {
                finalToOptimize.sayNo();
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
-                            .replacement(CommonUtil.formatDuration(Duration.ofMillis(finalToOptimize.getOptimizeCooldownMillis(cooldown_millis))))
+                            .replacement(GenericUtil.formatDuration(Duration.ofMillis(finalToOptimize.getOptimizeCooldownMillis(cooldown_millis))))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
                             .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
@@ -182,7 +181,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text(player.getName() +
                         " optimized villager by workstation (" + placed.getType().toString().toLowerCase() + ") at " +
-                        CommonUtil.formatLocation(finalToOptimize.villager().getLocation())).color(VillagerOptimizer.COLOR));
+                        GenericUtil.formatLocation(finalToOptimize.villager().getLocation())).color(GenericUtil.COLOR));
             }
         }, toOptimize.canLooseProfession() ? resettable_delay_millis : delay_millis, TimeUnit.MILLISECONDS));
     }
@@ -194,10 +193,10 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         WrappedTask pendingOpt = pending_optimizations.getIfPresent(broken.getLocation());
         if (pendingOpt != null) pendingOpt.cancel();
 
-        final Villager.Profession workstationProfession = CommonUtil.getWorkstationProfession(broken.getType());
+        final Villager.Profession workstationProfession = GenericUtil.getWorkstationProfession(broken.getType());
         if (workstationProfession.equals(Villager.Profession.NONE)) return;
         final Player player = event.getPlayer();
-        if (!player.hasPermission(Optimize.WORKSTATION.get())) return;
+        if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
         if (only_while_sneaking && !player.isSneaking()) return;
 
         final Location workstationLoc = broken.getLocation();
@@ -247,7 +246,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (log_enabled) {
             VillagerOptimizer.getLog().info(Component.text(player.getName() +
                     " unoptimized villager by workstation (" + broken.getType().toString().toLowerCase() + ") at " +
-                    CommonUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(VillagerOptimizer.COLOR));
+                    GenericUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(GenericUtil.COLOR));
         }
     }
 }

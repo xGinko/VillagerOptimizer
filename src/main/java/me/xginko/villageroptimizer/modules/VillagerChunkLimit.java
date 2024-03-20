@@ -5,7 +5,7 @@ import com.tcoded.folialib.wrapper.task.WrappedTask;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.GenericUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Chunk;
 import org.bukkit.Server;
@@ -92,7 +92,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         this.periodic_chunk_check = scheduler.runTimer(() -> {
             for (World world : server.getWorlds()) {
                 for (Chunk chunk : world.getLoadedChunks()) {
-                    if (!skip_unloaded_entity_chunks || CommonUtil.isEntitiesLoaded(chunk)) {
+                    if (!skip_unloaded_entity_chunks || GenericUtil.isEntitiesLoaded(chunk)) {
                         this.manageVillagerCount(chunk);
                     }
                 }
@@ -157,7 +157,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                     if (log_enabled) {
                         VillagerOptimizer.getLog().info(Component.text(
                                 "Removed unoptimized villager with profession '" + villager.getProfession().name() + "' at " +
-                                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.COLOR));
+                                        GenericUtil.formatLocation(villager.getLocation())).color(GenericUtil.COLOR));
                     }
                 });
             }
@@ -180,7 +180,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                     if (log_enabled) {
                         VillagerOptimizer.getLog().info(Component.text("Removed optimized villager with profession '" +
                                 villager.getProfession().name() + "' at " +
-                                CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.COLOR));
+                                GenericUtil.formatLocation(villager.getLocation())).color(GenericUtil.COLOR));
                     }
                 });
             }

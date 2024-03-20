@@ -5,7 +5,7 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.CommonUtil;
+import me.xginko.villageroptimizer.utils.GenericUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -87,7 +87,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
             if (log_enabled) {
                 VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
-                        CommonUtil.formatLocation(villager.getLocation())).color(VillagerOptimizer.COLOR));
+                        GenericUtil.formatLocation(villager.getLocation())).color(GenericUtil.COLOR));
             }
         });
     }

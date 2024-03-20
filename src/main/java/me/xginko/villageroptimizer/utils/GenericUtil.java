@@ -1,5 +1,8 @@
 package me.xginko.villageroptimizer.utils;
 
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -9,7 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 
-public class CommonUtil {
+public class GenericUtil {
+
+    public static final TextColor COLOR = TextColor.color(102,255,230);
+    public static final Style STYLE = Style.style(COLOR, TextDecoration.BOLD);
     public static final PlainTextComponentSerializer plainTextSerializer = PlainTextComponentSerializer.plainText();
 
     public static @NotNull String formatDuration(Duration duration) {

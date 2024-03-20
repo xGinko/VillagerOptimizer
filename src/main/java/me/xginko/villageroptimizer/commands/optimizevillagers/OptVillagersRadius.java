@@ -6,8 +6,7 @@ import me.xginko.villageroptimizer.WrappedVillager;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.enums.permissions.Bypass;
-import me.xginko.villageroptimizer.enums.permissions.Commands;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
@@ -50,7 +49,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (!sender.hasPermission(Commands.OPTIMIZE_RADIUS.get())) {
+        if (!sender.hasPermission(Permissions.Commands.OPTIMIZE_RADIUS.get())) {
             KyoriUtil.sendMessage(sender, VillagerOptimizer.getLang(sender).no_permission);
             return true;
         }
@@ -93,7 +92,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
             VillagerCache villagerCache = VillagerOptimizer.getCache();
             int successCount = 0;
             int failCount = 0;
-            final boolean player_has_cooldown_bypass = player.hasPermission(Bypass.COMMAND_COOLDOWN.get());
+            final boolean player_has_cooldown_bypass = player.hasPermission(Permissions.Bypass.COMMAND_COOLDOWN.get());
 
             for (Entity entity : player.getNearbyEntities(safeRadius, safeRadius, safeRadius)) {
                 if (!entity.getType().equals(EntityType.VILLAGER)) continue;

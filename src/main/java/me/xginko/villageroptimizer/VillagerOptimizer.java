@@ -5,11 +5,10 @@ import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import me.xginko.villageroptimizer.utils.GenericUtil;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bstats.bukkit.Metrics;
@@ -29,8 +28,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 public final class VillagerOptimizer extends JavaPlugin {
-    public static final TextColor COLOR = TextColor.color(102,255,230);
-    public static final Style STYLE = Style.style(COLOR, TextDecoration.BOLD);
 
     private static VillagerOptimizer instance;
     private static VillagerCache villagerCache;
@@ -39,49 +36,49 @@ public final class VillagerOptimizer extends JavaPlugin {
     private static Config config;
     private static BukkitAudiences audiences;
     private static ComponentLogger logger;
-    private Metrics metrics;
+    private static Metrics bStats;
 
     @Override
     public void onEnable() {
         instance = this;
         foliaLib = new FoliaLib(this);
         audiences = BukkitAudiences.create(this);
-        logger = ComponentLogger.logger(this.getName());
-        metrics = new Metrics(this, 19954);
+        logger = ComponentLogger.logger(getLogger().getName());
+        bStats = new Metrics(this, 19954);
 
-        logger.info(Component.text("╭────────────────────────────────────────────────────────────╮").style(STYLE));
-        logger.info(Component.text("│                                                            │").style(STYLE));
-        logger.info(Component.text("│                                                            │").style(STYLE));
-        logger.info(Component.text("│             _   __ _  __ __                                │").style(STYLE));
-        logger.info(Component.text("│            | | / /(_)/ // /___ _ ___ _ ___  ____           │").style(STYLE));
-        logger.info(Component.text("│            | |/ // // // // _ `// _ `// -_)/ __/           │").style(STYLE));
-        logger.info(Component.text("│            |___//_//_//_/ \\_,_/ \\_, / \\__//_/              │").style(STYLE));
-        logger.info(Component.text("│          ____        __   _    /___/_                      │").style(STYLE));
-        logger.info(Component.text("│         / __ \\ ___  / /_ (_)__ _   (_)___ ___  ____        │").style(STYLE));
-        logger.info(Component.text("│        / /_/ // _ \\/ __// //  ' \\ / //_ // -_)/ __/        │").style(STYLE));
-        logger.info(Component.text("│        \\____// .__/\\__//_//_/_/_//_/ /__/\\__//_/           │").style(STYLE));
-        logger.info(Component.text("│             /_/         by xGinko                          │").style(STYLE));
-        logger.info(Component.text("│                                                            │").style(STYLE));
-        logger.info(Component.text("│                                                            │").style(STYLE));
+        logger.info(Component.text("╭────────────────────────────────────────────────────────────╮").style(GenericUtil.STYLE));
+        logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│             _   __ _  __ __                                │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│            | | / /(_)/ // /___ _ ___ _ ___  ____           │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│            | |/ // // // // _ `// _ `// -_)/ __/           │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│            |___//_//_//_/ \\_,_/ \\_, / \\__//_/              │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│          ____        __   _    /___/_                      │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│         / __ \\ ___  / /_ (_)__ _   (_)___ ___  ____        │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│        / /_/ // _ \\/ __// //  ' \\ / //_ // -_)/ __/        │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│        \\____// .__/\\__//_//_/_/_//_/ /__/\\__//_/           │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│             /_/         by xGinko                          │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
         logger.info(Component.text("│        ")
-                .style(STYLE).append(Component.text("https://github.com/xGinko/VillagerOptimizer")
-                .color(NamedTextColor.GRAY)).append(Component.text("         │").style(STYLE)));
-        logger.info(Component.text("│                                                            │").style(STYLE));
-        logger.info(Component.text("│                                                            │").style(STYLE));
+                .style(GenericUtil.STYLE).append(Component.text("https://github.com/xGinko/VillagerOptimizer")
+                .color(NamedTextColor.GRAY)).append(Component.text("         │").style(GenericUtil.STYLE)));
+        logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
         logger.info(Component.text("│              ")
-                .style(STYLE).append(Component.text(" ➤  Loading Translations...").style(STYLE))
-                .append(Component.text("                   │").style(STYLE)));
+                .style(GenericUtil.STYLE).append(Component.text(" ➤  Loading Translations...").style(GenericUtil.STYLE))
+                .append(Component.text("                   │").style(GenericUtil.STYLE)));
         reloadLang(true);
         logger.info(Component.text("│              ")
-                .style(STYLE).append(Component.text(" ➤  Loading Config...").style(STYLE))
-                .append(Component.text("                         │").style(STYLE)));
+                .style(GenericUtil.STYLE).append(Component.text(" ➤  Loading Config...").style(GenericUtil.STYLE))
+                .append(Component.text("                         │").style(GenericUtil.STYLE)));
         reloadConfiguration();
         logger.info(Component.text("│              ")
-                .style(STYLE).append(Component.text(" ✓  Done.").color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
-                .append(Component.text("                                     │").style(STYLE)));
-        logger.info(Component.text("│                                                            │").style(STYLE));
-        logger.info(Component.text("│                                                            │").style(STYLE));
-        logger.info(Component.text("╰────────────────────────────────────────────────────────────╯").style(STYLE));
+                .style(GenericUtil.STYLE).append(Component.text(" ✓  Done.").color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
+                .append(Component.text("                                     │").style(GenericUtil.STYLE)));
+        logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
+        logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
+        logger.info(Component.text("╰────────────────────────────────────────────────────────────╯").style(GenericUtil.STYLE));
     }
 
     @Override
@@ -100,9 +97,9 @@ public final class VillagerOptimizer extends JavaPlugin {
             audiences.close();
             audiences = null;
         }
-        if (metrics != null) {
-            metrics.shutdown();
-            metrics = null;
+        if (bStats != null) {
+            bStats.shutdown();
+            bStats = null;
         }
         config = null;
         languageCacheMap = null;
@@ -164,9 +161,9 @@ public final class VillagerOptimizer extends JavaPlugin {
             for (String fileName : getDefaultLanguageFiles()) {
                 final String localeString = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
                 if (startup) logger.info(
-                        Component.text("│                       ").style(STYLE)
+                        Component.text("│                       ").style(GenericUtil.STYLE)
                                 .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
-                                .append(Component.text("                            │").style(STYLE)));
+                                .append(Component.text("                            │").style(GenericUtil.STYLE)));
                 else logger.info(String.format("Found language file for %s", localeString));
                 languageCacheMap.put(localeString, new LanguageCache(localeString));
             }
@@ -177,9 +174,9 @@ public final class VillagerOptimizer extends JavaPlugin {
                     String localeString = langMatcher.group(1).toLowerCase();
                     if (!languageCacheMap.containsKey(localeString)) { // make sure it wasn't a default file that we already loaded
                         if (startup) logger.info(
-                                Component.text("│                       ").style(STYLE)
+                                Component.text("│                       ").style(GenericUtil.STYLE)
                                         .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
-                                        .append(Component.text("                            │").style(STYLE)));
+                                        .append(Component.text("                            │").style(GenericUtil.STYLE)));
                         else logger.info(String.format("Found language file for %s", localeString));
                         languageCacheMap.put(localeString, new LanguageCache(localeString));
                     }
@@ -187,9 +184,9 @@ public final class VillagerOptimizer extends JavaPlugin {
             }
         } catch (Exception e) {
             if (startup) logger.error(
-                    Component.text("│                      ").style(STYLE)
+                    Component.text("│                      ").style(GenericUtil.STYLE)
                             .append(Component.text("LANG ERROR").color(NamedTextColor.RED).decorate(TextDecoration.BOLD))
-                            .append(Component.text("                            │").style(STYLE)), e);
+                            .append(Component.text("                            │").style(GenericUtil.STYLE)), e);
             else logger.error("Error loading language files!", e);
         }
     }
