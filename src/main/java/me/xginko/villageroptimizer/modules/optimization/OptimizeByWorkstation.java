@@ -91,12 +91,12 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (!player.hasPermission(Permissions.Optimize.WORKSTATION.get())) return;
 
         final Location workstationLoc = placed.getLocation();
-        final AtomicBoolean done = new AtomicBoolean(false);
-        final AtomicInteger taskAliveTicks = new AtomicInteger(check_duration_ticks);
+        final AtomicBoolean taskComplete = new AtomicBoolean();
+        final AtomicInteger taskAliveTicks = new AtomicInteger();
 
-        scheduler.runAtLocationTimer(workstationLoc, lingeringRepeatingCheck -> {
-            if (done.get() || taskAliveTicks.getAndAdd(-10) <= 0) {
-                lingeringRepeatingCheck.cancel();
+        scheduler.runAtLocationTimer(workstationLoc, repeatingTask -> {
+            if (taskComplete.get() || taskAliveTicks.getAndAdd(10) > check_duration_ticks) {
+                repeatingTask.cancel();
                 return;
             }
 
@@ -116,7 +116,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                         VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
                                 .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
                     }
-                    done.set(true);
+                    taskComplete.set(true);
                     return;
                 }
 
@@ -151,7 +151,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                             GenericUtil.formatLocation(wrapped.villager().getLocation())).color(GenericUtil.COLOR));
                 }
 
-                done.set(true);
+                taskComplete.set(true);
                 return;
             }
         }, 1L, 10L);
