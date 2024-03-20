@@ -26,7 +26,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.time.Duration;
-import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -101,15 +100,9 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 return;
             }
 
-            final Iterator<WrappedVillager> villagerIterator = workstationLoc.getNearbyEntitiesByType(Villager.class, search_radius)
-                    .stream()
-                    .filter(villager -> villager.isAdult() && villager.getProfession() != Villager.Profession.NITWIT)
-                    .map(villagerCache::getOrAdd)
-                    .iterator();
-
-            while (villagerIterator.hasNext()) {
-                final WrappedVillager wrapped = villagerIterator.next();
-                if (wrapped.villager().getProfession() != workstationProfession) continue;
+            for (Villager villager : workstationLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
+                if (villager.getProfession() != workstationProfession) continue;
+                WrappedVillager wrapped = villagerCache.getOrAdd(villager);
                 if (wrapped.getJobSite() == null) continue;
                 if (wrapped.getJobSite().distanceSquared(workstationLoc) > 1) continue;
 
