@@ -8,7 +8,6 @@ import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -31,14 +30,19 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("gameplay.restock-optimized-trades",
+        config.master().addComment(configPath(),
                 "This is for automatic restocking of trades for optimized villagers. Optimized Villagers\n" +
                 "don't have enough AI to restock their trades naturally, so this is here as a workaround.");
-        this.restock_delay_millis = config.getInt("gameplay.restock-optimized-trades.delay-in-ticks", 1000,
+        this.restock_delay_millis = config.getInt(configPath() + ".delay-in-ticks", 1000,
                 "1 second = 20 ticks. There are 24.000 ticks in a single minecraft day.") * 50L;
-        this.notify_player = config.getBoolean("gameplay.restock-optimized-trades.notify-player", true,
+        this.notify_player = config.getBoolean(configPath() + ".notify-player", true,
                 "Sends the player a message when the trades were restocked on a clicked villager.");
-        this.log_enabled = config.getBoolean("gameplay.restock-optimized-trades.log", false);
+        this.log_enabled = config.getBoolean(configPath() + ".log", false);
+    }
+
+    @Override
+    public String configPath() {
+        return "gameplay.restock-optimized-trades";
     }
 
     @Override
@@ -81,8 +85,7 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
             }
 
             if (log_enabled) {
-                VillagerOptimizer.getLog().info(Component.text("Restocked optimized villager at " +
-                        GenericUtil.formatLocation(wVillager.villager().getLocation())).color(GenericUtil.COLOR));
+                info("Restocked optimized villager at " + GenericUtil.formatLocation(wVillager.villager().getLocation()));
             }
         }
     }

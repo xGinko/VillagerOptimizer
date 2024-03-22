@@ -20,6 +20,11 @@ public class UnoptimizeOnJobLoose implements VillagerOptimizerModule, Listener {
     }
 
     @Override
+    public String configPath() {
+        return "gameplay.unoptimize-on-job-loose";
+    }
+
+    @Override
     public void enable() {
         VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -32,7 +37,7 @@ public class UnoptimizeOnJobLoose implements VillagerOptimizerModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.unoptimize-on-job-loose.enable", true,
+        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", true,
                 "Villagers that get their jobs reset will become unoptimized again.");
     }
 

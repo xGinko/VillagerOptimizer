@@ -15,6 +15,11 @@ public class MakeVillagersSpawnAdult implements VillagerOptimizerModule, Listene
     public MakeVillagersSpawnAdult() {}
 
     @Override
+    public String configPath() {
+        return "gameplay.villagers-spawn-as-adults";
+    }
+
+    @Override
     public void enable() {
         VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -27,7 +32,7 @@ public class MakeVillagersSpawnAdult implements VillagerOptimizerModule, Listene
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.villagers-spawn-as-adults.enable", false,
+        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", false,
                 "Spawned villagers will immediately be adults.\n" +
                 "This is to save some more resources as players don't have to keep unoptimized\n" +
                 "villagers loaded because they have to wait for them to turn into adults before they can\n" +

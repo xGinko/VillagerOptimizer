@@ -25,6 +25,11 @@ public class VisuallyHighlightOptimized implements VillagerOptimizerModule, List
     }
 
     @Override
+    public String configPath() {
+        return "gameplay.outline-optimized-villagers";
+    }
+
+    @Override
     public void enable() {
         VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);

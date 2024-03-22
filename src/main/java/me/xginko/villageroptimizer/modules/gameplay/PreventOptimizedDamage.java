@@ -29,25 +29,32 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("gameplay.prevent-damage-to-optimized.enable",
+        config.master().addComment(configPath() + ".enable",
                 "Configure what kind of damage you want to cancel for optimized villagers here.");
-        this.cancel_knockback = config.getBoolean("gameplay.prevent-damage-to-optimized.prevent-knockback-from-entity", true,
+        this.cancel_knockback = config.getBoolean(configPath() + ".prevent-knockback-from-entity", true,
                 "Prevents optimized villagers from getting knocked back by an attacking entity");
-        this.damage_causes_to_cancel = config.getList("gameplay.prevent-damage-to-optimized.damage-causes-to-cancel",
+        this.damage_causes_to_cancel = config.getList(configPath() + ".damage-causes-to-cancel",
                 Arrays.stream(EntityDamageEvent.DamageCause.values()).map(Enum::name).sorted().collect(Collectors.toList()),
                 "These are all current entries in the game. Remove what you do not need blocked.\n" +
                 "If you want a description or need to add a previously removed type, refer to:\n" +
-                "https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html"
-        ).stream().map(configuredDamageCause -> {
-            try {
-                return EntityDamageEvent.DamageCause.valueOf(configuredDamageCause);
-            } catch (IllegalArgumentException e) {
-                VillagerOptimizer.getLog().warn("(prevent-damage-to-optimized) DamageCause '"+configuredDamageCause +
-                        "' not recognized. Please use correct DamageCause enums from: " +
-                        "https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html");
-                return null;
-            }
-        }).filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));
+                "https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html")
+                .stream()
+                .map(configuredDamageCause -> {
+                    try {
+                        return EntityDamageEvent.DamageCause.valueOf(configuredDamageCause);
+                    } catch (IllegalArgumentException e) {
+                        warn("DamageCause '" + configuredDamageCause + "' not recognized. Please use correct DamageCause enums from: " +
+                             "https://jd.papermc.io/paper/1.20/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html");
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    @Override
+    public String configPath() {
+        return "gameplay.prevent-damage-to-optimized";
     }
 
     @Override
@@ -63,7 +70,7 @@ public class PreventOptimizedDamage implements VillagerOptimizerModule, Listener
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.prevent-damage-to-optimized.enable", true);
+        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

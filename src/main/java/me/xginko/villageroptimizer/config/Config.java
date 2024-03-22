@@ -16,12 +16,8 @@ public class Config {
     public final long cache_keep_time_seconds;
 
     public Config() throws Exception {
-        // Create plugin folder first if it does not exist yet
-        File pluginFolder = VillagerOptimizer.getInstance().getDataFolder();
-        if (!pluginFolder.exists() && !pluginFolder.mkdir())
-            VillagerOptimizer.getLog().error("Failed to create plugin directory.");
         // Load config.yml with ConfigMaster
-        this.config = ConfigFile.loadConfig(new File(pluginFolder, "config.yml"));
+        this.config = ConfigFile.loadConfig(new File(VillagerOptimizer.getInstance().getDataFolder(), "config.yml"));
 
         structureConfig();
 
@@ -42,7 +38,7 @@ public class Config {
         try {
             this.config.save();
         } catch (Throwable throwable) {
-            VillagerOptimizer.getLog().error("Failed to save config file!", throwable);
+            VillagerOptimizer.getPrefixedLogger().error("Failed to save config file!", throwable);
         }
     }
 

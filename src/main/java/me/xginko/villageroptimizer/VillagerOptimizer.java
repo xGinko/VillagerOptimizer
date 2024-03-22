@@ -45,6 +45,12 @@ public final class VillagerOptimizer extends JavaPlugin {
         audiences = BukkitAudiences.create(this);
         logger = ComponentLogger.logger(getLogger().getName());
         bStats = new Metrics(this, 19954);
+        try {
+            getDataFolder().mkdirs();
+        } catch (Exception e) {
+            logger.error("Failed to create plugin directory! Cannot enable!", e);
+            getServer().getPluginManager().disablePlugin(this);
+        }
 
         logger.info(Component.text("╭────────────────────────────────────────────────────────────╮").style(GenericUtil.STYLE));
         logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
@@ -65,14 +71,17 @@ public final class VillagerOptimizer extends JavaPlugin {
                 .color(NamedTextColor.GRAY)).append(Component.text("         │").style(GenericUtil.STYLE)));
         logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
         logger.info(Component.text("│                                                            │").style(GenericUtil.STYLE));
+
         logger.info(Component.text("│              ")
                 .style(GenericUtil.STYLE).append(Component.text(" ➤  Loading Translations...").style(GenericUtil.STYLE))
                 .append(Component.text("                   │").style(GenericUtil.STYLE)));
         reloadLang(true);
+
         logger.info(Component.text("│              ")
                 .style(GenericUtil.STYLE).append(Component.text(" ➤  Loading Config...").style(GenericUtil.STYLE))
                 .append(Component.text("                         │").style(GenericUtil.STYLE)));
         reloadConfiguration();
+
         logger.info(Component.text("│              ")
                 .style(GenericUtil.STYLE).append(Component.text(" ✓  Done.").color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
                 .append(Component.text("                                     │").style(GenericUtil.STYLE)));
@@ -119,7 +128,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static @NotNull FoliaLib getFoliaLib() {
         return foliaLib;
     }
-    public static @NotNull ComponentLogger getLog() {
+    public static @NotNull ComponentLogger getPrefixedLogger() {
         return logger;
     }
     public static @NotNull BukkitAudiences getAudiences() {

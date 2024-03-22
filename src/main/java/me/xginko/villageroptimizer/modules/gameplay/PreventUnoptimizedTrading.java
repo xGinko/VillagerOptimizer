@@ -25,12 +25,17 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("gameplay.prevent-trading-with-unoptimized.enable",
+        config.master().addComment(configPath() + ".enable",
                 "Will prevent players from selecting and using trades of unoptimized villagers.\n" +
                 "Use this if you have a lot of villagers and therefore want to force your players to optimize them.\n" +
                 "Inventories can still be opened so players can move villagers around.");
-        this.notify_player = config.getBoolean("gameplay.prevent-trading-with-unoptimized.notify-player", true,
+        this.notify_player = config.getBoolean(configPath() + ".notify-player", true,
                 "Sends players a message when they try to trade with an unoptimized villager.");
+    }
+
+    @Override
+    public String configPath() {
+        return "gameplay.prevent-trading-with-unoptimized";
     }
 
     @Override
@@ -46,7 +51,7 @@ public class PreventUnoptimizedTrading implements VillagerOptimizerModule, Liste
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.prevent-trading-with-unoptimized.enable", false);
+        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

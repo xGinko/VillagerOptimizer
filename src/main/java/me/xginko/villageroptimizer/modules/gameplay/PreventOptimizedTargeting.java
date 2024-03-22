@@ -24,6 +24,11 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
     }
 
     @Override
+    public String configPath() {
+        return "gameplay.prevent-entities-from-targeting-optimized";
+    }
+
+    @Override
     public void enable() {
         VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -36,7 +41,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.prevent-entities-from-targeting-optimized.enable", true,
+        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", true,
                 "Prevents hostile entities from targeting optimized villagers.");
     }
 

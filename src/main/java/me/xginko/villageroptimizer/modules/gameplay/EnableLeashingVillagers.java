@@ -6,7 +6,6 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.GenericUtil;
-import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -31,11 +30,16 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
         this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("gameplay.villagers-can-be-leashed.enable",
+        config.master().addComment(configPath() + ".enable",
                 "Enable leashing of villagers, enabling players to easily move villagers to where they want them to be.");
-        this.only_optimized = config.getBoolean("gameplay.villagers-can-be-leashed.only-optimized", false,
+        this.only_optimized = config.getBoolean(configPath() + ".only-optimized", false,
                 "If set to true, only optimized villagers can be leashed.");
-        this.log_enabled = config.getBoolean("gameplay.villagers-can-be-leashed.log", false);
+        this.log_enabled = config.getBoolean(configPath() + ".log", false);
+    }
+
+    @Override
+    public String configPath() {
+        return "gameplay.villagers-can-be-leashed";
     }
 
     @Override
@@ -51,7 +55,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.villagers-can-be-leashed.enable", false);
+        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", false);
     }
 
     @SuppressWarnings("deprecation")
@@ -86,8 +90,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
                 handItem.subtract(1); // Manually consume for survival players
 
             if (log_enabled) {
-                VillagerOptimizer.getLog().info(Component.text(player.getName() + " leashed a villager at " +
-                        GenericUtil.formatLocation(villager.getLocation())).color(GenericUtil.COLOR));
+                info(player.getName() + " leashed a villager at " + GenericUtil.formatLocation(villager.getLocation()));
             }
         });
     }

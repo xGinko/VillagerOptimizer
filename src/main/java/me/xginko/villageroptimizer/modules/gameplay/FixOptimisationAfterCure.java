@@ -18,6 +18,11 @@ public class FixOptimisationAfterCure implements VillagerOptimizerModule, Listen
     public FixOptimisationAfterCure() {}
 
     @Override
+    public String configPath() {
+        return "post-cure-optimization-fix";
+    }
+
+    @Override
     public void enable() {
         VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);

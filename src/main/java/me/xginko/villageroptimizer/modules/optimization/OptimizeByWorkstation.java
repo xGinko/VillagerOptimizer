@@ -12,7 +12,6 @@ import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -44,24 +43,29 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("optimization-methods.workstation-optimization.enable",
+        config.master().addComment(configPath() + ".enable",
                 "When enabled, villagers that have a job and have been traded with at least once will become optimized,\n" +
                 "if near their workstation. If the workstation is broken, the villager will become unoptimized again.");
-        this.check_duration_ticks = Math.max(config.getInt("optimization-methods.workstation-optimization.check-linger-duration-ticks", 100,
+        this.check_duration_ticks = Math.max(config.getInt(configPath() + ".check-linger-duration-ticks", 100,
                 "After a workstation has been placed, the plugin will wait for the configured amount of time in ticks\n" +
                 "for a villager to claim that workstation. Not recommended to go below 100 ticks."), 1);
-        this.search_radius = config.getDouble("optimization-methods.workstation-optimization.search-radius-in-blocks", 2.0,
+        this.search_radius = config.getDouble(configPath() + ".search-radius-in-blocks", 2.0,
                 "The radius in blocks a villager can be away from the player when he places a workstation.\n" +
                 "The closest unoptimized villager to the player will be optimized.");
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
-                Math.max(1, config.getInt("optimization-methods.workstation-optimization.optimize-cooldown-seconds", 600,
+                Math.max(1, config.getInt(configPath() + ".optimize-cooldown-seconds", 600,
                 "Cooldown in seconds until a villager can be optimized again using a workstation.\n" +
                 "Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.")));
-        this.only_while_sneaking = config.getBoolean("optimization-methods.workstation-optimization.only-when-sneaking", true,
+        this.only_while_sneaking = config.getBoolean(configPath() + ".only-when-sneaking", true,
                 "Only optimize/unoptimize by workstation when player is sneaking during place or break. Useful for villager rolling.");
-        this.notify_player = config.getBoolean("optimization-methods.workstation-optimization.notify-player", true,
+        this.notify_player = config.getBoolean(configPath() + ".notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
-        this.log_enabled = config.getBoolean("optimization-methods.workstation-optimization.log", false);
+        this.log_enabled = config.getBoolean(configPath() + ".log", false);
+    }
+
+    @Override
+    public String configPath() {
+        return "optimization-methods.workstation-optimization";
     }
 
     @Override
@@ -77,7 +81,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.workstation-optimization.enable", false);
+        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -146,9 +150,8 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 }
 
                 if (log_enabled) {
-                    VillagerOptimizer.getLog().info(Component.text(player.getName() +
-                            " optimized villager by workstation (" + placed.getType().toString().toLowerCase() + ") at " +
-                            GenericUtil.formatLocation(wrapped.villager().getLocation())).color(GenericUtil.COLOR));
+                    info(player.getName() + " optimized villager using workstation " + placed.getType() + " at " +
+                         GenericUtil.formatLocation(wrapped.villager().getLocation()));
                 }
 
                 taskComplete.set(true);
@@ -211,9 +214,8 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         }
 
         if (log_enabled) {
-            VillagerOptimizer.getLog().info(Component.text(player.getName() +
-                    " unoptimized villager by workstation (" + broken.getType().toString().toLowerCase() + ") at " +
-                    GenericUtil.formatLocation(closestOptimized.villager().getLocation())).color(GenericUtil.COLOR));
+            info(player.getName() + " unoptimized villager using workstation " + broken.getType() + " at " +
+                 GenericUtil.formatLocation(closestOptimized.villager().getLocation()));
         }
     }
 }

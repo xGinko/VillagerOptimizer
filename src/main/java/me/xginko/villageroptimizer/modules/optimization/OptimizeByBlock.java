@@ -45,34 +45,41 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("optimization-methods.block-optimization.enable",
+        config.master().addComment(configPath() + ".enable",
                 "When enabled, the closest villager standing near a configured block being placed will be optimized.\n" +
                 "If a configured block is broken nearby, the closest villager will become unoptimized again.");
-        this.blocks_that_disable = config.getList("optimization-methods.block-optimization.materials", Arrays.asList(
+        this.blocks_that_disable = config.getList(configPath() + ".materials", Arrays.asList(
                 "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
-        ), "Values here need to be valid bukkit Material enums for your server version."
-        ).stream().map(configuredMaterial -> {
-            try {
-                return Material.valueOf(configuredMaterial);
-            } catch (IllegalArgumentException e) {
-                VillagerOptimizer.getLog().warn("(block-optimization) Material '" + configuredMaterial +
-                        "' not recognized. Please use correct Material enums from: " +
-                        "https://jd.papermc.io/paper/1.20/org/bukkit/Material.html");
-                return null;
-            }
-        }).filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));
+        ), "Values here need to be valid bukkit Material enums for your server version.")
+                .stream()
+                .map(configuredMaterial -> {
+                    try {
+                        return Material.valueOf(configuredMaterial);
+                    } catch (IllegalArgumentException e) {
+                        warn("Material '" + configuredMaterial + "' not recognized. Please use correct Material enums from: " +
+                             "https://jd.papermc.io/paper/1.20/org/bukkit/Material.html");
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(HashSet::new));
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
-                config.getInt("optimization-methods.block-optimization.optimize-cooldown-seconds", 600,
+                config.getInt(configPath() + ".optimize-cooldown-seconds", 600,
                 "Cooldown in seconds until a villager can be optimized again by using specific blocks.\n" +
                 "Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior."));
-        this.search_radius = config.getDouble("optimization-methods.block-optimization.search-radius-in-blocks", 2.0,
+        this.search_radius = config.getDouble(configPath() + ".search-radius-in-blocks", 2.0,
                 "The radius in blocks a villager can be away from the player when he places an optimize block.\n" +
                 "The closest unoptimized villager to the player will be optimized.") / 2;
-        this.only_while_sneaking = config.getBoolean("optimization-methods.block-optimization.only-when-sneaking", true,
+        this.only_while_sneaking = config.getBoolean(configPath() + ".only-when-sneaking", true,
                 "Only optimize/unoptimize by block when player is sneaking during place or break.");
-        this.notify_player = config.getBoolean("optimization-methods.block-optimization.notify-player", true,
+        this.notify_player = config.getBoolean(configPath() + ".notify-player", true,
                 "Sends players a message when they successfully optimized or unoptimized a villager.");
-        this.log_enabled = config.getBoolean("optimization-methods.block-optimization.log", false);
+        this.log_enabled = config.getBoolean(configPath() + ".log", false);
+    }
+
+    @Override
+    public String configPath() {
+        return "optimization-methods.block-optimization";
     }
 
     @Override
@@ -88,7 +95,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.block-optimization.enable", false);
+        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -144,8 +151,8 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             }
 
             if (log_enabled) {
-                VillagerOptimizer.getLog().info(Component.text(player.getName() + " optimized villager by block at " +
-                        GenericUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(GenericUtil.COLOR));
+                VillagerOptimizer.getPrefixedLogger().info(Component.text(player.getName() + " optimized villager by block at " +
+                                                                          GenericUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(GenericUtil.COLOR));
             }
         } else {
             closestOptimizableVillager.sayNo();
@@ -209,8 +216,8 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         }
 
         if (log_enabled) {
-            VillagerOptimizer.getLog().info(Component.text(player.getName() + " unoptimized villager by block at " +
-                    GenericUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(GenericUtil.COLOR));
+            VillagerOptimizer.getPrefixedLogger().info(Component.text(player.getName() + " unoptimized villager by block at " +
+                                                                      GenericUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(GenericUtil.COLOR));
         }
     }
 }

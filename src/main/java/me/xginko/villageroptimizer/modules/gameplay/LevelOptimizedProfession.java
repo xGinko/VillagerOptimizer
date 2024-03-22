@@ -35,15 +35,20 @@ public class LevelOptimizedProfession implements VillagerOptimizerModule, Listen
         this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("gameplay.level-optimized-profession",
+        config.master().addComment(configPath(),
                 "This is needed to allow optimized villagers to level up.\n" +
                 "Temporarily enables the villagers AI to allow it to level up and then disables it again.");
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
-                config.getInt("gameplay.level-optimized-profession.level-check-cooldown-seconds", 5,
+                config.getInt(configPath() + ".level-check-cooldown-seconds", 5,
                 "Cooldown in seconds until the level of a villager will be checked and updated again.\n" +
                 "Recommended to leave as is."));
-        this.notify_player = config.getBoolean("gameplay.level-optimized-profession.notify-player", true,
+        this.notify_player = config.getBoolean(configPath() + ".notify-player", true,
                 "Tell players to wait when a villager is leveling up.");
+    }
+
+    @Override
+    public String configPath() {
+        return "gameplay.level-optimized-profession";
     }
 
     @Override

@@ -43,21 +43,26 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         shouldEnable();
         this.villagerCache = VillagerOptimizer.getCache();
         Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment("optimization-methods.nametag-optimization.enable",
+        config.master().addComment(configPath() + ".enable",
                 "Enable optimization by naming villagers to one of the names configured below.\n" +
                 "Nametag optimized villagers will be unoptimized again when they are renamed to something else.");
-        this.nametags = config.getList("optimization-methods.nametag-optimization.names", Arrays.asList("Optimize", "DisableAI"),
+        this.nametags = config.getList(configPath() + ".names", Arrays.asList("Optimize", "DisableAI"),
                 "Names are case insensitive, capital letters won't matter.")
                 .stream().map(String::toLowerCase).collect(Collectors.toCollection(HashSet::new));
-        this.consume_nametag = config.getBoolean("optimization-methods.nametag-optimization.nametags-get-consumed", true,
+        this.consume_nametag = config.getBoolean(configPath() + ".nametags-get-consumed", true,
                 "Enable or disable consumption of the used nametag item.");
         this.cooldown = TimeUnit.SECONDS.toMillis(
-                config.getInt("optimization-methods.nametag-optimization.optimize-cooldown-seconds", 600,
+                config.getInt(configPath() + ".optimize-cooldown-seconds", 600,
                 "Cooldown in seconds until a villager can be optimized again using a nametag.\n" +
                 "Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior."));
-        this.notify_player = config.getBoolean("optimization-methods.nametag-optimization.notify-player", true,
+        this.notify_player = config.getBoolean(configPath() + ".notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
-        this.log_enabled = config.getBoolean("optimization-methods.nametag-optimization.log", false);
+        this.log_enabled = config.getBoolean(configPath() + ".log", false);
+    }
+
+    @Override
+    public String configPath() {
+        return "optimization-methods.nametag-optimization";
     }
 
     @Override
@@ -73,7 +78,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("optimization-methods.nametag-optimization.enable", true);
+        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -120,9 +125,8 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 }
 
                 if (log_enabled) {
-                    VillagerOptimizer.getLog().info(Component.text(player.getName() +
-                            " optimized villager by nametag '" + nameTagPlainText + "' at " +
-                            GenericUtil.formatLocation(wVillager.villager().getLocation())).color(GenericUtil.COLOR));
+                    info(player.getName() + " optimized villager using nametag '" + nameTagPlainText + "' at " +
+                         GenericUtil.formatLocation(wVillager.villager().getLocation()));
                 }
             } else {
                 event.setCancelled(true);
@@ -154,9 +158,8 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 }
 
                 if (log_enabled) {
-                    VillagerOptimizer.getLog().info(Component.text(player.getName() +
-                            " unoptimized villager by nametag '" + nameTagPlainText + "' at " +
-                            GenericUtil.formatLocation(wVillager.villager().getLocation())).color(GenericUtil.COLOR));
+                    info(player.getName() + " unoptimized villager using nametag '" + nameTagPlainText + "' at " +
+                         GenericUtil.formatLocation(wVillager.villager().getLocation()));
                 }
             }
         }
