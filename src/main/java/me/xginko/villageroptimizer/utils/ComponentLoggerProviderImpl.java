@@ -1,13 +1,11 @@
 package me.xginko.villageroptimizer.utils;
 
-import com.google.auto.service.AutoService;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider;
 import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
-@AutoService(ComponentLoggerProvider.class)
 @SuppressWarnings("UnstableApiUsage")
 public final class ComponentLoggerProviderImpl implements ComponentLoggerProvider {
     private static final @NotNull ANSIComponentSerializer SERIALIZER = ANSIComponentSerializer.builder()

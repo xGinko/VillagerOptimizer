@@ -112,11 +112,6 @@
             <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google.auto.service</groupId>
-            <artifactId>auto-service</artifactId>
-            <version>1.1.1</version>
-        </dependency>
         <!-- Adventure API for easier cross-version compatibility -->
         <dependency>
             <groupId>net.kyori</groupId>
