@@ -165,7 +165,7 @@ public final class VillagerOptimizer extends JavaPlugin {
         try {
             File langDirectory = new File(getDataFolder() + File.separator + "lang");
             Files.createDirectories(langDirectory.toPath());
-            Set<String> locales = new HashSet<>();
+            SortedSet<String> locales = new TreeSet<>();
             locales.addAll(getDefaultLocales(getFile()));
             locales.addAll(getPresentLocales(langDirectory));
             for (String localeString : locales) {
