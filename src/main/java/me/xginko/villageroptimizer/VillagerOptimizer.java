@@ -18,14 +18,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
 
 public final class VillagerOptimizer extends JavaPlugin {
 
@@ -167,29 +165,16 @@ public final class VillagerOptimizer extends JavaPlugin {
         try {
             File langDirectory = new File(getDataFolder() + File.separator + "lang");
             Files.createDirectories(langDirectory.toPath());
-            for (String fileName : getDefaultLanguageFiles()) {
-                final String localeString = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf('.'));
+            Set<String> locales = new HashSet<>();
+            locales.addAll(getDefaultLocales(getFile()));
+            locales.addAll(getPresentLocales(langDirectory));
+            for (String localeString : locales) {
                 if (startup) logger.info(
                         Component.text("│                       ").style(GenericUtil.STYLE)
                                 .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
                                 .append(Component.text("                            │").style(GenericUtil.STYLE)));
                 else logger.info(String.format("Found language file for %s", localeString));
                 languageCacheMap.put(localeString, new LanguageCache(localeString));
-            }
-            final Pattern langPattern = Pattern.compile("([a-z]{1,3}_[a-z]{1,3})(\\.yml)", Pattern.CASE_INSENSITIVE);
-            for (File langFile : langDirectory.listFiles()) {
-                final Matcher langMatcher = langPattern.matcher(langFile.getName());
-                if (langMatcher.find()) {
-                    String localeString = langMatcher.group(1).toLowerCase();
-                    if (!languageCacheMap.containsKey(localeString)) { // make sure it wasn't a default file that we already loaded
-                        if (startup) logger.info(
-                                Component.text("│                       ").style(GenericUtil.STYLE)
-                                        .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
-                                        .append(Component.text("                            │").style(GenericUtil.STYLE)));
-                        else logger.info(String.format("Found language file for %s", localeString));
-                        languageCacheMap.put(localeString, new LanguageCache(localeString));
-                    }
-                }
             }
         } catch (Exception e) {
             if (startup) logger.error(
@@ -200,14 +185,34 @@ public final class VillagerOptimizer extends JavaPlugin {
         }
     }
 
-    private @NotNull Set<String> getDefaultLanguageFiles() {
-        try (final JarFile pluginJarFile = new JarFile(this.getFile())) {
+    private static final Pattern langPattern = Pattern.compile("([a-z]{1,3}_[a-z]{1,3})(\\.yml)", Pattern.CASE_INSENSITIVE);
+
+    private @NotNull Set<String> getDefaultLocales(File jarFile) {
+        try (final JarFile pluginJarFile = new JarFile(jarFile)) {
             return pluginJarFile.stream()
-                    .map(ZipEntry::getName)
-                    .filter(name -> name.startsWith("lang/") && name.endsWith(".yml"))
+                    .map(zipEntry -> {
+                        Matcher matcher = langPattern.matcher(zipEntry.getName());
+                        return matcher.find() ? matcher.group(1) : null;
+                    })
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
-        } catch (IOException e) {
-            logger.error("Failed getting default lang files!", e);
+        } catch (Throwable t) {
+            logger.error("Failed getting default lang files!", t);
+            return Collections.emptySet();
+        }
+    }
+
+    private @NotNull Set<String> getPresentLocales(File folder) {
+        try {
+            return Arrays.stream(Objects.requireNonNull(folder.listFiles()))
+                    .map(file -> {
+                        Matcher matcher = langPattern.matcher(file.getName());
+                        return matcher.find() ? matcher.group(1) : null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+        } catch (Throwable t) {
+            logger.error("Failed getting lang files from plugin folder!", t);
             return Collections.emptySet();
         }
     }

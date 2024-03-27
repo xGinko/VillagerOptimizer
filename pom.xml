@@ -130,16 +130,16 @@
             <artifactId>adventure-text-serializer-ansi</artifactId>
             <version>4.16.0</version>
         </dependency>
-        <!-- Adventure ComponentLogger for colorful slf4j logging -->
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-text-logger-slf4j</artifactId>
-            <version>4.16.0</version>
-        </dependency>
         <!-- Adventure plaintext serializer for reading unstyled content of components -->
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-plain</artifactId>
+            <version>4.16.0</version>
+        </dependency>
+        <!-- Adventure ComponentLogger for colorful slf4j logging -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-logger-slf4j</artifactId>
             <version>4.16.0</version>
         </dependency>
         <!-- Bukkit bStats -->
