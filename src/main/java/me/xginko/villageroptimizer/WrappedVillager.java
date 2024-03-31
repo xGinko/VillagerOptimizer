@@ -316,7 +316,6 @@ public final class WrappedVillager {
             villager.shakeHead();
         } catch (NoSuchMethodError e) {
             villager.getWorld().playSound(villager.getEyeLocation(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.0F);
-            villager.getWorld().spawnParticle(Particle.CLOUD, villager.getEyeLocation(), 4);
         }
     }
 
