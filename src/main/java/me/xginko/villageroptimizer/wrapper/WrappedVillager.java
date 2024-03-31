@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.wrapper;
 
+import me.xginko.villageroptimizer.enums.Keyring;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -69,8 +70,8 @@ public class WrappedVillager implements VillagerDataHandler {
     }
 
     @Override
-    public boolean isMain() {
-        return false;
+    public Keyring.Space getSpace() {
+        return Keyring.Space.VillagerOptimizer;
     }
 
     @Override
@@ -106,7 +107,7 @@ public class WrappedVillager implements VillagerDataHandler {
         for (VillagerDataHandler handler : dataHandlers) {
             OptimizationType type = handler.getOptimizationType();
             if (type != OptimizationType.NONE) {
-                if (handler.isMain()) {
+                if (handler.getSpace() == Keyring.Space.VillagerOptimizer) {
                     return type;
                 } else {
                     result = type;
@@ -151,7 +152,7 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public long getRestockCooldownMillis(long cooldown_millis) {
-        long cooldown = 0L;
+        long cooldown = cooldown_millis;
         for (VillagerDataHandler handler : dataHandlers) {
             cooldown = Math.max(cooldown, handler.getRestockCooldownMillis(cooldown_millis));
         }
@@ -177,9 +178,9 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public long getLevelCooldownMillis(long cooldown_millis) {
-        long cooldown = 0L;
+        long cooldown = cooldown_millis;
         for (VillagerDataHandler handler : dataHandlers) {
-            cooldown = Math.max(cooldown_millis, handler.getLevelCooldownMillis(cooldown_millis));
+            cooldown = Math.max(cooldown, handler.getLevelCooldownMillis(cooldown_millis));
         }
         return cooldown;
     }

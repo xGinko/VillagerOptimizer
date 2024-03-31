@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public final class Keyring {
 
-    public enum Spaces implements Namespaced {
+    public enum Space implements Namespaced {
 
         VillagerOptimizer("VillagerOptimizer"),
         AntiVillagerLag("AntiVillagerLag");
@@ -20,7 +20,7 @@ public final class Keyring {
         @Pattern("[a-z0-9_\\-.]+")
         private final @NotNull String namespace;
 
-        Spaces(@NotNull @Pattern("[a-z0-9_\\-.]+") String pluginName) {
+        Space(@NotNull @Pattern("[a-z0-9_\\-.]+") String pluginName) {
             this.namespace = pluginName.toLowerCase(Locale.ROOT);
         }
 
@@ -57,7 +57,7 @@ public final class Keyring {
         private final @NotNull NamespacedKey key;
 
         VillagerOptimizer(@NotNull String key) {
-            this.key = new NamespacedKey(Spaces.VillagerOptimizer.namespace(), key);
+            this.key = new NamespacedKey(Space.VillagerOptimizer.namespace(), key);
         }
 
         @Override
@@ -78,7 +78,7 @@ public final class Keyring {
         private final @NotNull NamespacedKey key;
 
         AntiVillagerLag(@NotNull String avlKey) {
-            this.key = new NamespacedKey(Spaces.AntiVillagerLag.namespace(), avlKey);
+            this.key = new NamespacedKey(Space.AntiVillagerLag.namespace(), avlKey);
         }
 
         @Override

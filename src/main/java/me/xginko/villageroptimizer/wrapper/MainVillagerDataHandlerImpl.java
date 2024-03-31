@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
 
-    private @NotNull Villager villager;
-    private @NotNull PersistentDataContainer dataContainer;
+    private final @NotNull Villager villager;
+    private final @NotNull PersistentDataContainer dataContainer;
 
     MainVillagerDataHandlerImpl(@NotNull Villager villager) {
         this.villager = villager;
@@ -21,8 +21,8 @@ public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public boolean isMain() {
-        return true;
+    public Keyring.Space getSpace() {
+        return Keyring.Space.VillagerOptimizer;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
     /**
      * @return The system time in millis when the villager was last optimized, 0L if the villager was never optimized.
      */
-    public long getLastOptimize() {
+    private long getLastOptimize() {
         if (dataContainer.has(Keyring.VillagerOptimizer.LAST_OPTIMIZE_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG)) {
             return dataContainer.get(Keyring.VillagerOptimizer.LAST_OPTIMIZE_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG);
         }
@@ -98,7 +98,7 @@ public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
     /**
      * @return The time when the entity was last restocked.
      */
-    public long getLastRestock() {
+    private long getLastRestock() {
         if (dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG)) {
             return dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG);
         }
@@ -125,7 +125,7 @@ public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
     /**
      * @return The systime in millis when the entity was last leveled up.
      */
-    public long getLastLevelUpTime() {
+    private long getLastLevelUpTime() {
         if (dataContainer.has(Keyring.VillagerOptimizer.LAST_LEVELUP_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG))
             return dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG);
         return 0L;

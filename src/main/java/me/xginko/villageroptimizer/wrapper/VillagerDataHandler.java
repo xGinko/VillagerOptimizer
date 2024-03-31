@@ -1,6 +1,7 @@
 package me.xginko.villageroptimizer.wrapper;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.enums.Keyring;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
@@ -19,9 +20,9 @@ public interface VillagerDataHandler {
     }
 
     /**
-     * @return True if the DataHandle is this plugin's implementation.
+     * @return The namespace of the handler
      */
-    boolean isMain();
+    Keyring.Space getSpace();
 
     /**
      * @return True if the villager is optimized by plugin, otherwise false.

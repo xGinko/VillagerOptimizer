@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
 
-    private @NotNull Villager villager;
-    private @NotNull PersistentDataContainer dataContainer;
+    private final @NotNull Villager villager;
+    private final @NotNull PersistentDataContainer dataContainer;
 
     AVLVillagerDataHandlerImpl(@NotNull Villager villager) {
         this.villager = villager;
@@ -21,8 +21,8 @@ public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public boolean isMain() {
-        return false;
+    public Keyring.Space getSpace() {
+        return Keyring.Space.AntiVillagerLag;
     }
 
     @Override
@@ -106,10 +106,8 @@ public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
 
     @Override
     public boolean canRestock(long cooldown_millis) {
-        if (dataContainer.has(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG)) {
-            return villager.getWorld().getFullTime() > dataContainer.get(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG);
-        }
-        return true;
+        return !dataContainer.has(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG)
+                || villager.getWorld().getFullTime() > dataContainer.get(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG);
     }
 
     @Override
