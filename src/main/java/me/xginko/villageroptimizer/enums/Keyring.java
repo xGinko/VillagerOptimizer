@@ -50,9 +50,9 @@ public final class Keyring {
     public enum VillagerOptimizer implements Keyed {
 
         OPTIMIZATION_TYPE("optimization-type"),
-        LAST_OPTIMIZE("last-optimize"),
-        LAST_LEVELUP("last-levelup"),
-        LAST_RESTOCK("last-restock");
+        LAST_OPTIMIZE_SYSTIME_MILLIS("last-optimize"),
+        LAST_LEVELUP_SYSTIME_MILLIS("last-levelup"),
+        LAST_RESTOCK_SYSTIME_MILLIS("last-restock");
 
         private final @NotNull NamespacedKey key;
 

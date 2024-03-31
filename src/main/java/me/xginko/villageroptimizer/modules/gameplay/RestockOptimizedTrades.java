@@ -2,7 +2,7 @@ package me.xginko.villageroptimizer.modules.gameplay;
 
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;

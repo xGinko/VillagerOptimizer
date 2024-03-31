@@ -2,6 +2,7 @@ package me.xginko.villageroptimizer;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
 

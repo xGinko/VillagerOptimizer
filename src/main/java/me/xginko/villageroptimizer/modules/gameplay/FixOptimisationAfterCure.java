@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;

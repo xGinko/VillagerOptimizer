@@ -4,7 +4,7 @@ import com.tcoded.folialib.impl.ServerImplementation;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;

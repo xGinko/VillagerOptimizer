@@ -1,6 +1,6 @@
 package me.xginko.villageroptimizer.events;
 
-import me.xginko.villageroptimizer.WrappedVillager;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
