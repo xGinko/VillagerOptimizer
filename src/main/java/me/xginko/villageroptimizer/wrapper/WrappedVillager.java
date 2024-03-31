@@ -134,13 +134,12 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public boolean canRestock(long cooldown_millis) {
-        boolean can_restock = true;
         for (VillagerDataHandler handler : dataHandlers) {
             if (!handler.canRestock(cooldown_millis)) {
-                can_restock = false;
+                return false;
             }
         }
-        return can_restock;
+        return true;
     }
 
     @Override
@@ -161,13 +160,12 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public boolean canLevelUp(long cooldown_millis) {
-        boolean can_level_up = true;
         for (VillagerDataHandler handler : dataHandlers) {
             if (!handler.canLevelUp(cooldown_millis)) {
-                can_level_up = false;
+                return false;
             }
         }
-        return can_level_up;
+        return true;
     }
 
     @Override
