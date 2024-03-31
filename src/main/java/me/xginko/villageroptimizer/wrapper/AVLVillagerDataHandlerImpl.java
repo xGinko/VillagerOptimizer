@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
 
-    private final @NotNull Villager villager;
-    private final @NotNull PersistentDataContainer dataContainer;
+    private @NotNull Villager villager;
+    private @NotNull PersistentDataContainer dataContainer;
 
     AVLVillagerDataHandlerImpl(@NotNull Villager villager) {
         this.villager = villager;
@@ -33,13 +33,13 @@ public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public boolean canOptimize(final long cooldown_millis) {
-        return dataContainer.has(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)
-                && System.currentTimeMillis() > TimeUnit.SECONDS.toMillis(dataContainer.get(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG));
+    public boolean canOptimize(long cooldown_millis) {
+        return !dataContainer.has(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)
+                || System.currentTimeMillis() > TimeUnit.SECONDS.toMillis(dataContainer.get(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG));
     }
 
     @Override
-    public void setOptimizationType(final OptimizationType type) {
+    public void setOptimizationType(OptimizationType type) {
         VillagerOptimizer.getFoliaLib().getImpl().runAtEntityTimer(villager, setOptimization -> {
             // Keep repeating task until villager is no longer trading with a player
             if (villager.isTrading()) return;
@@ -97,7 +97,7 @@ public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public long getOptimizeCooldownMillis(final long cooldown_millis) {
+    public long getOptimizeCooldownMillis(long cooldown_millis) {
         if (dataContainer.has(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)) {
             return Math.max(cooldown_millis, System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(dataContainer.get(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)));
         }
@@ -105,7 +105,7 @@ public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public boolean canRestock(final long cooldown_millis) {
+    public boolean canRestock(long cooldown_millis) {
         if (dataContainer.has(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG)) {
             return villager.getWorld().getFullTime() > dataContainer.get(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG);
         }
@@ -118,14 +118,14 @@ public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public long getRestockCooldownMillis(final long cooldown_millis) {
+    public long getRestockCooldownMillis(long cooldown_millis) {
         if (dataContainer.has(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG))
             return (villager.getWorld().getFullTime() - dataContainer.get(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG)) * 50L;
         return cooldown_millis;
     }
 
     @Override
-    public boolean canLevelUp(final long cooldown_millis) {
+    public boolean canLevelUp(long cooldown_millis) {
         return !dataContainer.has(Keyring.AntiVillagerLag.NEXT_LEVELUP_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)
                 || System.currentTimeMillis() > TimeUnit.SECONDS.toMillis(dataContainer.get(Keyring.AntiVillagerLag.NEXT_LEVELUP_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG));
     }
@@ -136,7 +136,7 @@ public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public long getLevelCooldownMillis(final long cooldown_millis) {
+    public long getLevelCooldownMillis(long cooldown_millis) {
         if (dataContainer.has(Keyring.AntiVillagerLag.NEXT_LEVELUP_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG))
             return System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(dataContainer.get(Keyring.AntiVillagerLag.NEXT_LEVELUP_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG));
         return cooldown_millis;

@@ -22,6 +22,10 @@ public final class VillagerCache {
         return this.villagerCache.asMap();
     }
 
+    public void clear() {
+        this.villagerCache.asMap().clear();
+    }
+
     public @NotNull WrappedVillager getOrAdd(@NotNull Villager villager) {
         WrappedVillager wrappedVillager = this.villagerCache.getIfPresent(villager.getUniqueId());
         return wrappedVillager == null ? this.add(new WrappedVillager(villager)) : this.add(wrappedVillager);

@@ -99,7 +99,7 @@ public final class VillagerOptimizer extends JavaPlugin {
             foliaLib = null;
         }
         if (villagerCache != null) {
-            villagerCache.cacheMap().clear();
+            villagerCache.clear();
             villagerCache = null;
         }
         if (audiences != null) {
@@ -153,6 +153,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     private void reloadConfiguration() {
         try {
             config = new Config();
+            if (villagerCache != null) villagerCache.clear();
             villagerCache = new VillagerCache(config.cache_keep_time_seconds);
             VillagerOptimizerCommand.reloadCommands();
             VillagerOptimizerModule.reloadModules();

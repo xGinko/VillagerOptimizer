@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public final class MainVillagerDataHandlerImpl implements VillagerDataHandler {
+public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
 
-    private final @NotNull Villager villager;
-    private final @NotNull PersistentDataContainer dataContainer;
+    private @NotNull Villager villager;
+    private @NotNull PersistentDataContainer dataContainer;
 
     MainVillagerDataHandlerImpl(@NotNull Villager villager) {
         this.villager = villager;
@@ -31,20 +31,19 @@ public final class MainVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public boolean canOptimize(final long cooldown_millis) {
+    public boolean canOptimize(long cooldown_millis) {
         return System.currentTimeMillis() > getLastOptimize() + cooldown_millis;
     }
 
     @Override
-    public void setOptimizationType(final OptimizationType type) {
+    public void setOptimizationType(OptimizationType type) {
         VillagerOptimizer.getFoliaLib().getImpl().runAtEntityTimer(villager, setOptimization -> {
             // Keep repeating task until villager is no longer trading with a player
             if (villager.isTrading()) return;
 
             if (type == OptimizationType.NONE) {
-                if (isOptimized()) {
+                if (isOptimized())
                     dataContainer.remove(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey());
-                }
                 villager.setAware(true);
                 villager.setAI(true);
             } else {
@@ -82,12 +81,12 @@ public final class MainVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public long getOptimizeCooldownMillis(final long cooldown_millis) {
+    public long getOptimizeCooldownMillis(long cooldown_millis) {
         return Math.max(System.currentTimeMillis() - getLastOptimize(), cooldown_millis);
     }
 
     @Override
-    public boolean canRestock(final long cooldown_millis) {
+    public boolean canRestock(long cooldown_millis) {
         return getLastRestock() + cooldown_millis <= System.currentTimeMillis();
     }
 
@@ -100,22 +99,21 @@ public final class MainVillagerDataHandlerImpl implements VillagerDataHandler {
      * @return The time when the entity was last restocked.
      */
     public long getLastRestock() {
-        long lastRestock = 0L;
         if (dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG)) {
-            lastRestock = dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG);
+            return dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG);
         }
-        return lastRestock;
+        return 0L;
     }
 
     @Override
-    public long getRestockCooldownMillis(final long cooldown_millis) {
+    public long getRestockCooldownMillis(long cooldown_millis) {
         if (dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG))
             return System.currentTimeMillis() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG) + cooldown_millis);
         return cooldown_millis;
     }
 
     @Override
-    public boolean canLevelUp(final long cooldown_millis) {
+    public boolean canLevelUp(long cooldown_millis) {
         return System.currentTimeMillis() >= getLastLevelUpTime() + cooldown_millis;
     }
 
@@ -134,7 +132,7 @@ public final class MainVillagerDataHandlerImpl implements VillagerDataHandler {
     }
 
     @Override
-    public long getLevelCooldownMillis(final long cooldown_millis) {
+    public long getLevelCooldownMillis(long cooldown_millis) {
         if (dataContainer.has(Keyring.VillagerOptimizer.LAST_LEVELUP_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG))
             return System.currentTimeMillis() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_LEVELUP_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG) + cooldown_millis);
         return cooldown_millis;

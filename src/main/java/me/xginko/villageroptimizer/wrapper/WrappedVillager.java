@@ -86,11 +86,11 @@ public class WrappedVillager implements VillagerDataHandler {
     @Override
     public boolean canOptimize(long cooldown_millis) {
         for (VillagerDataHandler handler : dataHandlers) {
-            if (handler.canOptimize(cooldown_millis)) {
-                return true;
+            if (!handler.canOptimize(cooldown_millis)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     @Override
