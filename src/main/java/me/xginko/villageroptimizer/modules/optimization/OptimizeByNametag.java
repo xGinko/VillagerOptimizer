@@ -11,8 +11,8 @@ import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -81,6 +81,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", true);
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
@@ -93,10 +94,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
         final ItemMeta meta = usedItem.getItemMeta();
         if (!meta.hasDisplayName()) return;
 
-        // Get component name first, so we can manually name the villager when canceling the event to avoid item consumption.
-        final Component newVillagerName = meta.displayName();
-        assert newVillagerName != null; // Legitimate since we checked for hasDisplayName()
-        final String nameTagPlainText = GenericUtil.plainTextSerializer.serialize(newVillagerName);
+        final String nameTagPlainText = ChatColor.stripColor(meta.getDisplayName());
         final Villager villager = (Villager) event.getRightClicked();
         final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
 
@@ -112,8 +110,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 if (!optimizeEvent.callEvent()) return;
 
                 if (!consume_nametag) {
-                    event.setCancelled(true);
-                    villager.customName(newVillagerName);
+                    usedItem.add();
                 }
 
                 wVillager.setOptimizationType(optimizeEvent.getOptimizationType());

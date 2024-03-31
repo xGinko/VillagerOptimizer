@@ -158,7 +158,7 @@ public final class VillagerOptimizer extends JavaPlugin {
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();
         } catch (Exception exception) {
-            logger.error("Error loading config!", exception);
+            logger.error("Error during config reload!", exception);
         }
     }
 
@@ -176,7 +176,7 @@ public final class VillagerOptimizer extends JavaPlugin {
             if (logFancy) logger.error(Component.text("│                      ").style(GenericUtil.STYLE)
                     .append(Component.text("LANG ERROR").color(NamedTextColor.RED).decorate(TextDecoration.BOLD))
                     .append(Component.text("                            │").style(GenericUtil.STYLE)), t);
-            else logger.error("Error loading language files!", t);
+            else logger.error("Error while loading translation files!", t);
         }
     }
 
@@ -191,7 +191,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                     .map(matcher -> matcher.group(1))
                     .collect(Collectors.toCollection(TreeSet::new));
         } catch (Throwable t) {
-            logger.error("Failed querying for available translations!", t);
+            logger.error("Failed while searching for available translations!", t);
             return new TreeSet<>();
         }
     }

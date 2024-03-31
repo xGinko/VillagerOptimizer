@@ -26,10 +26,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -62,7 +59,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                     }
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toCollection(HashSet::new));
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(Material.class)));
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
                 config.getInt(configPath() + ".optimize-cooldown-seconds", 600,
                 "Cooldown in seconds until a villager can be optimized again by using specific blocks.\n" +
