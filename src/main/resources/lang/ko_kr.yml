@@ -1,0 +1,44 @@
+messages:
+  no-permission: <red>이 명령을 사용할 권한이 없습니다.
+  trades-restocked:
+  - <green>모든 거래가 재입고되었습니다! 다음 재입고까지 %time% 남았습니다.
+  optimize-to-trade:
+  - <red>거래하기 전에 이 주민을 최적화해야 합니다.
+  villager-leveling-up:
+  - <yellow>주민이 현재 레벨 업 중입니다! %time% 후에 주민을 다시 사용할 수 있습니다.
+  nametag:
+    optimize-success:
+    - <green>네임태그을 사용하여 주민을 성공적으로 최적화했습니다.
+    optimize-on-cooldown:
+    - <gray>%time% 후에 이 주민을 다시 최적화할 수 있습니다.
+    unoptimize-success:
+    - <green>네임택을 제거하여 주민을 성공적으로 최적화 해제했습니다.
+  block:
+    optimize-success:
+    - <green>%blocktype% 블록을 사용하여 %vil_profession% 주민을 성공적으로 최적화했습니다.
+    optimize-on-cooldown:
+    - <gray>%time% 후에 이 주민을 다시 최적화할 수 있습니다.
+    unoptimize-success:
+    - <green>%blocktype% 블록을 제거하여 %vil_profession% 주민을 성공적으로 최적화 해제했습니다.
+  workstation:
+    optimize-success:
+    - <green>%blocktype% 작업대 블록을 사용하여 %vil_profession% 주민을 성공적으로 최적화했습니다.
+    optimize-on-cooldown:
+    - <gray>%time% 후에 이 주민을 다시 최적화할 수 있습니다.
+    unoptimize-success:
+    - <green>%blocktype% 작업대 블록을 제거하여 주민을 성공적으로 최적화 해제했습니다.
+  command:
+    optimize-success:
+    - <green>%radius% 블록 반경 내 %amount% 개의 주민을 성공적으로 최적화했습니다.
+    radius-limit-exceed:
+    - <red>입력한 반경이 %distance% 블록의 제한을 초과합니다.
+    optimize-fail:
+    - <gray>%amount% 개의 주민이 최근에 이미 최적화되어 최적화할 수 없습니다.
+    unoptimize-success:
+    - <green>%radius% 블록 반경 내 %amount% 개의 주민을 성공적으로 최적화 해제했습니다.
+    specify-radius:
+    - <red>반경을 지정하세요.
+    radius-invalid:
+    - <red>입력한 반경이 유효한 숫자가 아닙니다. 다시 시도하세요.
+    no-villagers-nearby:
+    - <gray>%radius% 블록 반경 내에서 사용 중인 주민을 찾을 수 없습니다.
