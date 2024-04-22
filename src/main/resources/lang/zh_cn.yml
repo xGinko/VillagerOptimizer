@@ -1,0 +1,44 @@
+messages:
+  no-permission: <red>您没有使用此命令的权限。
+  trades-restocked:
+  - <green>所有交易已经重新补充！下次补货时间为 %time%。
+  optimize-to-trade:
+  - <red>在与村民交易之前，您需要优化该村民。
+  villager-leveling-up:
+  - <yellow>村民正在升级中！您可以在 %time% 后再次与村民交互。
+  nametag:
+    optimize-success:
+    - <green>成功使用名牌优化了村民。
+    optimize-on-cooldown:
+    - <gray>您需要等待 %time% 才能再次优化该村民。
+    unoptimize-success:
+    - <green>成功使用名牌取消了村民的优化状态。
+  block:
+    optimize-success:
+    - <green>%vil_profession% 村民成功使用 %blocktype% 方块进行了优化。
+    optimize-on-cooldown:
+    - <gray>您需要等待 %time% 才能再次优化该村民。
+    unoptimize-success:
+    - <green>成功移除了 %blocktype% 方块，取消了 %vil_profession% 村民的优化状态。
+  workstation:
+    optimize-success:
+    - <green>%vil_profession% 村民成功使用工作站方块 %blocktype% 进行了优化。
+    optimize-on-cooldown:
+    - <gray>您需要等待 %time% 才能再次优化该村民。
+    unoptimize-success:
+    - <green>成功移除了工作站方块 %blocktype%，取消了村民的优化状态。
+  command:
+    optimize-success:
+    - <green>成功优化了 %amount% 名村民，半径为 %radius% 方块。
+    radius-limit-exceed:
+    - <red>您输入的半径超过了 %distance% 方块的限制。
+    optimize-fail:
+    - <gray>%amount% 名村民因为最近已经被优化过而无法再次优化。
+    unoptimize-success:
+    - <green>成功取消了 %amount% 名村民的优化状态，半径为 %radius% 方块。
+    specify-radius:
+    - <red>请指定一个半径。
+    radius-invalid:
+    - <red>您输入的半径不是有效的数字。请重试。
+    no-villagers-nearby:
+    - <gray>在 %radius% 方块范围内找不到任何就业的村民。
