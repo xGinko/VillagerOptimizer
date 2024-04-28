@@ -109,7 +109,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 if (villager.getProfession() != workstationProfession) continue;
                 WrappedVillager wrapped = villagerCache.getOrAdd(villager);
                 if (wrapped.getJobSite() == null) continue;
-                if (wrapped.getJobSite().getWorld() != workstationLoc.getWorld()) continue;
+                if (wrapped.getJobSite().getWorld().getUID() != workstationLoc.getWorld().getUID()) continue;
                 if (LocationUtil.relDistance3DSquared(wrapped.getJobSite(), workstationLoc) > 1) continue;
 
                 if (!wrapped.canOptimize(cooldown_millis) && !player.hasPermission(Permissions.Bypass.WORKSTATION_COOLDOWN.get())) {
