@@ -12,10 +12,10 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.util.Locale;
 
-public class GenericUtil {
+public class Util {
 
-    public static final @NotNull TextColor COLOR = TextColor.color(102,255,230);
-    public static final @NotNull Style STYLE = Style.style(COLOR, TextDecoration.BOLD);
+    public static final @NotNull TextColor PL_COLOR = TextColor.color(102,255,230);
+    public static final @NotNull Style PL_STYLE = Style.style(PL_COLOR, TextDecoration.BOLD);
 
     public static @NotNull String formatDuration(@NotNull Duration duration) {
         if (duration.isNegative()) duration = duration.negated();

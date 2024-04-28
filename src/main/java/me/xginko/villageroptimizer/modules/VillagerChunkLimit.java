@@ -5,7 +5,7 @@ import com.tcoded.folialib.wrapper.task.WrappedTask;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.LocationUtil;
 import org.bukkit.Chunk;
 import org.bukkit.Server;
@@ -111,7 +111,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         this.periodic_chunk_check = scheduler.runTimer(() -> {
             for (World world : server.getWorlds()) {
                 for (Chunk chunk : world.getLoadedChunks()) {
-                    if (!skip_unloaded_entity_chunks || GenericUtil.isEntitiesLoaded(chunk)) {
+                    if (!skip_unloaded_entity_chunks || Util.isEntitiesLoaded(chunk)) {
                         this.manageVillagerCount(chunk);
                     }
                 }
@@ -174,7 +174,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 scheduler.runAtEntity(villager, kill -> {
                     villager.remove();
                     if (log_enabled) {
-                        info("Removed unoptimized villager with profession '" + GenericUtil.formatEnum(villager.getProfession()) + "' at " +
+                        info("Removed unoptimized villager with profession '" + Util.formatEnum(villager.getProfession()) + "' at " +
                              LocationUtil.toString(villager.getLocation()));
                     }
                 });
@@ -196,7 +196,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                     villager.remove();
 
                     if (log_enabled) {
-                        info("Removed optimized villager with profession '" + GenericUtil.formatEnum(villager.getProfession()) + "' at " +
+                        info("Removed optimized villager with profession '" + Util.formatEnum(villager.getProfession()) + "' at " +
                              LocationUtil.toString(villager.getLocation()));
                     }
                 });

@@ -10,7 +10,7 @@ import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.ChatColor;
@@ -132,7 +132,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
-                            .replacement(GenericUtil.formatDuration(Duration.ofMillis(wVillager.getOptimizeCooldownMillis(cooldown))))
+                            .replacement(Util.formatDuration(Duration.ofMillis(wVillager.getOptimizeCooldownMillis(cooldown))))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
                             .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));

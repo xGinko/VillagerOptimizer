@@ -8,7 +8,7 @@ import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
@@ -141,11 +141,11 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             if (notify_player) {
                 final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                         .matchLiteral("%vil_profession%")
-                        .replacement(GenericUtil.formatEnum(closestOptimizableVillager.villager().getProfession()))
+                        .replacement(Util.formatEnum(closestOptimizableVillager.villager().getProfession()))
                         .build();
                 final TextReplacementConfig placedMaterial = TextReplacementConfig.builder()
                         .matchLiteral("%blocktype%")
-                        .replacement(GenericUtil.formatEnum(placed.getType()))
+                        .replacement(Util.formatEnum(placed.getType()))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).block_optimize_success
                         .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedMaterial)));
@@ -160,7 +160,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             if (notify_player) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
-                        .replacement(GenericUtil.formatDuration(Duration.ofMillis(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown_millis))))
+                        .replacement(Util.formatDuration(Duration.ofMillis(closestOptimizableVillager.getOptimizeCooldownMillis(cooldown_millis))))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).block_on_optimize_cooldown
                         .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
@@ -206,18 +206,18 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(GenericUtil.formatEnum(closestOptimizedVillager.villager().getProfession()))
+                    .replacement(Util.formatEnum(closestOptimizedVillager.villager().getProfession()))
                     .build();
             final TextReplacementConfig brokenMaterial = TextReplacementConfig.builder()
                     .matchLiteral("%blocktype%")
-                    .replacement(GenericUtil.formatEnum(broken.getType()))
+                    .replacement(Util.formatEnum(broken.getType()))
                     .build();
             VillagerOptimizer.getLang(player.locale()).block_unoptimize_success
                     .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(brokenMaterial)));
         }
 
         if (log_enabled) {
-            info(player.getName() + " unoptimized villager using " + GenericUtil.formatEnum(broken.getType()) +
+            info(player.getName() + " unoptimized villager using " + Util.formatEnum(broken.getType()) +
                     LocationUtil.toString(closestOptimizedVillager.villager().getLocation()));
         }
     }

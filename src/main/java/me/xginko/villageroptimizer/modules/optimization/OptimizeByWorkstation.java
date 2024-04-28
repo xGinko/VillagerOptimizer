@@ -11,7 +11,7 @@ import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
@@ -88,7 +88,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockPlace(BlockPlaceEvent event) {
         final Block placed = event.getBlock();
-        final Villager.Profession workstationProfession = GenericUtil.getWorkstationProfession(placed.getType());
+        final Villager.Profession workstationProfession = Util.getWorkstationProfession(placed.getType());
         if (workstationProfession == null) return;
 
         final Player player = event.getPlayer();
@@ -117,7 +117,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                     if (notify_player) {
                         final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                                 .matchLiteral("%time%")
-                                .replacement(GenericUtil.formatDuration(Duration.ofMillis(wrapped.getOptimizeCooldownMillis(cooldown_millis))))
+                                .replacement(Util.formatDuration(Duration.ofMillis(wrapped.getOptimizeCooldownMillis(cooldown_millis))))
                                 .build();
                         VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
                                 .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
@@ -141,18 +141,18 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 if (notify_player) {
                     final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                             .matchLiteral("%vil_profession%")
-                            .replacement(GenericUtil.formatEnum(wrapped.villager().getProfession()))
+                            .replacement(Util.formatEnum(wrapped.villager().getProfession()))
                             .build();
                     final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
                             .matchLiteral("%blocktype%")
-                            .replacement(GenericUtil.formatEnum(placed.getType()))
+                            .replacement(Util.formatEnum(placed.getType()))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).workstation_optimize_success
                             .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedWorkstation)));
                 }
 
                 if (log_enabled) {
-                    info(player.getName() + " optimized villager using workstation " + GenericUtil.formatEnum(placed.getType()) + " at " +
+                    info(player.getName() + " optimized villager using workstation " + Util.formatEnum(placed.getType()) + " at " +
                          LocationUtil.toString(wrapped.villager().getLocation()));
                 }
 
@@ -165,7 +165,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onBlockBreak(BlockBreakEvent event) {
         final Block broken = event.getBlock();
-        final Villager.Profession workstationProfession = GenericUtil.getWorkstationProfession(broken.getType());
+        final Villager.Profession workstationProfession = Util.getWorkstationProfession(broken.getType());
         if (workstationProfession == null) return;
 
         final Player player = event.getPlayer();
@@ -205,18 +205,18 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(GenericUtil.formatEnum(closestOptimized.villager().getProfession()))
+                    .replacement(Util.formatEnum(closestOptimized.villager().getProfession()))
                     .build();
             final TextReplacementConfig brokenWorkstation = TextReplacementConfig.builder()
                     .matchLiteral("%blocktype%")
-                    .replacement(GenericUtil.formatEnum(broken.getType()))
+                    .replacement(Util.formatEnum(broken.getType()))
                     .build();
             VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success
                     .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(brokenWorkstation)));
         }
 
         if (log_enabled) {
-            info(player.getName() + " unoptimized villager using workstation " + GenericUtil.formatEnum(broken.getType()) + " at " +
+            info(player.getName() + " unoptimized villager using workstation " + Util.formatEnum(broken.getType()) + " at " +
                  LocationUtil.toString(closestOptimized.villager().getLocation()));
         }
     }

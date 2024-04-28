@@ -7,7 +7,7 @@ import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.entity.EntityType;
@@ -79,7 +79,7 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
             if (notify_player && !player_bypassing) {
                 final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                         .matchLiteral("%time%")
-                        .replacement(GenericUtil.formatDuration(Duration.ofMillis(wVillager.getRestockCooldownMillis(restock_delay_millis))))
+                        .replacement(Util.formatDuration(Duration.ofMillis(wVillager.getRestockCooldownMillis(restock_delay_millis))))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).trades_restocked
                         .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));

@@ -6,7 +6,7 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.entity.Player;
@@ -93,7 +93,7 @@ public class LevelOptimizedProfession implements VillagerOptimizerModule, Listen
                     Player player = (Player) event.getPlayer();
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
-                            .replacement(GenericUtil.formatDuration(Duration.ofMillis(wVillager.getLevelCooldownMillis(cooldown_millis))))
+                            .replacement(Util.formatDuration(Duration.ofMillis(wVillager.getLevelCooldownMillis(cooldown_millis))))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).villager_leveling_up
                             .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));

@@ -4,7 +4,7 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.SubCommand;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -25,7 +25,7 @@ public class DisableSubCmd extends SubCommand {
 
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer disable").color(GenericUtil.COLOR);
+        return Component.text("/villageroptimizer disable").color(Util.PL_COLOR);
     }
 
     @Override
@@ -36,8 +36,8 @@ public class DisableSubCmd extends SubCommand {
         }
 
         KyoriUtil.sendMessage(sender, Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
-        VillagerOptimizerModule.modules.forEach(VillagerOptimizerModule::disable);
-        VillagerOptimizerModule.modules.clear();
+        VillagerOptimizerModule.MODULES.forEach(VillagerOptimizerModule::disable);
+        VillagerOptimizerModule.MODULES.clear();
         VillagerOptimizer.getCache().cacheMap().clear();
         KyoriUtil.sendMessage(sender, Component.text("Disabled all plugin listeners and tasks.").color(NamedTextColor.GREEN));
         KyoriUtil.sendMessage(sender, Component.text("You can enable the plugin again using the reload command.").color(NamedTextColor.YELLOW));

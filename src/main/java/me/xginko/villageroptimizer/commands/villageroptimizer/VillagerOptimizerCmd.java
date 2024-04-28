@@ -6,7 +6,7 @@ import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.Disabl
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.ReloadSubCmd;
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.VersionSubCmd;
 import me.xginko.villageroptimizer.enums.Permissions;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -59,17 +59,17 @@ public class VillagerOptimizerCmd implements VillagerOptimizerCommand {
     private void sendCommandOverview(CommandSender sender) {
         if (!sender.hasPermission(Permissions.Commands.RELOAD.get()) && !sender.hasPermission(Permissions.Commands.VERSION.get())) return;
         KyoriUtil.sendMessage(sender, Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
-        KyoriUtil.sendMessage(sender, Component.text("VillagerOptimizer Commands").color(GenericUtil.COLOR));
+        KyoriUtil.sendMessage(sender, Component.text("VillagerOptimizer Commands").color(Util.PL_COLOR));
         KyoriUtil.sendMessage(sender, Component.text("-----------------------------------------------------").color(NamedTextColor.GRAY));
         subCommands.forEach(subCommand -> KyoriUtil.sendMessage(sender,
                 subCommand.getSyntax().append(Component.text(" - ").color(NamedTextColor.DARK_GRAY)).append(subCommand.getDescription())));
         KyoriUtil.sendMessage(sender,
-                Component.text("/optimizevillagers <blockradius>").color(GenericUtil.COLOR)
+                Component.text("/optimizevillagers <blockradius>").color(Util.PL_COLOR)
                 .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text("Optimize villagers in a radius").color(NamedTextColor.GRAY))
         );
         KyoriUtil.sendMessage(sender,
-                Component.text("/unoptmizevillagers <blockradius>").color(GenericUtil.COLOR)
+                Component.text("/unoptmizevillagers <blockradius>").color(Util.PL_COLOR)
                 .append(Component.text(" - ").color(NamedTextColor.DARK_GRAY))
                 .append(Component.text("Unoptimize villagers in a radius").color(NamedTextColor.GRAY))
         );

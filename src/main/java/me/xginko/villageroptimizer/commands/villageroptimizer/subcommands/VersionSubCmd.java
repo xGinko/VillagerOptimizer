@@ -4,7 +4,7 @@ import io.papermc.paper.plugin.configuration.PluginMeta;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.SubCommand;
 import me.xginko.villageroptimizer.enums.Permissions;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -27,7 +27,7 @@ public class VersionSubCmd extends SubCommand {
 
     @Override
     public TextComponent getSyntax() {
-        return Component.text("/villageroptimizer version").color(GenericUtil.COLOR);
+        return Component.text("/villageroptimizer version").color(Util.PL_COLOR);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class VersionSubCmd extends SubCommand {
         KyoriUtil.sendMessage(sender, Component.newline()
                 .append(
                         Component.text(name + " " + version)
-                                .style(GenericUtil.STYLE)
+                                .style(Util.PL_STYLE)
                                 .clickEvent(ClickEvent.openUrl(website))
                 )
                 .append(Component.text(" by ").color(NamedTextColor.GRAY))

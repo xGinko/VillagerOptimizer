@@ -5,6 +5,8 @@ import me.xginko.villageroptimizer.modules.gameplay.*;
 import me.xginko.villageroptimizer.modules.optimization.OptimizeByBlock;
 import me.xginko.villageroptimizer.modules.optimization.OptimizeByNametag;
 import me.xginko.villageroptimizer.modules.optimization.OptimizeByWorkstation;
+import me.xginko.villageroptimizer.utils.Util;
+import net.kyori.adventure.text.Component;
 
 import java.util.HashSet;
 
@@ -15,48 +17,48 @@ public interface VillagerOptimizerModule {
     void disable();
     boolean shouldEnable();
 
-    HashSet<VillagerOptimizerModule> modules = new HashSet<>();
+    HashSet<VillagerOptimizerModule> MODULES = new HashSet<>(14);
 
     static void reloadModules() {
-        modules.forEach(VillagerOptimizerModule::disable);
-        modules.clear();
+        MODULES.forEach(VillagerOptimizerModule::disable);
+        MODULES.clear();
 
-        modules.add(new OptimizeByNametag());
-        modules.add(new OptimizeByBlock());
-        modules.add(new OptimizeByWorkstation());
+        MODULES.add(new OptimizeByNametag());
+        MODULES.add(new OptimizeByBlock());
+        MODULES.add(new OptimizeByWorkstation());
 
-        modules.add(new EnableLeashingVillagers());
-        modules.add(new FixOptimisationAfterCure());
-        modules.add(new RestockOptimizedTrades());
-        modules.add(new LevelOptimizedProfession());
-        modules.add(new VisuallyHighlightOptimized());
-        modules.add(new MakeVillagersSpawnAdult());
-        modules.add(new PreventUnoptimizedTrading());
-        modules.add(new PreventOptimizedTargeting());
-        modules.add(new PreventOptimizedDamage());
-        modules.add(new UnoptimizeOnJobLoose());
+        MODULES.add(new EnableLeashingVillagers());
+        MODULES.add(new FixOptimisationAfterCure());
+        MODULES.add(new RestockOptimizedTrades());
+        MODULES.add(new LevelOptimizedProfession());
+        MODULES.add(new VisuallyHighlightOptimized());
+        MODULES.add(new MakeVillagersSpawnAdult());
+        MODULES.add(new PreventUnoptimizedTrading());
+        MODULES.add(new PreventOptimizedTargeting());
+        MODULES.add(new PreventOptimizedDamage());
+        MODULES.add(new UnoptimizeOnJobLoose());
 
-        modules.add(new VillagerChunkLimit());
+        MODULES.add(new VillagerChunkLimit());
 
-        modules.forEach(module -> {
+        MODULES.forEach(module -> {
             if (module.shouldEnable()) module.enable();
         });
     }
 
-    default void trace(String message, Throwable throwable) {
-        VillagerOptimizer.getPrefixedLogger().trace(logPrefix() + message, throwable);
+    default void error(String message, Throwable t) {
+        VillagerOptimizer.getPrefixedLogger().error("{}{}", logPrefix(), message, t);
     }
 
     default void error(String message) {
-        VillagerOptimizer.getPrefixedLogger().error(logPrefix() + message);
+        VillagerOptimizer.getPrefixedLogger().error("{}{}", logPrefix(), message);
     }
 
     default void warn(String message) {
-        VillagerOptimizer.getPrefixedLogger().warn(logPrefix() + message);
+        VillagerOptimizer.getPrefixedLogger().warn("{}{}", logPrefix(), message);
     }
 
     default void info(String message) {
-        VillagerOptimizer.getPrefixedLogger().info(logPrefix() + message);
+        VillagerOptimizer.getPrefixedLogger().info(Component.text(logPrefix() + message).color(Util.PL_COLOR));
     }
 
     default String logPrefix() {
