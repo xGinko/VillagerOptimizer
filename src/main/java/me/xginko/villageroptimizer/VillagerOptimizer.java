@@ -166,7 +166,6 @@ public final class VillagerOptimizer extends JavaPlugin {
     }
 
     private void reloadLang(boolean logFancy) {
-        languageCacheMap = new HashMap<>();
         try {
             final SortedSet<String> availableLocales = getAvailableTranslations();
             if (!config.auto_lang) {
@@ -175,6 +174,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                     throw new FileNotFoundException("Could not find any translation file for language '" + config.default_lang + "'");
                 availableLocales.removeIf(localeString -> !localeString.equalsIgnoreCase(defaultLang));
             }
+            languageCacheMap = new HashMap<>(availableLocales.size());
             for (String localeString : availableLocales) {
                 if (logFancy) logger.info(Component.text("│                       ").style(Util.PL_STYLE)
                         .append(Component.text("    "+localeString).color(NamedTextColor.WHITE).decorate(TextDecoration.BOLD))
