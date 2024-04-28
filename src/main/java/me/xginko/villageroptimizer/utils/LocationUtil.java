@@ -11,7 +11,7 @@ public class LocationUtil {
         return "[" + location.getWorld().getName() + "] x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ();
     }
 
-    public static double relDistanceSquared2D(@NotNull Location from, @NotNull Location to) {
+    public static double relDistance2DSquared(@NotNull Location from, @NotNull Location to) {
         double toX = to.getX();
         double toZ = to.getZ();
         double fromX = from.getX();
@@ -32,7 +32,7 @@ public class LocationUtil {
         return NumberConversions.square(toX - fromX) + NumberConversions.square(toZ - fromZ);
     }
 
-    public static double relDistanceSquared3D(@NotNull Location from, @NotNull Location to) {
+    public static double relDistance3DSquared(@NotNull Location from, @NotNull Location to) {
         double toY = to.getY();
         double fromY = from.getY();
 
@@ -46,14 +46,14 @@ public class LocationUtil {
         if (toY > from.getWorld().getMaxHeight())
             toY = from.getWorld().getMaxHeight();
 
-        return relDistanceSquared2D(from, to) + NumberConversions.square(toY - fromY);
+        return relDistance2DSquared(from, to) + NumberConversions.square(toY - fromY);
     }
 
     public static double relDistance2D(@NotNull Location from, @NotNull Location to) {
-        return Math.sqrt(relDistanceSquared2D(from, to));
+        return Math.sqrt(relDistance2DSquared(from, to));
     }
 
     public static double relDistance3D(@NotNull Location from, @NotNull Location to) {
-        return Math.sqrt(relDistanceSquared3D(from, to));
+        return Math.sqrt(relDistance3DSquared(from, to));
     }
 }

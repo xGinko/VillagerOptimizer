@@ -110,7 +110,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 WrappedVillager wrapped = villagerCache.getOrAdd(villager);
                 if (wrapped.getJobSite() == null) continue;
                 if (wrapped.getJobSite().getWorld() != workstationLoc.getWorld()) continue;
-                if (LocationUtil.relDistanceSquared3D(wrapped.getJobSite(), workstationLoc) > 1) continue;
+                if (LocationUtil.relDistance3DSquared(wrapped.getJobSite(), workstationLoc) > 1) continue;
 
                 if (!wrapped.canOptimize(cooldown_millis) && !player.hasPermission(Permissions.Bypass.WORKSTATION_COOLDOWN.get())) {
                     wrapped.sayNo();
@@ -178,7 +178,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
         for (Villager villager : workstationLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
             if (!villager.getProfession().equals(workstationProfession)) continue;
-            final double distance = LocationUtil.relDistanceSquared3D(villager.getLocation(), workstationLoc);
+            final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), workstationLoc);
             if (distance >= closestDistance) continue;
 
             WrappedVillager wrapped = villagerCache.getOrAdd(villager);

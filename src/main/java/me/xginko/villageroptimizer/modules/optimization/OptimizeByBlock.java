@@ -114,7 +114,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             final Villager.Profession profession = villager.getProfession();
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
 
-            final double distance = LocationUtil.relDistanceSquared3D(villager.getLocation(), blockLoc);
+            final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
             final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
@@ -181,7 +181,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         double closestDistance = Double.MAX_VALUE;
 
         for (Villager villager : blockLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
-            final double distance = LocationUtil.relDistanceSquared3D(villager.getLocation(), blockLoc);
+            final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
             final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
