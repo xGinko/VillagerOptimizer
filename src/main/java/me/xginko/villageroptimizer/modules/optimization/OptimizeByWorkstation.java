@@ -3,6 +3,7 @@ package me.xginko.villageroptimizer.modules.optimization;
 import com.tcoded.folialib.impl.ServerImplementation;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
@@ -108,7 +109,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 if (villager.getProfession() != workstationProfession) continue;
                 WrappedVillager wrapped = villagerCache.getOrAdd(villager);
                 if (wrapped.getJobSite() == null) continue;
-                if (wrapped.getJobSite().distanceSquared(workstationLoc) > 1) continue;
+                if (LocationUtil.relDistanceSquared3D(wrapped.getJobSite(), workstationLoc) > 1) continue;
 
                 if (!wrapped.canOptimize(cooldown_millis) && !player.hasPermission(Permissions.Bypass.WORKSTATION_COOLDOWN.get())) {
                     wrapped.sayNo();
@@ -139,19 +140,19 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
                 if (notify_player) {
                     final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                             .matchLiteral("%vil_profession%")
-                            .replacement(wrapped.villager().getProfession().toString().toLowerCase())
+                            .replacement(GenericUtil.formatEnum(wrapped.villager().getProfession()))
                             .build();
                     final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
                             .matchLiteral("%blocktype%")
-                            .replacement(placed.getType().toString().toLowerCase())
+                            .replacement(GenericUtil.formatEnum(placed.getType()))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).workstation_optimize_success
                             .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedWorkstation)));
                 }
 
                 if (log_enabled) {
-                    info(player.getName() + " optimized villager using workstation " + placed.getType() + " at " +
-                         GenericUtil.formatLocation(wrapped.villager().getLocation()));
+                    info(player.getName() + " optimized villager using workstation " + GenericUtil.formatEnum(placed.getType()) + " at " +
+                         LocationUtil.toString(wrapped.villager().getLocation()));
                 }
 
                 taskComplete.set(true);
@@ -176,7 +177,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
         for (Villager villager : workstationLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
             if (!villager.getProfession().equals(workstationProfession)) continue;
-            final double distance = villager.getLocation().distanceSquared(workstationLoc);
+            final double distance = LocationUtil.relDistanceSquared3D(villager.getLocation(), workstationLoc);
             if (distance >= closestDistance) continue;
 
             WrappedVillager wrapped = villagerCache.getOrAdd(villager);
@@ -203,19 +204,19 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
         if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(closestOptimized.villager().getProfession().toString().toLowerCase())
+                    .replacement(GenericUtil.formatEnum(closestOptimized.villager().getProfession()))
                     .build();
             final TextReplacementConfig brokenWorkstation = TextReplacementConfig.builder()
                     .matchLiteral("%blocktype%")
-                    .replacement(broken.getType().toString().toLowerCase())
+                    .replacement(GenericUtil.formatEnum(broken.getType()))
                     .build();
             VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success
                     .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(brokenWorkstation)));
         }
 
         if (log_enabled) {
-            info(player.getName() + " unoptimized villager using workstation " + broken.getType() + " at " +
-                 GenericUtil.formatLocation(closestOptimized.villager().getLocation()));
+            info(player.getName() + " unoptimized villager using workstation " + GenericUtil.formatEnum(broken.getType()) + " at " +
+                 LocationUtil.toString(closestOptimized.villager().getLocation()));
         }
     }
 }

@@ -3,15 +3,14 @@ package me.xginko.villageroptimizer.utils;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.Locale;
 
 public class GenericUtil {
 
@@ -34,8 +33,16 @@ public class GenericUtil {
         }
     }
 
-    public static @NotNull String formatLocation(@NotNull Location location) {
-        return "[" + location.getWorld().getName() + "] x=" + location.getBlockX() + ", y=" + location.getBlockY() + ", z=" + location.getBlockZ();
+    public static @NotNull String formatEnum(@NotNull Enum<?> input) {
+        // Turn something like "REDSTONE_TORCH" into "redstone torch"
+        String[] lowercaseWords = input.name().toLowerCase(Locale.ROOT).split("-");
+        for (int i = 0; i < lowercaseWords.length; i++) {
+            String word = lowercaseWords[i];
+            // Capitalize first letter for each word
+            lowercaseWords[i] = word.substring(0, 1).toUpperCase() + word.substring(1);
+        }
+        // return as nice string
+        return String.join(" ", lowercaseWords);
     }
 
     private static boolean specificChunkLoadedMethodAvailable = true;

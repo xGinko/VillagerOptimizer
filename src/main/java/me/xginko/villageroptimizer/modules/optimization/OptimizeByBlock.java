@@ -2,7 +2,6 @@ package me.xginko.villageroptimizer.modules.optimization;
 
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
@@ -11,7 +10,8 @@ import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.GenericUtil;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
-import net.kyori.adventure.text.Component;
+import me.xginko.villageroptimizer.utils.LocationUtil;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,7 +26,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -110,7 +113,8 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         for (Villager villager : blockLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
             final Villager.Profession profession = villager.getProfession();
             if (profession.equals(Villager.Profession.NONE) || profession.equals(Villager.Profession.NITWIT)) continue;
-            final double distance = villager.getLocation().distanceSquared(blockLoc);
+
+            final double distance = LocationUtil.relDistanceSquared3D(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
             final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
@@ -137,19 +141,19 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             if (notify_player) {
                 final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                         .matchLiteral("%vil_profession%")
-                        .replacement(closestOptimizableVillager.villager().getProfession().toString().toLowerCase())
+                        .replacement(GenericUtil.formatEnum(closestOptimizableVillager.villager().getProfession()))
                         .build();
                 final TextReplacementConfig placedMaterial = TextReplacementConfig.builder()
                         .matchLiteral("%blocktype%")
-                        .replacement(placed.getType().toString().toLowerCase())
+                        .replacement(GenericUtil.formatEnum(placed.getType()))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).block_optimize_success
                         .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedMaterial)));
             }
 
             if (log_enabled) {
-                VillagerOptimizer.getPrefixedLogger().info(Component.text(player.getName() + " optimized villager by block at " +
-                                                                          GenericUtil.formatLocation(closestOptimizableVillager.villager().getLocation())).color(GenericUtil.COLOR));
+                info(player.getName() + " optimized villager at " +
+                        LocationUtil.toString(closestOptimizableVillager.villager().getLocation()));
             }
         } else {
             closestOptimizableVillager.sayNo();
@@ -177,7 +181,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         double closestDistance = Double.MAX_VALUE;
 
         for (Villager villager : blockLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
-            final double distance = villager.getLocation().distanceSquared(blockLoc);
+            final double distance = LocationUtil.relDistanceSquared3D(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
             final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
@@ -202,19 +206,19 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
         if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(closestOptimizedVillager.villager().getProfession().toString().toLowerCase())
+                    .replacement(GenericUtil.formatEnum(closestOptimizedVillager.villager().getProfession()))
                     .build();
             final TextReplacementConfig brokenMaterial = TextReplacementConfig.builder()
                     .matchLiteral("%blocktype%")
-                    .replacement(broken.getType().toString().toLowerCase())
+                    .replacement(GenericUtil.formatEnum(broken.getType()))
                     .build();
             VillagerOptimizer.getLang(player.locale()).block_unoptimize_success
                     .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(brokenMaterial)));
         }
 
         if (log_enabled) {
-            VillagerOptimizer.getPrefixedLogger().info(Component.text(player.getName() + " unoptimized villager by block at " +
-                                                                      GenericUtil.formatLocation(closestOptimizedVillager.villager().getLocation())).color(GenericUtil.COLOR));
+            info(player.getName() + " unoptimized villager using " + GenericUtil.formatEnum(broken.getType()) +
+                    LocationUtil.toString(closestOptimizedVillager.villager().getLocation()));
         }
     }
 }

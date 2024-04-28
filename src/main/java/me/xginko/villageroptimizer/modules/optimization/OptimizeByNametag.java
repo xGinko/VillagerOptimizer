@@ -2,6 +2,7 @@ package me.xginko.villageroptimizer.modules.optimization;
 
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
@@ -123,7 +124,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
                 if (log_enabled) {
                     info(player.getName() + " optimized villager using nametag '" + nameTagPlainText + "' at " +
-                         GenericUtil.formatLocation(wVillager.villager().getLocation()));
+                         LocationUtil.toString(wVillager.villager().getLocation()));
                 }
             } else {
                 event.setCancelled(true);
@@ -156,7 +157,7 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
 
                 if (log_enabled) {
                     info(player.getName() + " unoptimized villager using nametag '" + nameTagPlainText + "' at " +
-                         GenericUtil.formatLocation(wVillager.villager().getLocation()));
+                         LocationUtil.toString(wVillager.villager().getLocation()));
                 }
             }
         }

@@ -2,6 +2,7 @@ package me.xginko.villageroptimizer.modules.gameplay;
 
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.Permissions;
@@ -85,7 +86,7 @@ public class RestockOptimizedTrades implements VillagerOptimizerModule, Listener
             }
 
             if (log_enabled) {
-                info("Restocked optimized villager at " + GenericUtil.formatLocation(wVillager.villager().getLocation()));
+                info("Restocked optimized villager at " + LocationUtil.toString(wVillager.villager().getLocation()));
             }
         }
     }

@@ -5,7 +5,7 @@ import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.GenericUtil;
+import me.xginko.villageroptimizer.utils.LocationUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -90,7 +90,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
                 handItem.subtract(1); // Manually consume for survival players
 
             if (log_enabled) {
-                info(player.getName() + " leashed a villager at " + GenericUtil.formatLocation(villager.getLocation()));
+                info(player.getName() + " leashed a villager at " + LocationUtil.toString(villager.getLocation()));
             }
         });
     }
