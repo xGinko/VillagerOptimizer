@@ -12,20 +12,18 @@ public class LocationUtil {
     }
 
     public static double relDistanceSquared2D(@NotNull Location from, @NotNull Location to) {
-        World.Environment toEnv = to.getWorld().getEnvironment();
-        World.Environment fromEnv = from.getWorld().getEnvironment();
         double toX = to.getX();
         double toZ = to.getZ();
         double fromX = from.getX();
         double fromZ = from.getZ();
 
         // Make sure distance is relative since one block in the nether equates to 8 in the overworld/end
-        if (toEnv != fromEnv) {
-            if (fromEnv == World.Environment.NETHER) {
+        if (to.getWorld().getEnvironment() != from.getWorld().getEnvironment()) {
+            if (from.getWorld().getEnvironment() == World.Environment.NETHER) {
                 fromX *= 8;
                 fromZ *= 8;
             }
-            if (toEnv == World.Environment.NETHER) {
+            if (to.getWorld().getEnvironment() == World.Environment.NETHER) {
                 toX *= 8;
                 toZ *= 8;
             }
