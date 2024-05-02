@@ -35,7 +35,7 @@ public class Util {
 
     public static @NotNull String formatEnum(@NotNull Enum<?> input) {
         // Turn something like "REDSTONE_TORCH" into "redstone torch"
-        String[] lowercaseWords = input.name().toLowerCase(Locale.ROOT).split("-");
+        String[] lowercaseWords = input.name().toLowerCase(Locale.ROOT).split("_");
         for (int i = 0; i < lowercaseWords.length; i++) {
             String word = lowercaseWords[i];
             // Capitalize first letter for each word
