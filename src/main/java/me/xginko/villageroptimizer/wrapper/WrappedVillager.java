@@ -126,7 +126,7 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public long getOptimizeCooldownMillis(long cooldown_millis) {
-        long cooldown = cooldown_millis;
+        long cooldown = 0L;
         for (VillagerDataHandler handler : dataHandlers) {
             cooldown = Math.max(cooldown, handler.getOptimizeCooldownMillis(cooldown_millis));
         }

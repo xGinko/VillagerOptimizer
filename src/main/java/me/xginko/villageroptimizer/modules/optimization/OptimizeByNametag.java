@@ -111,8 +111,8 @@ public class OptimizeByNametag implements VillagerOptimizerModule, Listener {
                 if (!optimizeEvent.callEvent()) return;
 
                 if (!consume_nametag) {
-                    event.setCancelled(true);
-                    villager.customName(meta.displayName());
+                    player.getInventory().addItem(usedItem.asOne());
+                    player.updateInventory();
                 }
 
                 wVillager.setOptimizationType(optimizeEvent.getOptimizationType());

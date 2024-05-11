@@ -92,14 +92,13 @@ public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
 
     @Override
     public void saveOptimizeTime() {
-        dataContainer.set(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG,
-                TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + 30);
+        // We do nothing here to not break stuff
     }
 
     @Override
     public long getOptimizeCooldownMillis(long cooldown_millis) {
         if (dataContainer.has(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)) {
-            return Math.max(cooldown_millis, System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(dataContainer.get(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG)));
+            return TimeUnit.SECONDS.toMillis(dataContainer.get(Keyring.AntiVillagerLag.NEXT_OPTIMIZATION_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG) - System.currentTimeMillis());
         }
         return cooldown_millis;
     }
@@ -130,7 +129,7 @@ public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
 
     @Override
     public void saveLastLevelUp() {
-        dataContainer.set(Keyring.AntiVillagerLag.NEXT_LEVELUP_SYSTIME_SECONDS.getKey(), PersistentDataType.LONG, TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + 30);
+        // We do nothing here to not break stuff
     }
 
     @Override

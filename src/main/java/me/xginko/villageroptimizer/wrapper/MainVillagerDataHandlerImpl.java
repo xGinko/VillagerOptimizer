@@ -82,7 +82,10 @@ public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
 
     @Override
     public long getOptimizeCooldownMillis(long cooldown_millis) {
-        return Math.max(System.currentTimeMillis() - getLastOptimize(), cooldown_millis);
+        if (getLastOptimize() > 0L) {
+            return cooldown_millis - (System.currentTimeMillis() - getLastOptimize());
+        }
+        return cooldown_millis;
     }
 
     @Override
