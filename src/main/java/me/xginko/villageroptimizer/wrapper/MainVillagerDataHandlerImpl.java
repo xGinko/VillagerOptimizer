@@ -58,7 +58,7 @@ public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
 
     @Override
     public @NotNull OptimizationType getOptimizationType() {
-        if (!isOptimized()) {
+        if (isOptimized()) {
             return OptimizationType.valueOf(dataContainer.get(Keyring.VillagerOptimizer.OPTIMIZATION_TYPE.getKey(), PersistentDataType.STRING));
         } else {
             return OptimizationType.NONE;
