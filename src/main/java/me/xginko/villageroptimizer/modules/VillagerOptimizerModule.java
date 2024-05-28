@@ -45,25 +45,29 @@ public interface VillagerOptimizerModule {
         });
     }
 
+    default void trace(String prefix, String message, Throwable t) {
+        VillagerOptimizer.getPrefixedLogger().trace("<{}> {}", prefix, message, t);
+    }
+
     default void error(String message, Throwable t) {
-        VillagerOptimizer.getPrefixedLogger().error("{}{}", logPrefix(), message, t);
+        VillagerOptimizer.getPrefixedLogger().error("<{}> {}", logPrefix(), message, t);
     }
 
     default void error(String message) {
-        VillagerOptimizer.getPrefixedLogger().error("{}{}", logPrefix(), message);
+        VillagerOptimizer.getPrefixedLogger().error("<{}> {}", logPrefix(), message);
     }
 
     default void warn(String message) {
-        VillagerOptimizer.getPrefixedLogger().warn("{}{}", logPrefix(), message);
+        VillagerOptimizer.getPrefixedLogger().warn("<{}> {}", logPrefix(), message);
     }
 
     default void info(String message) {
-        VillagerOptimizer.getPrefixedLogger().info(Component.text(logPrefix() + message).color(Util.PL_COLOR));
+        VillagerOptimizer.getPrefixedLogger().info(Component.text("<" + logPrefix() + "> " + message).color(Util.PL_COLOR));
     }
 
     default String logPrefix() {
         String[] split = configPath().split("\\.");
-        if (split.length <= 2) return "<" + configPath() + "> ";
-        return "<" + String.join(".", split[split.length - 2], split[split.length - 1]) + "> ";
+        if (split.length <= 2) return configPath();
+        return split[split.length - 2] + "." + split[split.length - 1];
     }
 }
