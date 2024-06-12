@@ -94,8 +94,8 @@ public final class VillagerOptimizer extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        VillagerOptimizerModule.MODULES.forEach(VillagerOptimizerModule::disable);
-        VillagerOptimizerModule.MODULES.clear();
+        VillagerOptimizerModule.ENABLED_MODULES.forEach(VillagerOptimizerModule::disable);
+        VillagerOptimizerModule.ENABLED_MODULES.clear();
         if (foliaLib != null) {
             foliaLib.getImpl().cancelAllTasks();
             foliaLib = null;
@@ -121,7 +121,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static @NotNull VillagerOptimizer getInstance()  {
         return instance;
     }
-    public static @NotNull Config getConfiguration() {
+    public static @NotNull Config config() {
         return config;
     }
     public static @NotNull VillagerCache getCache() {
@@ -130,7 +130,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static @NotNull FoliaLib getFoliaLib() {
         return foliaLib;
     }
-    public static @NotNull ComponentLogger getPrefixedLogger() {
+    public static @NotNull ComponentLogger logger() {
         return logger;
     }
     public static @NotNull BukkitAudiences getAudiences() {

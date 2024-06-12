@@ -1,73 +1,83 @@
 package me.xginko.villageroptimizer.modules;
 
+import com.tcoded.folialib.impl.ServerImplementation;
+import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.modules.gameplay.*;
-import me.xginko.villageroptimizer.modules.optimization.OptimizeByBlock;
-import me.xginko.villageroptimizer.modules.optimization.OptimizeByNametag;
-import me.xginko.villageroptimizer.modules.optimization.OptimizeByWorkstation;
-import me.xginko.villageroptimizer.utils.Util;
-import net.kyori.adventure.text.Component;
+import me.xginko.villageroptimizer.config.Config;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
 
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
+import java.util.Set;
 
-public interface VillagerOptimizerModule {
+public abstract class VillagerOptimizerModule {
 
-    String configPath();
-    void enable();
-    void disable();
-    boolean shouldEnable();
+    private static final Reflections MODULES_PACKAGE = new Reflections(VillagerOptimizerModule.class.getPackage().getName());
+    public static final Set<VillagerOptimizerModule> ENABLED_MODULES = new HashSet<>();
 
-    HashSet<VillagerOptimizerModule> MODULES = new HashSet<>(14);
+    public abstract void enable();
+    public abstract void disable();
+    public abstract boolean shouldEnable();
 
-    static void reloadModules() {
-        MODULES.forEach(VillagerOptimizerModule::disable);
-        MODULES.clear();
+    protected final VillagerOptimizer plugin;
+    protected final Config config;
+    protected final VillagerCache villagerCache;
+    protected final ServerImplementation scheduler;
+    public final String configPath;
+    private final String logFormat;
 
-        MODULES.add(new OptimizeByNametag());
-        MODULES.add(new OptimizeByBlock());
-        MODULES.add(new OptimizeByWorkstation());
-
-        MODULES.add(new EnableLeashingVillagers());
-        MODULES.add(new FixOptimisationAfterCure());
-        MODULES.add(new RestockOptimizedTrades());
-        MODULES.add(new LevelOptimizedProfession());
-        MODULES.add(new VisuallyHighlightOptimized());
-        MODULES.add(new MakeVillagersSpawnAdult());
-        MODULES.add(new PreventUnoptimizedTrading());
-        MODULES.add(new PreventOptimizedTargeting());
-        MODULES.add(new PreventOptimizedDamage());
-        MODULES.add(new UnoptimizeOnJobLoose());
-
-        MODULES.add(new VillagerChunkLimit());
-
-        MODULES.forEach(module -> {
-            if (module.shouldEnable()) module.enable();
-        });
+    public VillagerOptimizerModule(String configPath) {
+        this.plugin = VillagerOptimizer.getInstance();
+        this.config = VillagerOptimizer.config();
+        this.villagerCache = VillagerOptimizer.getCache();
+        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
+        this.configPath = configPath;
+        shouldEnable(); // Ensure enable option is always first
+        String[] paths = configPath.split("\\.");
+        if (paths.length <= 2) {
+            this.logFormat = "<" + configPath + "> {}";
+        } else {
+            this.logFormat = "<" + paths[paths.length - 2] + "." + paths[paths.length - 1] + "> {}";
+        }
     }
 
-    default void trace(String prefix, String message, Throwable t) {
-        VillagerOptimizer.getPrefixedLogger().trace("<{}> {}", prefix, message, t);
+    public static void reloadModules() {
+        ENABLED_MODULES.forEach(VillagerOptimizerModule::disable);
+        ENABLED_MODULES.clear();
+
+        for (Class<?> clazz : MODULES_PACKAGE.get(Scanners.SubTypes.of(VillagerOptimizerModule.class).asClass())) {
+            if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
+
+            try {
+                VillagerOptimizerModule module = (VillagerOptimizerModule) clazz.getDeclaredConstructor().newInstance();
+                if (module.shouldEnable()) {
+                    module.enable();
+                    ENABLED_MODULES.add(module);
+                }
+            } catch (Throwable t) {
+                VillagerOptimizer.logger().error("Failed to load module {}", clazz.getSimpleName(), t);
+            }
+        }
     }
 
-    default void error(String message, Throwable t) {
-        VillagerOptimizer.getPrefixedLogger().error("<{}> {}", logPrefix(), message, t);
+    protected void error(String message, Throwable throwable) {
+        VillagerOptimizer.logger().error(logFormat, message, throwable);
     }
 
-    default void error(String message) {
-        VillagerOptimizer.getPrefixedLogger().error("<{}> {}", logPrefix(), message);
+    protected void error(String message) {
+        VillagerOptimizer.logger().error(logFormat, message);
     }
 
-    default void warn(String message) {
-        VillagerOptimizer.getPrefixedLogger().warn("<{}> {}", logPrefix(), message);
+    protected void warn(String message) {
+        VillagerOptimizer.logger().warn(logFormat, message);
     }
 
-    default void info(String message) {
-        VillagerOptimizer.getPrefixedLogger().info(Component.text("<" + logPrefix() + "> " + message).color(Util.PL_COLOR));
+    protected void info(String message) {
+        VillagerOptimizer.logger().info(logFormat, message);
     }
 
-    default String logPrefix() {
-        String[] split = configPath().split("\\.");
-        if (split.length <= 2) return configPath();
-        return split[split.length - 2] + "." + split[split.length - 1];
+    protected void notRecognized(Class<?> clazz, String unrecognized) {
+        warn("Unable to parse " + clazz.getSimpleName() + " at '" + unrecognized + "'. Please check your configuration.");
     }
 }

@@ -30,7 +30,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
     private final int max_radius;
 
     public OptVillagersRadius() {
-        Config config = VillagerOptimizer.getConfiguration();
+        Config config = VillagerOptimizer.config();
         this.max_radius = config.getInt("optimization-methods.commands.optimizevillagers.max-block-radius", 100);
         this.cooldown = config.getInt("optimization-methods.commands.optimizevillagers.cooldown-seconds", 600,
                 "Cooldown in seconds until a villager can be optimized again using the command.\n" +
@@ -100,7 +100,7 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
                 Villager.Profession profession = villager.getProfession();
                 if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
 
-                WrappedVillager wVillager = villagerCache.getOrAdd(villager);
+                WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
 
                 if (player_has_cooldown_bypass || wVillager.canOptimize(cooldown)) {
                     VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.COMMAND, player);

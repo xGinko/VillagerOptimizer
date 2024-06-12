@@ -1,18 +1,15 @@
 package me.xginko.villageroptimizer.modules.optimization;
 
-import com.tcoded.folialib.impl.ServerImplementation;
-import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.utils.LocationUtil;
-import me.xginko.villageroptimizer.wrapper.WrappedVillager;
-import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
+import me.xginko.villageroptimizer.utils.LocationUtil;
+import me.xginko.villageroptimizer.utils.Util;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -30,48 +27,37 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener {
+public class OptimizeByWorkstation extends VillagerOptimizerModule implements Listener {
 
-    private final ServerImplementation scheduler;
-    private final VillagerCache villagerCache;
     private final long cooldown_millis;
     private final double search_radius;
     private final int check_duration_ticks;
     private final boolean only_while_sneaking, log_enabled, notify_player;
 
     public OptimizeByWorkstation() {
-        shouldEnable();
-        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
-        this.villagerCache = VillagerOptimizer.getCache();
-        Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment(configPath() + ".enable",
+        super("optimization-methods.workstation-optimization");
+        config.master().addComment(configPath + ".enable",
                 "When enabled, villagers that have a job and have been traded with at least once will become optimized,\n" +
                 "if near their workstation. If the workstation is broken, the villager will become unoptimized again.");
-        this.check_duration_ticks = Math.max(config.getInt(configPath() + ".check-linger-duration-ticks", 100,
+        this.check_duration_ticks = Math.max(config.getInt(configPath + ".check-linger-duration-ticks", 100,
                 "After a workstation has been placed, the plugin will wait for the configured amount of time in ticks\n" +
                 "for a villager to claim that workstation. Not recommended to go below 100 ticks."), 1);
-        this.search_radius = config.getDouble(configPath() + ".search-radius-in-blocks", 2.0,
+        this.search_radius = config.getDouble(configPath + ".search-radius-in-blocks", 2.0,
                 "The radius in blocks a villager can be away from the player when he places a workstation.\n" +
                 "The closest unoptimized villager to the player will be optimized.");
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
-                Math.max(1, config.getInt(configPath() + ".optimize-cooldown-seconds", 600,
+                Math.max(1, config.getInt(configPath + ".optimize-cooldown-seconds", 600,
                 "Cooldown in seconds until a villager can be optimized again using a workstation.\n" +
                 "Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior.")));
-        this.only_while_sneaking = config.getBoolean(configPath() + ".only-when-sneaking", true,
+        this.only_while_sneaking = config.getBoolean(configPath + ".only-when-sneaking", true,
                 "Only optimize/unoptimize by workstation when player is sneaking during place or break. Useful for villager rolling.");
-        this.notify_player = config.getBoolean(configPath() + ".notify-player", true,
+        this.notify_player = config.getBoolean(configPath + ".notify-player", true,
                 "Sends players a message when they successfully optimized a villager.");
-        this.log_enabled = config.getBoolean(configPath() + ".log", false);
-    }
-
-    @Override
-    public String configPath() {
-        return "optimization-methods.workstation-optimization";
+        this.log_enabled = config.getBoolean(configPath + ".log", false);
     }
 
     @Override
     public void enable() {
-        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -82,7 +68,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", false);
+        return config.getBoolean(configPath + ".enable", false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -107,7 +93,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
 
             for (Villager villager : workstationLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
                 if (villager.getProfession() != workstationProfession) continue;
-                WrappedVillager wrapped = villagerCache.getOrAdd(villager);
+                WrappedVillager wrapped = villagerCache.createIfAbsent(villager);
                 if (wrapped.getJobSite() == null) continue;
                 if (wrapped.getJobSite().getWorld().getUID() != workstationLoc.getWorld().getUID()) continue;
                 if (LocationUtil.relDistance3DSquared(wrapped.getJobSite(), workstationLoc) > 1) continue;
@@ -181,7 +167,7 @@ public class OptimizeByWorkstation implements VillagerOptimizerModule, Listener 
             final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), workstationLoc);
             if (distance >= closestDistance) continue;
 
-            WrappedVillager wrapped = villagerCache.getOrAdd(villager);
+            WrappedVillager wrapped = villagerCache.createIfAbsent(villager);
 
             if (wrapped.isOptimized()) {
                 closestOptimized = wrapped;

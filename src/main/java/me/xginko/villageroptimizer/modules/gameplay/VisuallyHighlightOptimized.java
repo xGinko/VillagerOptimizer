@@ -1,8 +1,5 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
-import com.tcoded.folialib.impl.ServerImplementation;
-import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
@@ -12,26 +9,16 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-public class VisuallyHighlightOptimized implements VillagerOptimizerModule, Listener {
-
-    private final ServerImplementation scheduler;
+public class VisuallyHighlightOptimized extends VillagerOptimizerModule implements Listener {
 
     public VisuallyHighlightOptimized() {
-        shouldEnable();
-        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
-        Config config = VillagerOptimizer.getConfiguration();
+        super("gameplay.outline-optimized-villagers");
         config.master().addComment("gameplay.outline-optimized-villagers.enable",
                 "Will make optimized villagers glow.");
     }
 
     @Override
-    public String configPath() {
-        return "gameplay.outline-optimized-villagers";
-    }
-
-    @Override
     public void enable() {
-        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -42,7 +29,7 @@ public class VisuallyHighlightOptimized implements VillagerOptimizerModule, List
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean("gameplay.outline-optimized-villagers.enable", false);
+        return config.getBoolean("gameplay.outline-optimized-villagers.enable", false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

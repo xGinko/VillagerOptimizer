@@ -1,8 +1,7 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
-import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -13,18 +12,14 @@ import org.bukkit.event.entity.EntityTransformEvent;
 
 import java.util.concurrent.TimeUnit;
 
-public class FixOptimisationAfterCure implements VillagerOptimizerModule, Listener {
+public class FixOptimisationAfterCure extends VillagerOptimizerModule implements Listener {
 
-    public FixOptimisationAfterCure() {}
-
-    @Override
-    public String configPath() {
-        return "post-cure-optimization-fix";
+    public FixOptimisationAfterCure() {
+        super("post-cure-optimization-fix");
     }
 
     @Override
     public void enable() {
-        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -45,8 +40,8 @@ public class FixOptimisationAfterCure implements VillagerOptimizerModule, Listen
                 && event.getTransformedEntity().getType().equals(EntityType.VILLAGER)
         ) {
             Villager villager = (Villager) event.getTransformedEntity();
-            VillagerOptimizer.getFoliaLib().getImpl().runAtEntityLater(villager, () -> {
-                WrappedVillager wVillager = VillagerOptimizer.getCache().getOrAdd(villager);
+            scheduler.runAtEntityLater(villager, () -> {
+                WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
                 wVillager.setOptimizationType(wVillager.getOptimizationType());
             }, 2, TimeUnit.SECONDS);
         }

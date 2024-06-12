@@ -28,7 +28,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand {
     private final int max_radius;
 
     public UnOptVillagersRadius() {
-        this.max_radius = VillagerOptimizer.getConfiguration()
+        this.max_radius = VillagerOptimizer.config()
                 .getInt("optimization-methods.commands.unoptimizevillagers.max-block-radius", 100);
     }
 
@@ -93,7 +93,7 @@ public class UnOptVillagersRadius implements VillagerOptimizerCommand {
                 Villager.Profession profession = villager.getProfession();
                 if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
 
-                WrappedVillager wVillager = villagerCache.getOrAdd(villager);
+                WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
 
                 if (wVillager.isOptimized()) {
                     VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager, player, OptimizationType.COMMAND);

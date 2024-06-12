@@ -1,8 +1,6 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
 import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
-import me.xginko.villageroptimizer.VillagerCache;
-import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -15,22 +13,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 
-public class PreventOptimizedTargeting implements VillagerOptimizerModule, Listener {
-
-    private final VillagerCache villagerCache;
+public class PreventOptimizedTargeting extends VillagerOptimizerModule implements Listener {
 
     public PreventOptimizedTargeting() {
-        this.villagerCache = VillagerOptimizer.getCache();
-    }
-
-    @Override
-    public String configPath() {
-        return "gameplay.prevent-entities-from-targeting-optimized";
+        super("gameplay.prevent-entities-from-targeting-optimized");
+        config.master().addComment(configPath + ".enable",
+                "Prevents hostile entities from targeting optimized villagers.");
     }
 
     @Override
     public void enable() {
-        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -41,8 +33,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", true,
-                "Prevents hostile entities from targeting optimized villagers.");
+        return config.getBoolean(configPath + ".enable", true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -51,7 +42,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
         if (
                 target != null
                 && target.getType().equals(EntityType.VILLAGER)
-                && villagerCache.getOrAdd((Villager) target).isOptimized()
+                && villagerCache.createIfAbsent((Villager) target).isOptimized()
         ) {
             event.setTarget(null);
             event.setCancelled(true);
@@ -64,7 +55,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
         if (
                 target != null
                 && target.getType().equals(EntityType.VILLAGER)
-                && villagerCache.getOrAdd((Villager) target).isOptimized()
+                && villagerCache.createIfAbsent((Villager) target).isOptimized()
         ) {
             event.setCancelled(true);
         }
@@ -75,7 +66,7 @@ public class PreventOptimizedTargeting implements VillagerOptimizerModule, Liste
         if (
                 event.getEntityType().equals(EntityType.VILLAGER)
                 && event.getDamager() instanceof Mob
-                && villagerCache.getOrAdd((Villager) event.getEntity()).isOptimized()
+                && villagerCache.createIfAbsent((Villager) event.getEntity()).isOptimized()
         ) {
             ((Mob) event.getDamager()).setTarget(null);
         }

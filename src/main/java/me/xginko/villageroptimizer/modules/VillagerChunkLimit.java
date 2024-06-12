@@ -1,12 +1,9 @@
 package me.xginko.villageroptimizer.modules;
 
-import com.tcoded.folialib.impl.ServerImplementation;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
-import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.config.Config;
-import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.LocationUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import org.bukkit.Chunk;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -21,14 +18,15 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
+public class VillagerChunkLimit extends VillagerOptimizerModule implements Listener {
 
-    private final ServerImplementation scheduler;
-    private final VillagerCache villagerCache;
     private WrappedTask periodic_chunk_check;
     private final List<Villager.Profession> non_optimized_removal_priority, optimized_removal_priority;
     private final long check_period;
@@ -36,20 +34,17 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
     private final boolean log_enabled, skip_unloaded_entity_chunks;
 
     protected VillagerChunkLimit() {
-        shouldEnable();
-        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
-        this.villagerCache = VillagerOptimizer.getCache();
-        Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment(configPath() + ".enable",
+        super("villager-chunk-limit");
+        config.master().addComment(configPath + ".enable",
                 "Checks chunks for too many villagers and removes excess villagers based on priority.");
-        this.check_period = config.getInt(configPath() + ".check-period-in-ticks", 600,
+        this.check_period = config.getInt(configPath + ".check-period-in-ticks", 600,
                 "Check all loaded chunks every X ticks. 1 second = 20 ticks\n" +
                 "A shorter delay in between checks is more efficient but is also more resource intense.\n" +
                 "A larger delay is less resource intense but could become inefficient.");
-        this.skip_unloaded_entity_chunks = config.getBoolean(configPath() + ".skip-if-chunk-has-not-loaded-entities", true,
+        this.skip_unloaded_entity_chunks = config.getBoolean(configPath + ".skip-if-chunk-has-not-loaded-entities", true,
                 "Does not check chunks that don't have their entities loaded.");
-        this.log_enabled = config.getBoolean(configPath() + ".log-removals", true);
-        this.non_optimized_max_per_chunk = config.getInt(configPath() + ".unoptimized.max-per-chunk", 20,
+        this.log_enabled = config.getBoolean(configPath + ".log-removals", true);
+        this.non_optimized_max_per_chunk = config.getInt(configPath + ".unoptimized.max-per-chunk", 20,
                 "The maximum amount of unoptimized villagers per chunk.");
         final List<String> defaults = Stream.of(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
@@ -63,7 +58,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                         return false;
                     }
                 }).collect(Collectors.toList());
-        this.non_optimized_removal_priority = config.getList(configPath() + ".unoptimized.removal-priority", defaults,
+        this.non_optimized_removal_priority = config.getList(configPath + ".unoptimized.removal-priority", defaults,
                         "Professions that are in the top of the list are going to be scheduled for removal first.\n" +
                         "Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html")
                 .stream()
@@ -79,9 +74,9 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        this.optimized_max_per_chunk = config.getInt(configPath() + ".optimized.max-per-chunk", 60,
+        this.optimized_max_per_chunk = config.getInt(configPath + ".optimized.max-per-chunk", 60,
                 "The maximum amount of optimized villagers per chunk.");
-        this.optimized_removal_priority = config.getList(configPath() + ".optimized.removal-priority", defaults)
+        this.optimized_removal_priority = config.getList(configPath + ".optimized.removal-priority", defaults)
                 .stream()
                 .map(configuredProfession -> {
                     try {
@@ -95,11 +90,6 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public String configPath() {
-        return "villager-chunk-limit";
     }
 
     @Override
@@ -121,7 +111,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", false);
+        return VillagerOptimizer.config().getBoolean(configPath + ".enable", false);
     }
 
     @Override
@@ -152,7 +142,7 @@ public class VillagerChunkLimit implements VillagerOptimizerModule, Listener {
         for (Entity entity : chunk.getEntities()) {
             if (entity.getType().equals(EntityType.VILLAGER)) {
                 Villager villager = (Villager) entity;
-                if (villagerCache.getOrAdd(villager).isOptimized()) {
+                if (villagerCache.createIfAbsent(villager).isOptimized()) {
                     optimized_villagers.add(villager);
                 } else {
                     not_optimized_villagers.add(villager);

@@ -1,16 +1,14 @@
 package me.xginko.villageroptimizer.modules.optimization;
 
-import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.utils.LocationUtil;
+import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.Location;
@@ -33,22 +31,19 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
+public class OptimizeByBlock extends VillagerOptimizerModule implements Listener {
 
-    private final VillagerCache villagerCache;
     private final Set<Material> blocks_that_disable;
     private final long cooldown_millis;
     private final double search_radius;
     private final boolean only_while_sneaking, notify_player, log_enabled;
 
     public OptimizeByBlock() {
-        shouldEnable();
-        this.villagerCache = VillagerOptimizer.getCache();
-        Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment(configPath() + ".enable",
+        super("optimization-methods.block-optimization");
+        config.master().addComment(configPath + ".enable",
                 "When enabled, the closest villager standing near a configured block being placed will be optimized.\n" +
                 "If a configured block is broken nearby, the closest villager will become unoptimized again.");
-        this.blocks_that_disable = config.getList(configPath() + ".materials", Arrays.asList(
+        this.blocks_that_disable = config.getList(configPath + ".materials", Arrays.asList(
                 "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
         ), "Values here need to be valid bukkit Material enums for your server version.")
                 .stream()
@@ -64,27 +59,21 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(Material.class)));
         this.cooldown_millis = TimeUnit.SECONDS.toMillis(
-                config.getInt(configPath() + ".optimize-cooldown-seconds", 600,
+                config.getInt(configPath + ".optimize-cooldown-seconds", 600,
                 "Cooldown in seconds until a villager can be optimized again by using specific blocks.\n" +
                 "Here for configuration freedom. Recommended to leave as is to not enable any exploitable behavior."));
-        this.search_radius = config.getDouble(configPath() + ".search-radius-in-blocks", 2.0,
+        this.search_radius = config.getDouble(configPath + ".search-radius-in-blocks", 2.0,
                 "The radius in blocks a villager can be away from the player when he places an optimize block.\n" +
                 "The closest unoptimized villager to the player will be optimized.") / 2;
-        this.only_while_sneaking = config.getBoolean(configPath() + ".only-when-sneaking", true,
+        this.only_while_sneaking = config.getBoolean(configPath + ".only-when-sneaking", true,
                 "Only optimize/unoptimize by block when player is sneaking during place or break.");
-        this.notify_player = config.getBoolean(configPath() + ".notify-player", true,
+        this.notify_player = config.getBoolean(configPath + ".notify-player", true,
                 "Sends players a message when they successfully optimized or unoptimized a villager.");
-        this.log_enabled = config.getBoolean(configPath() + ".log", false);
-    }
-
-    @Override
-    public String configPath() {
-        return "optimization-methods.block-optimization";
+        this.log_enabled = config.getBoolean(configPath + ".log", false);
     }
 
     @Override
     public void enable() {
-        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -95,7 +84,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", false);
+        return config.getBoolean(configPath + ".enable", false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -117,7 +106,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
-            final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
+            final WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
             if (wVillager.canOptimize(cooldown_millis)) {
                 closestOptimizableVillager = wVillager;
                 closestDistance = distance;
@@ -184,7 +173,7 @@ public class OptimizeByBlock implements VillagerOptimizerModule, Listener {
             final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
-            final WrappedVillager wVillager = villagerCache.getOrAdd(villager);
+            final WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
             if (wVillager.isOptimized()) {
                 closestOptimizedVillager = wVillager;
                 closestDistance = distance;

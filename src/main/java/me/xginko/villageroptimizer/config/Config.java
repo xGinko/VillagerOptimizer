@@ -23,22 +23,25 @@ public class Config {
 
         this.default_lang = Locale.forLanguageTag(
                 getString("general.default-language", "en_us",
-                        "The default language that will be used if auto-language is false or no matching language file was found.")
+                        "The default language that will be used if auto-language is false\n" +
+                                "or no matching language file was found.")
                         .replace("_", "-"));
         this.auto_lang = getBoolean("general.auto-language", true,
                 "If set to true, will display messages based on client language");
         this.cache_keep_time_seconds = getInt("general.cache-keep-time-seconds", 30,
                 "The amount of time in seconds a villager will be kept in the plugin's cache.");
         this.support_other_plugins = getBoolean("general.support-avl-villagers", false,
-                "Enable if you have previously used AntiVillagerLag (https://www.spigotmc.org/resources/antivillagerlag.102949/).\n" +
-                "Tries to read pre-existing info like optimization state so players don't need to reoptimize their villagers.");
+                "Enable if you have previously used AntiVillagerLag\n" +
+                        "(https://www.spigotmc.org/resources/antivillagerlag.102949/).\n" +
+                        "Tries to read pre-existing info like optimization state so players\n" +
+                        "don't need to reoptimize their villagers.");
     }
 
     public void saveConfig() {
         try {
             this.config.save();
         } catch (Throwable throwable) {
-            VillagerOptimizer.getPrefixedLogger().error("Failed to save config file!", throwable);
+            VillagerOptimizer.logger().error("Failed to save config file!", throwable);
         }
     }
 

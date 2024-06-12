@@ -6,7 +6,7 @@
 
     <groupId>me.xginko</groupId>
     <artifactId>VillagerOptimizer</artifactId>
-    <version>1.5.5</version>
+    <version>1.6.0</version>
     <packaging>jar</packaging>
 
     <name>VillagerOptimizer</name>
@@ -61,6 +61,10 @@
                                     <pattern>io.github.thatsmusic99.configurationmaster</pattern>
                                     <shadedPattern>me.xginko.villageroptimizer.libs.configmaster</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.reflections</pattern>
+                                    <shadedPattern>me.xginko.villageroptimizer.libs.reflections</shadedPattern>
+                                </relocation>
                             </relocations>
                             <filters>
                                 <filter>
@@ -111,6 +115,11 @@
             <artifactId>paper-api</artifactId>
             <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
         </dependency>
         <!-- Adventure API for easier cross-version compatibility -->
         <dependency>

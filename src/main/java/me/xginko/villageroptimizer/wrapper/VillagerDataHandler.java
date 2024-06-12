@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public interface VillagerDataHandler {
 
     static VillagerDataHandler[] forVillager(Villager villager) {
-        if (VillagerOptimizer.getConfiguration().support_other_plugins) {
+        if (VillagerOptimizer.config().support_other_plugins) {
             return new VillagerDataHandler[]{
                     new MainVillagerDataHandlerImpl(villager),
                     new AVLVillagerDataHandlerImpl(villager)

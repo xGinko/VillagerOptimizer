@@ -1,9 +1,5 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
-import com.tcoded.folialib.impl.ServerImplementation;
-import me.xginko.villageroptimizer.VillagerCache;
-import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.LocationUtil;
 import org.bukkit.GameMode;
@@ -19,32 +15,21 @@ import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class EnableLeashingVillagers implements VillagerOptimizerModule, Listener {
+public class EnableLeashingVillagers extends VillagerOptimizerModule implements Listener {
 
-    private final ServerImplementation scheduler;
-    private final VillagerCache villagerCache;
     private final boolean only_optimized, log_enabled;
 
     public EnableLeashingVillagers() {
-        shouldEnable();
-        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
-        this.villagerCache = VillagerOptimizer.getCache();
-        Config config = VillagerOptimizer.getConfiguration();
-        config.master().addComment(configPath() + ".enable",
+        super("gameplay.villagers-can-be-leashed");
+        config.master().addComment(configPath + ".enable",
                 "Enable leashing of villagers, enabling players to easily move villagers to where they want them to be.");
-        this.only_optimized = config.getBoolean(configPath() + ".only-optimized", false,
+        this.only_optimized = config.getBoolean(configPath + ".only-optimized", false,
                 "If set to true, only optimized villagers can be leashed.");
-        this.log_enabled = config.getBoolean(configPath() + ".log", false);
-    }
-
-    @Override
-    public String configPath() {
-        return "gameplay.villagers-can-be-leashed";
+        this.log_enabled = config.getBoolean(configPath + ".log", false);
     }
 
     @Override
     public void enable() {
-        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -55,7 +40,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
     @Override
     public boolean shouldEnable() {
-        return VillagerOptimizer.getConfiguration().getBoolean(configPath() + ".enable", false);
+        return config.getBoolean(configPath + ".enable", false);
     }
 
     @SuppressWarnings("deprecation")
@@ -68,7 +53,7 @@ public class EnableLeashingVillagers implements VillagerOptimizerModule, Listene
 
         final Villager villager = (Villager) event.getRightClicked();
         if (villager.isLeashed()) return;
-        if (only_optimized && !villagerCache.getOrAdd(villager).isOptimized()) return;
+        if (only_optimized && !villagerCache.createIfAbsent(villager).isOptimized()) return;
 
         event.setCancelled(true); // Cancel the event, so we don't interact with the villager
 
