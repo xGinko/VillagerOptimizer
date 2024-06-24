@@ -50,7 +50,7 @@ public class Util {
         return PROFESSION_MAP.getOrDefault(workstation, null);
     }
 
-    public static boolean isEntitiesLoaded(@NotNull Chunk chunk) {
+    public static boolean isChunkLoaded(@NotNull Chunk chunk) {
         return canUseIsEntitiesLoaded ? chunk.isEntitiesLoaded() : chunk.isLoaded();
     }
 
