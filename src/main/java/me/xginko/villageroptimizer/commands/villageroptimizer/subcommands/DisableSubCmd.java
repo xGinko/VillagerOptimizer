@@ -36,8 +36,8 @@ public class DisableSubCmd extends SubCommand {
         }
 
         KyoriUtil.sendMessage(sender, Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
-        VillagerOptimizerModule.MODULES.forEach(VillagerOptimizerModule::disable);
-        VillagerOptimizerModule.MODULES.clear();
+        VillagerOptimizerModule.ENABLED_MODULES.forEach(VillagerOptimizerModule::disable);
+        VillagerOptimizerModule.ENABLED_MODULES.clear();
         VillagerOptimizer.getCache().cacheMap().clear();
         KyoriUtil.sendMessage(sender, Component.text("Disabled all plugin listeners and tasks.").color(NamedTextColor.GREEN));
         KyoriUtil.sendMessage(sender, Component.text("You can enable the plugin again using the reload command.").color(NamedTextColor.YELLOW));
