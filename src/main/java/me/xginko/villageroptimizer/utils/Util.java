@@ -10,12 +10,49 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.EnumMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class Util {
 
-    public static final @NotNull TextColor PL_COLOR = TextColor.color(102,255,230);
-    public static final @NotNull Style PL_STYLE = Style.style(PL_COLOR, TextDecoration.BOLD);
+    public static final @NotNull TextColor PL_COLOR;
+    public static final @NotNull Style PL_STYLE;
+    private static final @NotNull Map<Material, Villager.Profession> PROFESSION_MAP;
+    private static boolean canUseIsEntitiesLoaded;
+
+    static {
+        PL_COLOR = TextColor.color(102,255,230);
+        PL_STYLE = Style.style(PL_COLOR, TextDecoration.BOLD);
+        PROFESSION_MAP = new EnumMap<>(Material.class);
+        PROFESSION_MAP.put(Material.BARREL, Villager.Profession.FISHERMAN);
+        PROFESSION_MAP.put(Material.CARTOGRAPHY_TABLE, Villager.Profession.CARTOGRAPHER);
+        PROFESSION_MAP.put(Material.SMOKER, Villager.Profession.BUTCHER);
+        PROFESSION_MAP.put(Material.SMITHING_TABLE, Villager.Profession.TOOLSMITH);
+        PROFESSION_MAP.put(Material.GRINDSTONE, Villager.Profession.WEAPONSMITH);
+        PROFESSION_MAP.put(Material.BLAST_FURNACE, Villager.Profession.ARMORER);
+        PROFESSION_MAP.put(Material.CAULDRON, Villager.Profession.LEATHERWORKER);
+        PROFESSION_MAP.put(Material.BREWING_STAND, Villager.Profession.CLERIC);
+        PROFESSION_MAP.put(Material.COMPOSTER, Villager.Profession.FARMER);
+        PROFESSION_MAP.put(Material.FLETCHING_TABLE, Villager.Profession.FLETCHER);
+        PROFESSION_MAP.put(Material.LOOM, Villager.Profession.SHEPHERD);
+        PROFESSION_MAP.put(Material.LECTERN, Villager.Profession.LIBRARIAN);
+        PROFESSION_MAP.put(Material.STONECUTTER, Villager.Profession.MASON);
+        try {
+            Chunk.class.getMethod("isEntitiesLoaded");
+            canUseIsEntitiesLoaded = true;
+        } catch (NoSuchMethodException e) {
+            canUseIsEntitiesLoaded = false;
+        }
+    }
+
+    public static @Nullable Villager.Profession getWorkstationProfession(@NotNull Material workstation) {
+        return PROFESSION_MAP.getOrDefault(workstation, null);
+    }
+
+    public static boolean isEntitiesLoaded(@NotNull Chunk chunk) {
+        return canUseIsEntitiesLoaded ? chunk.isEntitiesLoaded() : chunk.isLoaded();
+    }
 
     public static @NotNull String formatDuration(@NotNull Duration duration) {
         if (duration.isNegative()) duration = duration.negated();
@@ -43,51 +80,5 @@ public class Util {
         }
         // return as nice string
         return String.join(" ", lowercaseWords);
-    }
-
-    private static boolean specificChunkLoadedMethodAvailable = true;
-    public static boolean isEntitiesLoaded(@NotNull Chunk chunk) {
-        if (!specificChunkLoadedMethodAvailable) {
-            return chunk.isLoaded();
-        }
-        try {
-            return chunk.isEntitiesLoaded();
-        } catch (NoSuchMethodError e) {
-            specificChunkLoadedMethodAvailable = false;
-            return chunk.isLoaded();
-        }
-    }
-
-    public static @Nullable Villager.Profession getWorkstationProfession(@NotNull Material workstation) {
-        switch (workstation) {
-            case BARREL:
-                return Villager.Profession.FISHERMAN;
-            case CARTOGRAPHY_TABLE:
-                return Villager.Profession.CARTOGRAPHER;
-            case SMOKER:
-                return Villager.Profession.BUTCHER;
-            case SMITHING_TABLE:
-                return Villager.Profession.TOOLSMITH;
-            case GRINDSTONE:
-                return Villager.Profession.WEAPONSMITH;
-            case BLAST_FURNACE:
-                return Villager.Profession.ARMORER;
-            case CAULDRON:
-                return Villager.Profession.LEATHERWORKER;
-            case BREWING_STAND:
-                return Villager.Profession.CLERIC;
-            case COMPOSTER:
-                return Villager.Profession.FARMER;
-            case FLETCHING_TABLE:
-                return Villager.Profession.FLETCHER;
-            case LOOM:
-                return Villager.Profession.SHEPHERD;
-            case LECTERN:
-                return Villager.Profession.LIBRARIAN;
-            case STONECUTTER:
-                return Villager.Profession.MASON;
-            default:
-                return null;
-        }
     }
 }
