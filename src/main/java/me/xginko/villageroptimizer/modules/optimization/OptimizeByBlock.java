@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.modules.optimization;
 
+import com.cryptomorin.xseries.XMaterial;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
@@ -24,12 +25,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class OptimizeByBlock extends VillagerOptimizerModule implements Listener {
 
@@ -43,9 +45,12 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
         config.master().addComment(configPath + ".enable",
                 "When enabled, the closest villager standing near a configured block being placed will be optimized.\n" +
                 "If a configured block is broken nearby, the closest villager will become unoptimized again.");
-        this.blocks_that_disable = config.getList(configPath + ".materials", Arrays.asList(
-                "LAPIS_BLOCK", "GLOWSTONE", "IRON_BLOCK"
-        ), "Values here need to be valid bukkit Material enums for your server version.")
+        List<String> defaults = Stream.of(XMaterial.LAPIS_BLOCK, XMaterial.GLOWSTONE, XMaterial.IRON_BLOCK)
+                .filter(XMaterial::isSupported)
+                .map(Enum::name)
+                .collect(Collectors.toList());
+        this.blocks_that_disable = config.getList(configPath + ".materials", defaults,
+                        "Values here need to be valid bukkit Material enums for your server version.")
                 .stream()
                 .map(configuredMaterial -> {
                     try {

@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
+import com.cryptomorin.xseries.XEntityType;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
@@ -8,7 +9,6 @@ import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import net.kyori.adventure.text.TextReplacementConfig;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -53,30 +53,29 @@ public class RestockOptimizedTrades extends VillagerOptimizerModule implements L
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onInteract(PlayerInteractEntityEvent event) {
-        if (!event.getRightClicked().getType().equals(EntityType.VILLAGER)) return;
+        if (event.getRightClicked().getType() != XEntityType.VILLAGER.get()) return;
 
         final WrappedVillager wVillager = villagerCache.createIfAbsent((Villager) event.getRightClicked());
         if (!wVillager.isOptimized()) return;
 
         final Player player = event.getPlayer();
         final boolean player_bypassing = player.hasPermission(Permissions.Bypass.RESTOCK_COOLDOWN.get());
+        if (!wVillager.canRestock(restock_delay_millis) && !player_bypassing) return;
 
-        if (wVillager.canRestock(restock_delay_millis) || player_bypassing) {
-            wVillager.restock();
-            wVillager.saveRestockTime();
+        wVillager.restock();
+        wVillager.saveRestockTime();
 
-            if (notify_player && !player_bypassing) {
-                final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
-                        .matchLiteral("%time%")
-                        .replacement(Util.formatDuration(Duration.ofMillis(wVillager.getRestockCooldownMillis(restock_delay_millis))))
-                        .build();
-                VillagerOptimizer.getLang(player.locale()).trades_restocked
-                        .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
-            }
+        if (notify_player && !player_bypassing) {
+            final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
+                    .matchLiteral("%time%")
+                    .replacement(Util.formatDuration(Duration.ofMillis(wVillager.getRestockCooldownMillis(restock_delay_millis))))
+                    .build();
+            VillagerOptimizer.getLang(player.locale()).trades_restocked
+                    .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
+        }
 
-            if (log_enabled) {
-                info("Restocked optimized villager at " + LocationUtil.toString(wVillager.villager().getLocation()));
-            }
+        if (log_enabled) {
+            info("Restocked optimized villager at " + LocationUtil.toString(wVillager.villager().getLocation()));
         }
     }
 }

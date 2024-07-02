@@ -53,7 +53,7 @@ public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
 
             // End repeating task once logic is finished
             setOptimization.cancel();
-        }, 0L, 1L, TimeUnit.SECONDS);
+        }, 1L, 1L, TimeUnit.SECONDS);
     }
 
     @Override

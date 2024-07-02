@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.enums;
 
+import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
@@ -69,6 +70,26 @@ public final class Permissions {
 
         public Permission get() {
             return permission;
+        }
+    }
+
+    public static void registerAll() {
+        for (Bypass perm : Bypass.values()) {
+            try {
+                Bukkit.getPluginManager().addPermission(perm.get());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Commands perm : Commands.values()) {
+            try {
+                Bukkit.getPluginManager().addPermission(perm.get());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Optimize perm : Optimize.values()) {
+            try {
+                Bukkit.getPluginManager().addPermission(perm.get());
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }

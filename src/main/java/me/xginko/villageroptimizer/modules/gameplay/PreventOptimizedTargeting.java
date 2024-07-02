@@ -1,9 +1,9 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
+import com.cryptomorin.xseries.XEntityType;
 import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -41,7 +41,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
         final Entity target = event.getTarget();
         if (
                 target != null
-                && target.getType().equals(EntityType.VILLAGER)
+                && target.getType() == XEntityType.VILLAGER.get()
                 && villagerCache.createIfAbsent((Villager) target).isOptimized()
         ) {
             event.setTarget(null);
@@ -54,7 +54,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
         final Entity target = event.getTargetEntity();
         if (
                 target != null
-                && target.getType().equals(EntityType.VILLAGER)
+                && target.getType() == XEntityType.VILLAGER.get()
                 && villagerCache.createIfAbsent((Villager) target).isOptimized()
         ) {
             event.setCancelled(true);
@@ -64,7 +64,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onEntityAttackVillager(EntityDamageByEntityEvent event) {
         if (
-                event.getEntityType().equals(EntityType.VILLAGER)
+                event.getEntityType() == XEntityType.VILLAGER.get()
                 && event.getDamager() instanceof Mob
                 && villagerCache.createIfAbsent((Villager) event.getEntity()).isOptimized()
         ) {

@@ -45,7 +45,7 @@ public class PreventUnoptimizedTrading extends VillagerOptimizerModule implement
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onTradeOpen(TradeSelectEvent event) {
-        if (!event.getInventory().getType().equals(InventoryType.MERCHANT)) return;
+        if (event.getInventory().getType() != InventoryType.MERCHANT) return;
         if (event.getWhoClicked().hasPermission(Permissions.Bypass.TRADE_PREVENTION.get())) return;
         if (!(event.getInventory().getHolder() instanceof Villager)) return;
         if (villagerCache.createIfAbsent((Villager) event.getInventory().getHolder()).isOptimized()) return;
@@ -60,7 +60,7 @@ public class PreventUnoptimizedTrading extends VillagerOptimizerModule implement
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getInventory().getType().equals(InventoryType.MERCHANT)) return;
+        if (event.getInventory().getType() != InventoryType.MERCHANT) return;
         if (event.getWhoClicked().hasPermission(Permissions.Bypass.TRADE_PREVENTION.get())) return;
         if (!(event.getInventory().getHolder() instanceof Villager)) return;
         if (villagerCache.createIfAbsent((Villager) event.getInventory().getHolder()).isOptimized()) return;

@@ -1,5 +1,6 @@
 package me.xginko.villageroptimizer.utils;
 
+import com.cryptomorin.xseries.XMaterial;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -25,19 +26,19 @@ public class Util {
         PL_COLOR = TextColor.color(102,255,230);
         PL_STYLE = Style.style(PL_COLOR, TextDecoration.BOLD);
         PROFESSION_MAP = new EnumMap<>(Material.class);
-        PROFESSION_MAP.put(Material.LOOM,               Villager.Profession.SHEPHERD);
-        PROFESSION_MAP.put(Material.BARREL,             Villager.Profession.FISHERMAN);
-        PROFESSION_MAP.put(Material.SMOKER,             Villager.Profession.BUTCHER);
-        PROFESSION_MAP.put(Material.LECTERN,            Villager.Profession.LIBRARIAN);
-        PROFESSION_MAP.put(Material.CAULDRON,           Villager.Profession.LEATHERWORKER);
-        PROFESSION_MAP.put(Material.COMPOSTER,          Villager.Profession.FARMER);
-        PROFESSION_MAP.put(Material.GRINDSTONE,         Villager.Profession.WEAPONSMITH);
-        PROFESSION_MAP.put(Material.STONECUTTER,        Villager.Profession.MASON);
-        PROFESSION_MAP.put(Material.BREWING_STAND,      Villager.Profession.CLERIC);
-        PROFESSION_MAP.put(Material.BLAST_FURNACE,      Villager.Profession.ARMORER);
-        PROFESSION_MAP.put(Material.SMITHING_TABLE,     Villager.Profession.TOOLSMITH);
-        PROFESSION_MAP.put(Material.FLETCHING_TABLE,    Villager.Profession.FLETCHER);
-        PROFESSION_MAP.put(Material.CARTOGRAPHY_TABLE,  Villager.Profession.CARTOGRAPHER);
+        PROFESSION_MAP.put(XMaterial.LOOM.parseMaterial(),               Villager.Profession.SHEPHERD);
+        PROFESSION_MAP.put(XMaterial.BARREL.parseMaterial(),             Villager.Profession.FISHERMAN);
+        PROFESSION_MAP.put(XMaterial.SMOKER.parseMaterial(),             Villager.Profession.BUTCHER);
+        PROFESSION_MAP.put(XMaterial.LECTERN.parseMaterial(),            Villager.Profession.LIBRARIAN);
+        PROFESSION_MAP.put(XMaterial.CAULDRON.parseMaterial(),           Villager.Profession.LEATHERWORKER);
+        PROFESSION_MAP.put(XMaterial.COMPOSTER.parseMaterial(),          Villager.Profession.FARMER);
+        PROFESSION_MAP.put(XMaterial.GRINDSTONE.parseMaterial(),         Villager.Profession.WEAPONSMITH);
+        PROFESSION_MAP.put(XMaterial.STONECUTTER.parseMaterial(),        Villager.Profession.MASON);
+        PROFESSION_MAP.put(XMaterial.BREWING_STAND.parseMaterial(),      Villager.Profession.CLERIC);
+        PROFESSION_MAP.put(XMaterial.BLAST_FURNACE.parseMaterial(),      Villager.Profession.ARMORER);
+        PROFESSION_MAP.put(XMaterial.SMITHING_TABLE.parseMaterial(),     Villager.Profession.TOOLSMITH);
+        PROFESSION_MAP.put(XMaterial.FLETCHING_TABLE.parseMaterial(),    Villager.Profession.FLETCHER);
+        PROFESSION_MAP.put(XMaterial.CARTOGRAPHY_TABLE.parseMaterial(),  Villager.Profession.CARTOGRAPHER);
         try {
             Chunk.class.getMethod("isEntitiesLoaded");
             canUseIsEntitiesLoaded = true;

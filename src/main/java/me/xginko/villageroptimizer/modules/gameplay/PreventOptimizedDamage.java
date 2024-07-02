@@ -1,8 +1,8 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
+import com.cryptomorin.xseries.XEntityType;
 import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -64,7 +64,7 @@ public class PreventOptimizedDamage extends VillagerOptimizerModule implements L
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onDamageByEntity(EntityDamageEvent event) {
         if (
-                event.getEntityType().equals(EntityType.VILLAGER)
+                event.getEntityType() == XEntityType.VILLAGER.get()
                 && damage_causes_to_cancel.contains(event.getCause())
                 && villagerCache.createIfAbsent((Villager) event.getEntity()).isOptimized()
         ) {
@@ -76,7 +76,7 @@ public class PreventOptimizedDamage extends VillagerOptimizerModule implements L
     private void onKnockbackByEntity(EntityKnockbackByEntityEvent event) {
         if (
                 cancel_knockback
-                && event.getEntityType().equals(EntityType.VILLAGER)
+                && event.getEntityType() == XEntityType.VILLAGER.get()
                 && villagerCache.createIfAbsent((Villager) event.getEntity()).isOptimized()
         ) {
             event.setCancelled(true);

@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
+import com.cryptomorin.xseries.XEntityType;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -37,7 +37,7 @@ public class MakeVillagersSpawnAdult extends VillagerOptimizerModule implements 
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onVillagerSpawn(CreatureSpawnEvent event) {
-        if (event.getEntityType().equals(EntityType.VILLAGER)) {
+        if (event.getEntityType() == XEntityType.VILLAGER.get()) {
             final Villager villager = (Villager) event.getEntity();
             if (!villager.isAdult()) villager.setAdult();
         }

@@ -4,6 +4,7 @@ import com.tcoded.folialib.FoliaLib;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
+import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.Util;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -73,6 +74,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                 .color(NamedTextColor.GRAY)).append(Component.text("         │").style(Util.PL_STYLE)));
         logger.info(Component.text("│                                                            │").style(Util.PL_STYLE));
         logger.info(Component.text("│                                                            │").style(Util.PL_STYLE));
+        Permissions.registerAll();
 
         logger.info(Component.text("│              ")
                 .style(Util.PL_STYLE).append(Component.text(" ➤  Loading Config...").style(Util.PL_STYLE))

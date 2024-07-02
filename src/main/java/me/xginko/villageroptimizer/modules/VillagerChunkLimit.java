@@ -1,12 +1,12 @@
 package me.xginko.villageroptimizer.modules;
 
+import com.cryptomorin.xseries.XEntityType;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -120,14 +120,14 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCreatureSpawn(CreatureSpawnEvent event) {
-        if (event.getEntityType() == EntityType.VILLAGER) {
+        if (event.getEntityType() == XEntityType.VILLAGER.get()) {
             manageVillagerCount(event.getEntity().getChunk());
         }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     private void onInteract(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked().getType() == EntityType.VILLAGER) {
+        if (event.getRightClicked().getType() == XEntityType.VILLAGER.get()) {
             manageVillagerCount(event.getRightClicked().getChunk());
         }
     }
@@ -138,7 +138,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
         List<Villager> not_optimized_villagers = new ArrayList<>();
 
         for (Entity entity : chunk.getEntities()) {
-            if (entity.getType() != EntityType.VILLAGER) continue;
+            if (entity.getType() != XEntityType.VILLAGER.get()) continue;
 
             Villager villager = (Villager) entity;
 
