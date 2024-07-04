@@ -78,8 +78,7 @@ public final class Keyring {
         private final @NotNull NamespacedKey key;
 
         AntiVillagerLag(@NotNull String avlKey) {
-            avlKey = avlKey.toLowerCase();
-            this.key = new NamespacedKey(Space.AntiVillagerLag.namespace(), avlKey);
+            this.key = new NamespacedKey(Space.AntiVillagerLag.namespace(), avlKey.toLowerCase());
         }
 
         @Override
