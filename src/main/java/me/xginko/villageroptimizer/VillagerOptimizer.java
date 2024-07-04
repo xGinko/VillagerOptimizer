@@ -12,6 +12,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,7 +23,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +46,13 @@ public final class VillagerOptimizer extends JavaPlugin {
     private static BukkitAudiences audiences;
     private static ComponentLogger logger;
     private static Metrics bStats;
+
+    @Override
+    public void onLoad() {
+        // Disable reflection logging
+        String shadedLibs = getClass().getPackage().getName() + ".libs";
+        Configurator.setLevel(shadedLibs + ".reflections.Reflections", Level.OFF);
+    }
 
     @Override
     public void onEnable() {
