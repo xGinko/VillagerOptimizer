@@ -44,7 +44,7 @@ public final class Keyring {
      * from a {@link PersistentDataContainer}
      */
     public static NamespacedKey getKey(@NotNull String pluginName, @NotNull String key) {
-        return new NamespacedKey(pluginName.toLowerCase(Locale.ROOT), key);
+        return new NamespacedKey(pluginName.toLowerCase(Locale.ROOT), key.toLowerCase(Locale.ROOT));
     }
 
     public enum VillagerOptimizer implements Keyed {
@@ -57,7 +57,7 @@ public final class Keyring {
         private final @NotNull NamespacedKey key;
 
         VillagerOptimizer(@NotNull String key) {
-            this.key = new NamespacedKey(Space.VillagerOptimizer.namespace(), key);
+            this.key = Keyring.getKey(Space.VillagerOptimizer.namespace(), key);
         }
 
         @Override
@@ -78,7 +78,7 @@ public final class Keyring {
         private final @NotNull NamespacedKey key;
 
         AntiVillagerLag(@NotNull String avlKey) {
-            this.key = new NamespacedKey(Space.AntiVillagerLag.namespace(), avlKey.toLowerCase());
+            this.key = Keyring.getKey(Space.AntiVillagerLag.namespace(), avlKey);
         }
 
         @Override
