@@ -1,6 +1,7 @@
 package me.xginko.villageroptimizer.modules;
 
 import com.cryptomorin.xseries.XEntityType;
+import me.xginko.villageroptimizer.utils.ExpiringSet;
 import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import org.bukkit.Chunk;
@@ -16,6 +17,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
 import space.arim.morepaperlib.scheduling.ScheduledTask;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -27,6 +29,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
 
     private ScheduledTask periodic_chunk_check;
     private final List<Villager.Profession> non_optimized_removal_priority, optimized_removal_priority;
+    private final ExpiringSet<Chunk> checked_chunks;
     private final long check_period;
     private final int non_optimized_max_per_chunk, optimized_max_per_chunk;
     private final boolean log_enabled, skip_unloaded_chunks;
@@ -44,6 +47,10 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
         this.log_enabled = config.getBoolean(configPath + ".log-removals", true);
         this.non_optimized_max_per_chunk = config.getInt(configPath + ".unoptimized.max-per-chunk", 20,
                 "The maximum amount of unoptimized villagers per chunk.");
+        this.checked_chunks = new ExpiringSet<>(Duration.ofSeconds(
+                Math.max(1, config.getInt(configPath + ".chunk-check-cooldown-seconds", 5,
+                        "The delay in seconds a chunk will not be checked again after the first time.\n" +
+                                "Reduces chances to lag the server due to overchecking."))));
         final List<String> defaults = Stream.of(
                 "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
                 "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN")
@@ -111,9 +118,11 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
     public void run() {
         for (World world : plugin.getServer().getWorlds()) {
             for (Chunk chunk : world.getLoadedChunks()) {
-                if (!skip_unloaded_chunks || Util.isChunkLoaded(chunk)) {
-                    manageVillagerCount(chunk);
-                }
+                scheduling.regionSpecificScheduler(chunk.getWorld(), chunk.getX(), chunk.getZ()).run(() -> {
+                    if (!skip_unloaded_chunks || Util.isChunkLoaded(chunk)) {
+                        manageVillagerCount(chunk);
+                    }
+                });
             }
         }
     }
@@ -121,72 +130,78 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onCreatureSpawn(CreatureSpawnEvent event) {
         if (event.getEntityType() == XEntityType.VILLAGER.get()) {
-            manageVillagerCount(event.getEntity().getChunk());
+            scheduling.regionSpecificScheduler(event.getLocation()).run(() -> {
+                manageVillagerCount(event.getEntity().getChunk());
+            });
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     private void onInteract(PlayerInteractEntityEvent event) {
         if (event.getRightClicked().getType() == XEntityType.VILLAGER.get()) {
-            manageVillagerCount(event.getRightClicked().getChunk());
+            scheduling.regionSpecificScheduler(event.getRightClicked().getLocation()).run(() -> {
+                manageVillagerCount(event.getRightClicked().getChunk());
+            });
         }
     }
 
     private void manageVillagerCount(@NotNull Chunk chunk) {
-        scheduling.regionSpecificScheduler(chunk.getWorld(), chunk.getX(), chunk.getZ()).run(() -> {
-            // Collect all optimized and unoptimized villagers in that chunk
-            List<Villager> optimized_villagers = new ArrayList<>();
-            List<Villager> not_optimized_villagers = new ArrayList<>();
+        // Remember which chunk we have already checked
+        if (checked_chunks.contains(chunk)) return;
+        else checked_chunks.add(chunk);
 
-            for (Entity entity : chunk.getEntities()) {
-                if (entity.getType() != XEntityType.VILLAGER.get()) continue;
+        // Collect all optimized and unoptimized villagers in that chunk
+        List<Villager> optimized_villagers = new ArrayList<>();
+        List<Villager> not_optimized_villagers = new ArrayList<>();
 
-                Villager villager = (Villager) entity;
+        for (Entity entity : chunk.getEntities()) {
+            if (entity.getType() != XEntityType.VILLAGER.get()) continue;
 
-                if (villagerCache.createIfAbsent(villager).isOptimized()) {
-                    optimized_villagers.add(villager);
-                } else {
-                    not_optimized_villagers.add(villager);
-                }
+            Villager villager = (Villager) entity;
+
+            if (villagerCache.createIfAbsent(villager).isOptimized()) {
+                optimized_villagers.add(villager);
+            } else {
+                not_optimized_villagers.add(villager);
             }
+        }
 
-            // Check if there are more unoptimized villagers in that chunk than allowed
-            final int not_optimized_villagers_too_many = not_optimized_villagers.size() - non_optimized_max_per_chunk;
-            if (not_optimized_villagers_too_many > 0) {
-                // Sort villagers by profession priority
-                not_optimized_villagers.sort(Comparator.comparingInt(villager -> {
-                    final Villager.Profession profession = villager.getProfession();
-                    return non_optimized_removal_priority.contains(profession) ? non_optimized_removal_priority.indexOf(profession) : Integer.MAX_VALUE;
-                }));
-                // Remove prioritized villagers that are too many
-                for (int i = 0; i < not_optimized_villagers_too_many; i++) {
-                    Villager villager = not_optimized_villagers.get(i);
-                    scheduling.entitySpecificScheduler(villager).run(kill -> {
-                        villager.remove();
-                        if (log_enabled) info("Removed unoptimized villager with profession '" +
-                                Util.formatEnum(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
-                    }, null);
-                }
+        // Check if there are more unoptimized villagers in that chunk than allowed
+        final int not_optimized_villagers_too_many = not_optimized_villagers.size() - non_optimized_max_per_chunk;
+        if (not_optimized_villagers_too_many > 0) {
+            // Sort villagers by profession priority
+            not_optimized_villagers.sort(Comparator.comparingInt(villager -> {
+                final Villager.Profession profession = villager.getProfession();
+                return non_optimized_removal_priority.contains(profession) ? non_optimized_removal_priority.indexOf(profession) : Integer.MAX_VALUE;
+            }));
+            // Remove prioritized villagers that are too many
+            for (int i = 0; i < not_optimized_villagers_too_many; i++) {
+                Villager villager = not_optimized_villagers.get(i);
+                scheduling.entitySpecificScheduler(villager).run(kill -> {
+                    villager.remove();
+                    if (log_enabled) info("Removed unoptimized villager with profession '" +
+                            Util.formatEnum(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
+                }, null);
             }
+        }
 
-            // Check if there are more optimized villagers in that chunk than allowed
-            final int optimized_villagers_too_many = optimized_villagers.size() - optimized_max_per_chunk;
-            if (optimized_villagers_too_many > 0) {
-                // Sort villagers by profession priority
-                optimized_villagers.sort(Comparator.comparingInt(villager -> {
-                    final Villager.Profession profession = villager.getProfession();
-                    return optimized_removal_priority.contains(profession) ? optimized_removal_priority.indexOf(profession) : Integer.MAX_VALUE;
-                }));
-                // Remove prioritized villagers that are too many
-                for (int i = 0; i < optimized_villagers_too_many; i++) {
-                    Villager villager = optimized_villagers.get(i);
-                    scheduling.entitySpecificScheduler(villager).run(kill -> {
-                        villager.remove();
-                        if (log_enabled) info("Removed unoptimized villager with profession '" +
-                                Util.formatEnum(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
-                    }, null);
-                }
+        // Check if there are more optimized villagers in that chunk than allowed
+        final int optimized_villagers_too_many = optimized_villagers.size() - optimized_max_per_chunk;
+        if (optimized_villagers_too_many > 0) {
+            // Sort villagers by profession priority
+            optimized_villagers.sort(Comparator.comparingInt(villager -> {
+                final Villager.Profession profession = villager.getProfession();
+                return optimized_removal_priority.contains(profession) ? optimized_removal_priority.indexOf(profession) : Integer.MAX_VALUE;
+            }));
+            // Remove prioritized villagers that are too many
+            for (int i = 0; i < optimized_villagers_too_many; i++) {
+                Villager villager = optimized_villagers.get(i);
+                scheduling.entitySpecificScheduler(villager).run(kill -> {
+                    villager.remove();
+                    if (log_enabled) info("Removed unoptimized villager with profession '" +
+                            Util.formatEnum(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
+                }, null);
             }
-        });
+        }
     }
 }
