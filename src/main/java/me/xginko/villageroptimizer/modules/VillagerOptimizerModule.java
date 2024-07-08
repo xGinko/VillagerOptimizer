@@ -1,11 +1,11 @@
 package me.xginko.villageroptimizer.modules;
 
-import com.tcoded.folialib.impl.ServerImplementation;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
+import space.arim.morepaperlib.scheduling.GracefulScheduling;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ public abstract class VillagerOptimizerModule {
     protected final VillagerOptimizer plugin;
     protected final Config config;
     protected final VillagerCache villagerCache;
-    protected final ServerImplementation scheduler;
+    protected final GracefulScheduling scheduling;
     public final String configPath;
     private final String logFormat;
 
@@ -31,7 +31,7 @@ public abstract class VillagerOptimizerModule {
         this.plugin = VillagerOptimizer.getInstance();
         this.config = VillagerOptimizer.config();
         this.villagerCache = VillagerOptimizer.getCache();
-        this.scheduler = VillagerOptimizer.getFoliaLib().getImpl();
+        this.scheduling = VillagerOptimizer.scheduling();
         this.configPath = configPath;
         shouldEnable(); // Ensure enable option is always first
         String[] paths = configPath.split("\\.");

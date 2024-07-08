@@ -68,7 +68,7 @@ public class EnableLeashingVillagers extends VillagerOptimizerModule implements 
         // If canceled by any plugin, do nothing
         if (!leashEvent.callEvent()) return;
 
-        scheduler.runAtEntity(villager, leash -> {
+        scheduling.entitySpecificScheduler(villager).run(leash -> {
             // Legitimate to not use entities from the event object since they are final in PlayerLeashEntityEvent
             if (!villager.setLeashHolder(player)) return;
             if (player.getGameMode().equals(GameMode.SURVIVAL))
@@ -77,6 +77,6 @@ public class EnableLeashingVillagers extends VillagerOptimizerModule implements 
             if (log_enabled) {
                 info(player.getName() + " leashed a villager at " + LocationUtil.toString(villager.getLocation()));
             }
-        });
+        }, null);
     }
 }

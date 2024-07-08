@@ -1,6 +1,5 @@
 package me.xginko.villageroptimizer;
 
-import com.tcoded.folialib.FoliaLib;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
@@ -19,6 +18,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import space.arim.morepaperlib.MorePaperLib;
+import space.arim.morepaperlib.scheduling.GracefulScheduling;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,7 +41,7 @@ public final class VillagerOptimizer extends JavaPlugin {
 
     private static VillagerOptimizer instance;
     private static VillagerCache villagerCache;
-    private static FoliaLib foliaLib;
+    private static GracefulScheduling scheduling;
     private static Map<String, LanguageCache> languageCacheMap;
     private static Config config;
     private static BukkitAudiences audiences;
@@ -57,7 +58,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        foliaLib = new FoliaLib(this);
+        scheduling = new MorePaperLib(this).scheduling();
         audiences = BukkitAudiences.create(this);
         logger = ComponentLogger.logger(getLogger().getName());
         bStats = new Metrics(this, 19954);
@@ -112,9 +113,9 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void onDisable() {
         VillagerOptimizerModule.ENABLED_MODULES.forEach(VillagerOptimizerModule::disable);
         VillagerOptimizerModule.ENABLED_MODULES.clear();
-        if (foliaLib != null) {
-            foliaLib.getImpl().cancelAllTasks();
-            foliaLib = null;
+        if (scheduling != null) {
+            scheduling.cancelGlobalTasks();
+            scheduling = null;
         }
         if (villagerCache != null) {
             villagerCache.clear();
@@ -143,8 +144,8 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static @NotNull VillagerCache getCache() {
         return villagerCache;
     }
-    public static @NotNull FoliaLib getFoliaLib() {
-        return foliaLib;
+    public static @NotNull GracefulScheduling scheduling() {
+        return scheduling;
     }
     public static @NotNull ComponentLogger logger() {
         return logger;

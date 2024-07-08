@@ -35,7 +35,7 @@ public class ReloadSubCmd extends SubCommand {
         }
 
         KyoriUtil.sendMessage(sender, Component.text("Reloading VillagerOptimizer...").color(NamedTextColor.WHITE));
-        VillagerOptimizer.getFoliaLib().getImpl().runNextTick(reload -> { // Reload in sync with the server
+        VillagerOptimizer.scheduling().asyncScheduler().run(reload -> {
             VillagerOptimizer.getInstance().reloadPlugin();
             KyoriUtil.sendMessage(sender, Component.text("Reload complete.").color(NamedTextColor.GREEN));
         });

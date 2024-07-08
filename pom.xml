@@ -42,10 +42,6 @@
                         <configuration>
                             <relocations>
                                 <relocation>
-                                    <pattern>com.tcoded.folialib</pattern>
-                                    <shadedPattern>me.xginko.villageroptimizer.libs.folialib</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>com.github.benmanes.caffeine</pattern>
                                     <shadedPattern>me.xginko.villageroptimizer.libs.caffeine</shadedPattern>
                                 </relocation>
@@ -68,6 +64,10 @@
                                 <relocation>
                                     <pattern>com.cryptomorin.xseries</pattern>
                                     <shadedPattern>me.xginko.villageroptimizer.libs.xseries</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>space.arim.morepaperlib</pattern>
+                                    <shadedPattern>me.xginko.villageroptimizer.libs.morepaperlib</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
@@ -112,8 +112,8 @@
             <url>https://ci.pluginwiki.us/plugin/repository/everything/</url>
         </repository>
         <repository>
-            <id>folialib-repo</id>
-            <url>https://nexuslite.gcnt.net/repos/other/</url>
+            <id>morepaperlib-repo</id>
+            <url>https://mvn-repo.arim.space/lesser-gpl3/</url>
         </repository>
     </repositories>
 
@@ -179,9 +179,9 @@
         </dependency>
         <!-- Folia Support -->
         <dependency>
-            <groupId>com.tcoded</groupId>
-            <artifactId>FoliaLib</artifactId>
-            <version>0.3.1</version>
+            <groupId>space.arim.morepaperlib</groupId>
+            <artifactId>morepaperlib</artifactId>
+            <version>0.4.3</version>
         </dependency>
         <!-- Cross-Version Support -->
         <dependency>

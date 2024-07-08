@@ -85,7 +85,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
         final AtomicBoolean taskComplete = new AtomicBoolean();
         final AtomicInteger taskAliveTicks = new AtomicInteger();
 
-        scheduler.runAtLocationTimer(workstationLoc, repeatingTask -> {
+        scheduling.regionSpecificScheduler(workstationLoc).runAtFixedRate(repeatingTask -> {
             if (taskComplete.get() || taskAliveTicks.getAndAdd(10) > check_duration_ticks) {
                 repeatingTask.cancel();
                 return;

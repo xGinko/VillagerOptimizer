@@ -10,8 +10,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTransformEvent;
 
-import java.util.concurrent.TimeUnit;
-
 public class FixOptimisationAfterCure extends VillagerOptimizerModule implements Listener {
 
     public FixOptimisationAfterCure() {
@@ -40,10 +38,10 @@ public class FixOptimisationAfterCure extends VillagerOptimizerModule implements
                 && event.getTransformedEntity().getType() == XEntityType.VILLAGER.get()
         ) {
             Villager villager = (Villager) event.getTransformedEntity();
-            scheduler.runAtEntityLater(villager, () -> {
+            scheduling.entitySpecificScheduler(villager).runDelayed(() -> {
                 WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
                 wVillager.setOptimizationType(wVillager.getOptimizationType());
-            }, 2, TimeUnit.SECONDS);
+            }, null, 40L);
         }
     }
 }

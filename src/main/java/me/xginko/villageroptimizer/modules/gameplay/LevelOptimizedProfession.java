@@ -71,14 +71,14 @@ public class LevelOptimizedProfession extends VillagerOptimizerModule implements
             if (wVillager.canLevelUp(cooldown_millis)) {
                 if (wVillager.calculateLevel() <= villager.getVillagerLevel()) return;
 
-                scheduler.runAtEntity(villager, enableAI -> {
+                scheduling.entitySpecificScheduler(villager).run(enableAI -> {
                     villager.addPotionEffect(SUPER_SLOWNESS);
                     villager.setAware(true);
-                    scheduler.runAtEntityLater(villager, disableAI -> {
+                    scheduling.entitySpecificScheduler(villager).runDelayed(disableAI -> {
                         villager.setAware(false);
                         wVillager.saveLastLevelUp();
-                    }, 5, TimeUnit.SECONDS);
-                });
+                    }, null, 100L);
+                }, null);
             } else {
                 if (notify_player) {
                     Player player = (Player) event.getPlayer();

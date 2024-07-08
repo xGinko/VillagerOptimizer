@@ -1,7 +1,6 @@
 package me.xginko.villageroptimizer.modules;
 
 import com.cryptomorin.xseries.XEntityType;
-import com.tcoded.folialib.wrapper.task.WrappedTask;
 import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import org.bukkit.Chunk;
@@ -15,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
+import space.arim.morepaperlib.scheduling.ScheduledTask;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 public class VillagerChunkLimit extends VillagerOptimizerModule implements Runnable, Listener {
 
-    private WrappedTask periodic_chunk_check;
+    private ScheduledTask periodic_chunk_check;
     private final List<Villager.Profession> non_optimized_removal_priority, optimized_removal_priority;
     private final long check_period;
     private final int non_optimized_max_per_chunk, optimized_max_per_chunk;
@@ -93,7 +93,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
     @Override
     public void enable() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        periodic_chunk_check = scheduler.runTimer(this, check_period, check_period);
+        periodic_chunk_check = scheduling.globalRegionalScheduler().runAtFixedRate(this, check_period, check_period);
     }
 
     @Override
@@ -160,11 +160,11 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
             // Remove prioritized villagers that are too many
             for (int i = 0; i < not_optimized_villagers_too_many; i++) {
                 Villager villager = not_optimized_villagers.get(i);
-                scheduler.runAtEntity(villager, kill -> {
+                scheduling.entitySpecificScheduler(villager).run(kill -> {
                     villager.remove();
                     if (log_enabled) info("Removed unoptimized villager with profession '" +
                             Util.formatEnum(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
-                });
+                }, null);
             }
         }
 
@@ -179,11 +179,11 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
             // Remove prioritized villagers that are too many
             for (int i = 0; i < optimized_villagers_too_many; i++) {
                 Villager villager = optimized_villagers.get(i);
-                scheduler.runAtEntity(villager, kill -> {
+                scheduling.entitySpecificScheduler(villager).run(kill -> {
                     villager.remove();
-                    if (log_enabled) info("Removed optimized villager with profession '" +
+                    if (log_enabled) info("Removed unoptimized villager with profession '" +
                             Util.formatEnum(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
-                });
+                }, null);
             }
         }
     }

@@ -8,8 +8,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.TimeUnit;
-
 public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
 
     private final @NotNull Villager villager;
@@ -37,7 +35,7 @@ public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
 
     @Override
     public void setOptimizationType(OptimizationType type) {
-        VillagerOptimizer.getFoliaLib().getImpl().runAtEntityTimer(villager, setOptimization -> {
+        VillagerOptimizer.scheduling().entitySpecificScheduler(villager).runAtFixedRate(setOptimization -> {
             // Keep repeating task until villager is no longer trading with a player
             if (villager.isTrading()) return;
 
@@ -53,7 +51,7 @@ public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
 
             // End repeating task once logic is finished
             setOptimization.cancel();
-        }, 1L, 1L, TimeUnit.SECONDS);
+        }, null, 1L, 20L);
     }
 
     @Override
