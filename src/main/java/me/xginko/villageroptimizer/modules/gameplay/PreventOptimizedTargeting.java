@@ -1,7 +1,6 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
 import com.cryptomorin.xseries.XEntityType;
-import com.destroystokyo.paper.event.entity.EntityPathfindEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
@@ -50,7 +49,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onEntityTargetVillager(EntityPathfindEvent event) {
+    private void onEntityTargetVillager(com.destroystokyo.paper.event.entity.EntityPathfindEvent event) {
         final Entity target = event.getTargetEntity();
         if (
                 target != null

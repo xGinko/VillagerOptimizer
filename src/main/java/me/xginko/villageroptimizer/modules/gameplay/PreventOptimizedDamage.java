@@ -1,7 +1,6 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
 import com.cryptomorin.xseries.XEntityType;
-import com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -73,7 +72,7 @@ public class PreventOptimizedDamage extends VillagerOptimizerModule implements L
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onKnockbackByEntity(EntityKnockbackByEntityEvent event) {
+    private void onKnockbackByEntity(com.destroystokyo.paper.event.entity.EntityKnockbackByEntityEvent event) {
         if (
                 cancel_knockback
                 && event.getEntityType() == XEntityType.VILLAGER.get()
