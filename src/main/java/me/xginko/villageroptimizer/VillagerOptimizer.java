@@ -117,13 +117,15 @@ public final class VillagerOptimizer extends JavaPlugin {
     public void onDisable() {
         VillagerOptimizerModule.ENABLED_MODULES.forEach(VillagerOptimizerModule::disable);
         VillagerOptimizerModule.ENABLED_MODULES.clear();
-        if (scheduling != null) {
-            scheduling.cancelGlobalTasks();
-            scheduling = null;
-        }
+        VillagerOptimizerCommand.COMMANDS.forEach(VillagerOptimizerCommand::disable);
+        VillagerOptimizerCommand.COMMANDS.clear();
         if (wrapperCache != null) {
             wrapperCache.disable();
             wrapperCache = null;
+        }
+        if (scheduling != null) {
+            scheduling.cancelGlobalTasks();
+            scheduling = null;
         }
         if (audiences != null) {
             audiences.close();
@@ -133,10 +135,11 @@ public final class VillagerOptimizer extends JavaPlugin {
             bStats.shutdown();
             bStats = null;
         }
-        config = null;
+        commandRegistration = null;
         languageCacheMap = null;
-        logger = null;
         instance = null;
+        config = null;
+        logger = null;
     }
 
     public static @NotNull VillagerOptimizer getInstance()  {
