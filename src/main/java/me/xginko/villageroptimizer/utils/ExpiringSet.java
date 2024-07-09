@@ -206,7 +206,7 @@ public final class ExpiringSet<E> extends AbstractSet<E> implements Set<E> {
     @Override
     public boolean remove(Object o) {
         boolean present = contains(o);
-        this.cache.asMap().remove(o);
+        this.cache.invalidate(o);
         return present;
     }
 
@@ -344,6 +344,6 @@ public final class ExpiringSet<E> extends AbstractSet<E> implements Set<E> {
      */
     @Override
     public void clear() {
-        this.cache.asMap().clear();
+        this.cache.invalidateAll();
     }
 }
