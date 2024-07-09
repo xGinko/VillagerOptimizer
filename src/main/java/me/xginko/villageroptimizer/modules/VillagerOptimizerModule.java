@@ -11,6 +11,7 @@ import space.arim.morepaperlib.scheduling.GracefulScheduling;
 
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class VillagerOptimizerModule implements Enableable, Disableable {
@@ -46,19 +47,21 @@ public abstract class VillagerOptimizerModule implements Enableable, Disableable
         ENABLED_MODULES.forEach(VillagerOptimizerModule::disable);
         ENABLED_MODULES.clear();
 
-        for (Class<?> clazz : MODULES_PACKAGE.get(Scanners.SubTypes.of(VillagerOptimizerModule.class).asClass())) {
-            if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
+        MODULES_PACKAGE.get(Scanners.SubTypes.of(VillagerOptimizerModule.class).asClass())
+                .stream()
+                .filter(clazz -> !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers()))
+                .map(clazz -> {
+                    try {
+                        return (VillagerOptimizerModule) clazz.getDeclaredConstructor().newInstance();
+                    } catch (Throwable t) {
+                        VillagerOptimizer.logger().error("Failed initialising module '{}'.", clazz.getSimpleName(), t);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .forEach(ENABLED_MODULES::add);
 
-            try {
-                VillagerOptimizerModule module = (VillagerOptimizerModule) clazz.getDeclaredConstructor().newInstance();
-                if (module.shouldEnable()) {
-                    module.enable();
-                    ENABLED_MODULES.add(module);
-                }
-            } catch (Throwable t) {
-                VillagerOptimizer.logger().error("Failed to load module {}", clazz.getSimpleName(), t);
-            }
-        }
+        ENABLED_MODULES.forEach(Enableable::enable);
     }
 
     protected void error(String message, Throwable throwable) {
