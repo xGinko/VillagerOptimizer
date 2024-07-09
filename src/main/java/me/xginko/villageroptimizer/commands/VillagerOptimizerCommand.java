@@ -33,7 +33,7 @@ public abstract class VillagerOptimizerCommand implements Enableable, Disableabl
     }
 
     public static void reloadCommands() {
-        COMMANDS.forEach(Disableable::disable);
+        COMMANDS.forEach(VillagerOptimizerCommand::disable);
         COMMANDS.clear();
 
         COMMANDS_PACKAGE.get(Scanners.SubTypes.of(VillagerOptimizerCommand.class).asClass())
@@ -50,7 +50,7 @@ public abstract class VillagerOptimizerCommand implements Enableable, Disableabl
                 .filter(Objects::nonNull)
                 .forEach(COMMANDS::add);
 
-        COMMANDS.forEach(Enableable::enable);
+        COMMANDS.forEach(VillagerOptimizerCommand::enable);
     }
 
     @Override

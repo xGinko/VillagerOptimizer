@@ -61,7 +61,7 @@ public abstract class VillagerOptimizerModule implements Enableable, Disableable
                 .filter(Objects::nonNull)
                 .forEach(ENABLED_MODULES::add);
 
-        ENABLED_MODULES.forEach(Enableable::enable);
+        ENABLED_MODULES.forEach(VillagerOptimizerModule::enable);
     }
 
     protected void error(String message, Throwable throwable) {
