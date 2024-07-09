@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import space.arim.morepaperlib.MorePaperLib;
+import space.arim.morepaperlib.commands.CommandRegistration;
 import space.arim.morepaperlib.scheduling.GracefulScheduling;
 
 import java.io.File;
@@ -41,6 +42,7 @@ public final class VillagerOptimizer extends JavaPlugin {
 
     private static VillagerOptimizer instance;
     private static VillagerCache villagerCache;
+    private static CommandRegistration commandRegistration;
     private static GracefulScheduling scheduling;
     private static Map<String, LanguageCache> languageCacheMap;
     private static Config config;
@@ -58,7 +60,9 @@ public final class VillagerOptimizer extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        scheduling = new MorePaperLib(this).scheduling();
+        MorePaperLib morePaperLib = new MorePaperLib(this);
+        commandRegistration = morePaperLib.commandRegistration();
+        scheduling = morePaperLib.scheduling();
         audiences = BukkitAudiences.create(this);
         logger = ComponentLogger.logger(getLogger().getName());
         bStats = new Metrics(this, 19954);
@@ -143,6 +147,9 @@ public final class VillagerOptimizer extends JavaPlugin {
     }
     public static @NotNull VillagerCache getCache() {
         return villagerCache;
+    }
+    public static @NotNull CommandRegistration commandRegistration() {
+        return commandRegistration;
     }
     public static @NotNull GracefulScheduling scheduling() {
         return scheduling;

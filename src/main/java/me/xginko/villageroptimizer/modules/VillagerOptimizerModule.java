@@ -3,6 +3,8 @@ package me.xginko.villageroptimizer.modules;
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
+import me.xginko.villageroptimizer.utils.Disableable;
+import me.xginko.villageroptimizer.utils.Enableable;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import space.arim.morepaperlib.scheduling.GracefulScheduling;
@@ -11,13 +13,11 @@ import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class VillagerOptimizerModule {
+public abstract class VillagerOptimizerModule implements Enableable, Disableable {
 
     private static final Reflections MODULES_PACKAGE = new Reflections(VillagerOptimizerModule.class.getPackage().getName());
     public static final Set<VillagerOptimizerModule> ENABLED_MODULES = new HashSet<>();
 
-    public abstract void enable();
-    public abstract void disable();
     public abstract boolean shouldEnable();
 
     protected final VillagerOptimizer plugin;

@@ -10,32 +10,43 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
 
 public class VersionSubCmd extends SubCommand {
 
     @Override
-    public String getLabel() {
+    public @NotNull String label() {
         return "version";
     }
 
     @Override
-    public TextComponent getDescription() {
+    public @NotNull TextComponent description() {
         return Component.text("Show the plugin version.").color(NamedTextColor.GRAY);
     }
 
     @Override
-    public TextComponent getSyntax() {
+    public @NotNull TextComponent syntax() {
         return Component.text("/villageroptimizer version").color(Util.PL_COLOR);
     }
 
     @Override
-    @SuppressWarnings({"deprecation", "UnstableApiUsage"})
-    public void perform(CommandSender sender, String[] args) {
+    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
+            throws CommandException, IllegalArgumentException
+    {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if (!sender.hasPermission(Permissions.Commands.VERSION.get())) {
             KyoriUtil.sendMessage(sender, VillagerOptimizer.getLang(sender).no_permission);
-            return;
+            return true;
         }
 
         String name, version, website, author;
@@ -68,5 +79,7 @@ public class VersionSubCmd extends SubCommand {
                 )
                 .append(Component.newline())
         );
+
+         return true;
     }
 }

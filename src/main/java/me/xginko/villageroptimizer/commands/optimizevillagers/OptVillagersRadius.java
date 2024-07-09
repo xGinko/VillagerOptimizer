@@ -2,34 +2,41 @@ package me.xginko.villageroptimizer.commands.optimizevillagers;
 
 import me.xginko.villageroptimizer.VillagerCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-public class OptVillagersRadius implements VillagerOptimizerCommand {
+public class OptVillagersRadius extends VillagerOptimizerCommand {
 
     private final long cooldown;
     private final int max_radius;
 
     public OptVillagersRadius() {
+        super(
+                "optimizevillagers",
+                "Optmize villagers in a radius around you",
+                "/unoptimizevillagers <blockradius>",
+                Arrays.asList("optvils", "noai")
+        );
         Config config = VillagerOptimizer.config();
         this.max_radius = config.getInt("optimization-methods.commands.optimizevillagers.max-block-radius", 100);
         this.cooldown = config.getInt("optimization-methods.commands.optimizevillagers.cooldown-seconds", 600,
@@ -38,17 +45,14 @@ public class OptVillagersRadius implements VillagerOptimizerCommand {
     }
 
     @Override
-    public String label() {
-        return "optimizevillagers";
+    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
+            throws CommandException, IllegalArgumentException
+    {
+        return args.length == 1 ? RADIUS_SUGGESTIONS : Collections.emptyList();
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return args.length == 1 ? RADIUS_TABCOMPLETES : NO_TABCOMPLETES;
-    }
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if (!sender.hasPermission(Permissions.Commands.OPTIMIZE_RADIUS.get())) {
             KyoriUtil.sendMessage(sender, VillagerOptimizer.getLang(sender).no_permission);
             return true;

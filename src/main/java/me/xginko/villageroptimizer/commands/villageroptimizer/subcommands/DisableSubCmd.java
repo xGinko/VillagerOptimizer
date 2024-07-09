@@ -9,30 +9,42 @@ import me.xginko.villageroptimizer.utils.KyoriUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
 
 public class DisableSubCmd extends SubCommand {
 
     @Override
-    public String getLabel() {
+    public @NotNull String label() {
         return "disable";
     }
 
     @Override
-    public TextComponent getDescription() {
+    public @NotNull TextComponent description() {
         return Component.text("Disable all plugin tasks and listeners.").color(NamedTextColor.GRAY);
     }
 
     @Override
-    public TextComponent getSyntax() {
+    public @NotNull TextComponent syntax() {
         return Component.text("/villageroptimizer disable").color(Util.PL_COLOR);
     }
 
     @Override
-    public void perform(CommandSender sender, String[] args) {
+    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
+            throws CommandException, IllegalArgumentException
+    {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if (!sender.hasPermission(Permissions.Commands.DISABLE.get())) {
             KyoriUtil.sendMessage(sender, VillagerOptimizer.getLang(sender).no_permission);
-            return;
+            return true;
         }
 
         KyoriUtil.sendMessage(sender, Component.text("Disabling VillagerOptimizer...").color(NamedTextColor.RED));
@@ -41,5 +53,6 @@ public class DisableSubCmd extends SubCommand {
         VillagerOptimizer.getCache().cacheMap().clear();
         KyoriUtil.sendMessage(sender, Component.text("Disabled all plugin listeners and tasks.").color(NamedTextColor.GREEN));
         KyoriUtil.sendMessage(sender, Component.text("You can enable the plugin again using the reload command.").color(NamedTextColor.YELLOW));
+        return true;
     }
 }
