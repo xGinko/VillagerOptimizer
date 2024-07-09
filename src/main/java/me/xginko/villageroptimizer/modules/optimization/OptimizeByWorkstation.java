@@ -93,7 +93,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
 
             for (Villager villager : workstationLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
                 if (villager.getProfession() != workstationProfession) continue;
-                WrappedVillager wrapped = villagerCache.createIfAbsent(villager);
+                WrappedVillager wrapped = wrapperCache.get(villager);
                 if (wrapped.getJobSite() == null) continue;
                 if (wrapped.getJobSite().getWorld().getUID() != workstationLoc.getWorld().getUID()) continue;
                 if (LocationUtil.relDistance3DSquared(wrapped.getJobSite(), workstationLoc) > 1) continue;
@@ -167,7 +167,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
             final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), workstationLoc);
             if (distance >= closestDistance) continue;
 
-            WrappedVillager wrapped = villagerCache.createIfAbsent(villager);
+            WrappedVillager wrapped = wrapperCache.get(villager);
 
             if (wrapped.isOptimized()) {
                 closestOptimized = wrapped;

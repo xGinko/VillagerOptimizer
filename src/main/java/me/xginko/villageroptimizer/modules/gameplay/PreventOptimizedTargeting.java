@@ -41,7 +41,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
         if (
                 target != null
                 && target.getType() == XEntityType.VILLAGER.get()
-                && villagerCache.createIfAbsent((Villager) target).isOptimized()
+                && wrapperCache.get((Villager) target).isOptimized()
         ) {
             event.setTarget(null);
             event.setCancelled(true);
@@ -54,7 +54,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
         if (
                 target != null
                 && target.getType() == XEntityType.VILLAGER.get()
-                && villagerCache.createIfAbsent((Villager) target).isOptimized()
+                && wrapperCache.get((Villager) target).isOptimized()
         ) {
             event.setCancelled(true);
         }
@@ -65,7 +65,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
         if (
                 event.getEntityType() == XEntityType.VILLAGER.get()
                 && event.getDamager() instanceof Mob
-                && villagerCache.createIfAbsent((Villager) event.getEntity()).isOptimized()
+                && wrapperCache.get((Villager) event.getEntity()).isOptimized()
         ) {
             ((Mob) event.getDamager()).setTarget(null);
         }

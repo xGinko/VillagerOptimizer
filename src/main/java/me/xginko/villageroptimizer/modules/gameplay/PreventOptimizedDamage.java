@@ -65,7 +65,7 @@ public class PreventOptimizedDamage extends VillagerOptimizerModule implements L
         if (
                 event.getEntityType() == XEntityType.VILLAGER.get()
                 && damage_causes_to_cancel.contains(event.getCause())
-                && villagerCache.createIfAbsent((Villager) event.getEntity()).isOptimized()
+                && wrapperCache.get((Villager) event.getEntity()).isOptimized()
         ) {
             event.setCancelled(true);
         }
@@ -76,7 +76,7 @@ public class PreventOptimizedDamage extends VillagerOptimizerModule implements L
         if (
                 cancel_knockback
                 && event.getEntityType() == XEntityType.VILLAGER.get()
-                && villagerCache.createIfAbsent((Villager) event.getEntity()).isOptimized()
+                && wrapperCache.get((Villager) event.getEntity()).isOptimized()
         ) {
             event.setCancelled(true);
         }

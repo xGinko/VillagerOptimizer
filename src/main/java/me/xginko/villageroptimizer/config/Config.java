@@ -5,6 +5,7 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 
@@ -12,8 +13,8 @@ public class Config {
 
     private final @NotNull ConfigFile config;
     public final @NotNull Locale default_lang;
+    public final @NotNull Duration cache_keep_time;
     public final boolean auto_lang, support_other_plugins;
-    public final long cache_keep_time_seconds;
 
     public Config() throws Exception {
         // Load config.yml with ConfigMaster
@@ -28,8 +29,8 @@ public class Config {
                         .replace("_", "-"));
         this.auto_lang = getBoolean("general.auto-language", true,
                 "If set to true, will display messages based on client language");
-        this.cache_keep_time_seconds = getInt("general.cache-keep-time-seconds", 30,
-                "The amount of time in seconds a villager will be kept in the plugin's cache.");
+        this.cache_keep_time = Duration.ofSeconds(Math.max(1, getInt("general.cache-keep-time-seconds", 30,
+                "The amount of time in seconds a villager will be kept in the plugin's cache.")));
         this.support_other_plugins = getBoolean("general.support-avl-villagers", false,
                 "Enable if you have previously used AntiVillagerLag\n" +
                         "(https://www.spigotmc.org/resources/antivillagerlag.102949/).\n" +

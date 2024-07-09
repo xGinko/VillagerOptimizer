@@ -39,7 +39,7 @@ public class FixOptimisationAfterCure extends VillagerOptimizerModule implements
         ) {
             Villager villager = (Villager) event.getTransformedEntity();
             scheduling.entitySpecificScheduler(villager).runDelayed(() -> {
-                WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
+                WrappedVillager wVillager = wrapperCache.get(villager);
                 wVillager.setOptimizationType(wVillager.getOptimizationType());
             }, null, 40L);
         }

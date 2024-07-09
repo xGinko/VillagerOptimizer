@@ -41,7 +41,7 @@ import java.util.zip.ZipEntry;
 public final class VillagerOptimizer extends JavaPlugin {
 
     private static VillagerOptimizer instance;
-    private static VillagerCache villagerCache;
+    private static WrapperCache wrapperCache;
     private static CommandRegistration commandRegistration;
     private static GracefulScheduling scheduling;
     private static Map<String, LanguageCache> languageCacheMap;
@@ -121,9 +121,9 @@ public final class VillagerOptimizer extends JavaPlugin {
             scheduling.cancelGlobalTasks();
             scheduling = null;
         }
-        if (villagerCache != null) {
-            villagerCache.disable();
-            villagerCache = null;
+        if (wrapperCache != null) {
+            wrapperCache.disable();
+            wrapperCache = null;
         }
         if (audiences != null) {
             audiences.close();
@@ -145,8 +145,8 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static @NotNull Config config() {
         return config;
     }
-    public static @NotNull VillagerCache getCache() {
-        return villagerCache;
+    public static @NotNull WrapperCache getCache() {
+        return wrapperCache;
     }
     public static @NotNull CommandRegistration commandRegistration() {
         return commandRegistration;
@@ -179,8 +179,8 @@ public final class VillagerOptimizer extends JavaPlugin {
     private void reloadConfiguration() {
         try {
             config = new Config();
-            if (villagerCache != null) villagerCache.disable();
-            villagerCache = new VillagerCache(config.cache_keep_time_seconds);
+            if (wrapperCache != null) wrapperCache.disable();
+            wrapperCache = new WrapperCache(config.cache_keep_time);
             VillagerOptimizerCommand.reloadCommands();
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();

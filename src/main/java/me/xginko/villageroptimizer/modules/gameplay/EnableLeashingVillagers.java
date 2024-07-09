@@ -53,7 +53,7 @@ public class EnableLeashingVillagers extends VillagerOptimizerModule implements 
 
         final Villager villager = (Villager) event.getRightClicked();
         if (villager.isLeashed()) return;
-        if (only_optimized && !villagerCache.createIfAbsent(villager).isOptimized()) return;
+        if (only_optimized && !wrapperCache.get(villager).isOptimized()) return;
 
         event.setCancelled(true); // Cancel the event, so we don't interact with the villager
 

@@ -1,6 +1,6 @@
 package me.xginko.villageroptimizer.modules;
 
-import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.WrapperCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.utils.Disableable;
@@ -23,7 +23,7 @@ public abstract class VillagerOptimizerModule implements Enableable, Disableable
 
     protected final VillagerOptimizer plugin;
     protected final Config config;
-    protected final VillagerCache villagerCache;
+    protected final WrapperCache wrapperCache;
     protected final GracefulScheduling scheduling;
     public final String configPath;
     private final String logFormat;
@@ -31,7 +31,7 @@ public abstract class VillagerOptimizerModule implements Enableable, Disableable
     public VillagerOptimizerModule(String configPath) {
         this.plugin = VillagerOptimizer.getInstance();
         this.config = VillagerOptimizer.config();
-        this.villagerCache = VillagerOptimizer.getCache();
+        this.wrapperCache = VillagerOptimizer.getCache();
         this.scheduling = VillagerOptimizer.scheduling();
         this.configPath = configPath;
         shouldEnable(); // Ensure enable option is always first

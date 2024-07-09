@@ -35,7 +35,7 @@ public class UnoptimizeOnJobLoose extends VillagerOptimizerModule implements Lis
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onJobReset(VillagerCareerChangeEvent event) {
         if (event.getReason() != VillagerCareerChangeEvent.ChangeReason.LOSING_JOB) return;
-        final WrappedVillager wrappedVillager = villagerCache.createIfAbsent(event.getEntity());
+        final WrappedVillager wrappedVillager = wrapperCache.get(event.getEntity());
         if (wrappedVillager.isOptimized()) {
             wrappedVillager.setOptimizationType(OptimizationType.NONE);
         }

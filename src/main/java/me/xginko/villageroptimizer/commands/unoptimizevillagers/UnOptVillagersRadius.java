@@ -1,6 +1,6 @@
 package me.xginko.villageroptimizer.commands.unoptimizevillagers;
 
-import me.xginko.villageroptimizer.VillagerCache;
+import me.xginko.villageroptimizer.WrapperCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.enums.OptimizationType;
@@ -85,7 +85,7 @@ public class UnOptVillagersRadius extends VillagerOptimizerCommand {
                 return true;
             }
 
-            VillagerCache villagerCache = VillagerOptimizer.getCache();
+            WrapperCache wrapperCache = VillagerOptimizer.getCache();
             int successCount = 0;
 
             for (Entity entity : player.getNearbyEntities(safeRadius, safeRadius, safeRadius)) {
@@ -94,7 +94,7 @@ public class UnOptVillagersRadius extends VillagerOptimizerCommand {
                 Villager.Profession profession = villager.getProfession();
                 if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
 
-                WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
+                WrappedVillager wVillager = wrapperCache.get(villager);
 
                 if (wVillager.isOptimized()) {
                     VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(wVillager, player, OptimizationType.COMMAND);

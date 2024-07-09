@@ -86,7 +86,7 @@ public class OptimizeByNametag extends VillagerOptimizerModule implements Listen
 
         final String nameTagPlainText = ChatColor.stripColor(meta.getDisplayName());
         final Villager villager = (Villager) event.getRightClicked();
-        final WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
+        final WrappedVillager wVillager = wrapperCache.get(villager);
 
         if (nametags.contains(nameTagPlainText.toLowerCase())) {
             if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {

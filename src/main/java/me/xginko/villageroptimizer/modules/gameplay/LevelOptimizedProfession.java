@@ -65,7 +65,7 @@ public class LevelOptimizedProfession extends VillagerOptimizerModule implements
                 && event.getInventory().getHolder() instanceof Villager
         ) {
             final Villager villager = (Villager) event.getInventory().getHolder();
-            final WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
+            final WrappedVillager wVillager = wrapperCache.get(villager);
             if (!wVillager.isOptimized()) return;
 
             if (wVillager.canLevelUp(cooldown_millis)) {

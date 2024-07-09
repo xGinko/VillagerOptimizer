@@ -159,7 +159,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
 
             Villager villager = (Villager) entity;
 
-            if (villagerCache.createIfAbsent(villager).isOptimized()) {
+            if (wrapperCache.get(villager).isOptimized()) {
                 optimized_villagers.add(villager);
             } else {
                 not_optimized_villagers.add(villager);

@@ -111,7 +111,7 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
             final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
-            final WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
+            final WrappedVillager wVillager = wrapperCache.get(villager);
             if (wVillager.canOptimize(cooldown_millis)) {
                 closestOptimizableVillager = wVillager;
                 closestDistance = distance;
@@ -178,7 +178,7 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
             final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
-            final WrappedVillager wVillager = villagerCache.createIfAbsent(villager);
+            final WrappedVillager wVillager = wrapperCache.get(villager);
             if (wVillager.isOptimized()) {
                 closestOptimizedVillager = wVillager;
                 closestDistance = distance;
