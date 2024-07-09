@@ -12,15 +12,15 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.command.CommandException;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,25 +29,22 @@ public class UnOptVillagersRadius extends VillagerOptimizerCommand {
     private final int max_radius;
 
     public UnOptVillagersRadius() {
-        super(
-                "unoptimizevillagers",
-                "Unoptmize villagers in a radius around you",
-                "/optimizevillagers <blockradius>",
-                Arrays.asList("unoptvils", "noaiundo")
-        );
+        super("unoptimizevillagers");
         this.max_radius = VillagerOptimizer.config()
                 .getInt("optimization-methods.commands.unoptimizevillagers.max-block-radius", 100);
     }
 
     @Override
-    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
-            throws CommandException, IllegalArgumentException
-    {
+    public @Nullable List<String> onTabComplete(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String commandLabel, @NotNull String[] args
+    ) {
         return args.length == 1 ? RADIUS_SUGGESTIONS : Collections.emptyList();
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+    public boolean onCommand(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String commandLabel, @NotNull String[] args
+    ) {
         if (!sender.hasPermission(Permissions.Commands.UNOPTIMIZE_RADIUS.get())) {
             KyoriUtil.sendMessage(sender, VillagerOptimizer.getLang(sender).no_permission);
             return true;

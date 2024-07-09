@@ -10,9 +10,10 @@ import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.command.CommandException;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,20 +26,15 @@ public class VillagerOptimizerCmd extends VillagerOptimizerCommand {
     private final List<String> tabCompletes;
 
     public VillagerOptimizerCmd() {
-        super(
-                "villageroptimizer",
-                "VillagerOptimizer admin commands",
-                "/villageroptimizer [ reload, version, disable ]",
-                Arrays.asList("voptimizer", "vo")
-        );
+        super("villageroptimizer");
         subCommands = Arrays.asList(new ReloadSubCmd(), new VersionSubCmd(), new DisableSubCmd());
         tabCompletes = subCommands.stream().map(SubCommand::label).collect(Collectors.toList());
     }
 
     @Override
-    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
-            throws CommandException, IllegalArgumentException
-    {
+    public @Nullable List<String> onTabComplete(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String commandLabel, @NotNull String[] args
+    ) {
         if (args.length == 1) {
             return tabCompletes;
         }
@@ -46,7 +42,7 @@ public class VillagerOptimizerCmd extends VillagerOptimizerCommand {
         if (args.length >= 2) {
             for (SubCommand subCommand : subCommands) {
                 if (args[0].equalsIgnoreCase(subCommand.label())) {
-                    return subCommand.tabComplete(sender, alias, args);
+                    return subCommand.onTabComplete(sender, command, commandLabel, args);
                 }
             }
         }
@@ -55,11 +51,13 @@ public class VillagerOptimizerCmd extends VillagerOptimizerCommand {
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+    public boolean onCommand(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String commandLabel, @NotNull String[] args
+    ) {
         if (args.length >= 1) {
             for (SubCommand subCommand : subCommands) {
                 if (args[0].equalsIgnoreCase(subCommand.label())) {
-                    return subCommand.execute(sender, commandLabel, args);
+                    return subCommand.onCommand(sender, command, commandLabel, args);
                 }
             }
         }

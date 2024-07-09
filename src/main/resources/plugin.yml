@@ -6,3 +6,23 @@ description: ${project.description}
 website: ${project.url}
 api-version: '1.16'
 folia-supported: true
+
+commands:
+  villageroptimizer:
+    usage: /villageroptimizer [ reload, version, disable ]
+    description: VillagerOptimizer admin commands
+    aliases:
+      - voptimizer
+      - vo
+  optimizevillagers:
+    usage: /optimizevillagers <blockradius>
+    description: Optmize villagers in a radius around you
+    aliases:
+      - optvils
+      - noai
+  unoptimizevillagers:
+    usage: /unoptimizevillagers <blockradius>
+    description: Unoptmize villagers in a radius around you
+    aliases:
+      - unoptvils
+      - noaiundo

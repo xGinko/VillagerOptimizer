@@ -3,14 +3,10 @@ package me.xginko.villageroptimizer.commands;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.utils.Disableable;
 import me.xginko.villageroptimizer.utils.Enableable;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
@@ -22,17 +18,16 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class VillagerOptimizerCommand extends Command
-        implements Enableable, Disableable, PluginIdentifiableCommand, CommandExecutor, TabCompleter  {
+public abstract class VillagerOptimizerCommand implements Enableable, Disableable, CommandExecutor, TabCompleter  {
 
     public static final Set<VillagerOptimizerCommand> COMMANDS = new HashSet<>();
     public static final List<String> RADIUS_SUGGESTIONS = Arrays.asList("5", "10", "25", "50");
     public static final Reflections COMMANDS_PACKAGE = new Reflections(VillagerOptimizerCommand.class.getPackage().getName());
 
-    protected VillagerOptimizerCommand(
-            @NotNull String name, @NotNull String description, @NotNull String usageMessage, @NotNull List<String> aliases
-    ) {
-        super(name, description, usageMessage, aliases);
+    public final String label;
+
+    protected VillagerOptimizerCommand(@NotNull String name) {
+        this.label = name;
     }
 
     public static void reloadCommands() {
@@ -57,38 +52,17 @@ public abstract class VillagerOptimizerCommand extends Command
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(
-            @NotNull CommandSender sender, @NotNull Command command, @NotNull String commandLabel, @NotNull String[] args
-    ) {
-        return tabComplete(sender, commandLabel, args);
-    }
-
-    @Override
-    public boolean onCommand(
-            @NotNull CommandSender sender, @NotNull Command command, @NotNull String commandLabel, @NotNull String[] args
-    ) {
-        return execute(sender, commandLabel, args);
-    }
-
-    @Override
-    public @NotNull Plugin getPlugin() {
-        return VillagerOptimizer.getInstance();
-    }
-
-    @Override
-    @SuppressWarnings({"deprecation", "DataFlowIssue"})
+    @SuppressWarnings("DataFlowIssue")
     public void enable() {
-        VillagerOptimizer plugin = VillagerOptimizer.getInstance();
-        VillagerOptimizer.commandRegistration().getServerCommandMap()
-                .register(plugin.getDescription().getName().toLowerCase(), this);
-        plugin.getCommand(getName()).setExecutor(this);
-        plugin.getCommand(getName()).setTabCompleter(this);
+        PluginCommand pluginCommand = VillagerOptimizer.getInstance().getCommand(label);
+        pluginCommand.setExecutor(this);
+        pluginCommand.setTabCompleter(this);
     }
 
     @Override
     @SuppressWarnings("DataFlowIssue")
     public void disable() {
-        VillagerOptimizer.getInstance().getCommand(getName())
+        VillagerOptimizer.getInstance().getCommand(label)
                 .unregister(VillagerOptimizer.commandRegistration().getServerCommandMap());
     }
 }
