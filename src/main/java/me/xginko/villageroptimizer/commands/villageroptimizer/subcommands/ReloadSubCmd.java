@@ -6,7 +6,6 @@ import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,19 +17,11 @@ import java.util.List;
 
 public class ReloadSubCmd extends SubCommand {
 
-    @Override
-    public @NotNull String label() {
-        return "reload";
-    }
-
-    @Override
-    public @NotNull TextComponent description() {
-        return Component.text("Reload the plugin configuration.").color(NamedTextColor.GRAY);
-    }
-
-    @Override
-    public @NotNull TextComponent syntax() {
-        return Component.text("/villageroptimizer reload").color(Util.PL_COLOR);
+    public ReloadSubCmd() {
+        super(
+                "reload",
+                Component.text("/villageroptimizer reload").color(Util.PL_COLOR),
+                Component.text("Reload the plugin configuration.").color(NamedTextColor.GRAY));
     }
 
     @Override

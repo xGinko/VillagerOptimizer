@@ -7,7 +7,6 @@ import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -19,19 +18,12 @@ import java.util.List;
 
 public class DisableSubCmd extends SubCommand {
 
-    @Override
-    public @NotNull String label() {
-        return "disable";
-    }
-
-    @Override
-    public @NotNull TextComponent description() {
-        return Component.text("Disable all plugin tasks and listeners.").color(NamedTextColor.GRAY);
-    }
-
-    @Override
-    public @NotNull TextComponent syntax() {
-        return Component.text("/villageroptimizer disable").color(Util.PL_COLOR);
+    public DisableSubCmd() {
+        super(
+                "disable",
+                Component.text("/villageroptimizer disable").color(Util.PL_COLOR),
+                Component.text("Disable all plugin tasks and listeners.").color(NamedTextColor.GRAY)
+        );
     }
 
     @Override

@@ -7,7 +7,6 @@ import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -21,19 +20,12 @@ import java.util.List;
 
 public class VersionSubCmd extends SubCommand {
 
-    @Override
-    public @NotNull String label() {
-        return "version";
-    }
-
-    @Override
-    public @NotNull TextComponent description() {
-        return Component.text("Show the plugin version.").color(NamedTextColor.GRAY);
-    }
-
-    @Override
-    public @NotNull TextComponent syntax() {
-        return Component.text("/villageroptimizer version").color(Util.PL_COLOR);
+    public VersionSubCmd() {
+        super(
+                "version",
+                Component.text("/villageroptimizer version").color(Util.PL_COLOR),
+                Component.text("Show the plugin version.").color(NamedTextColor.GRAY)
+        );
     }
 
     @Override
