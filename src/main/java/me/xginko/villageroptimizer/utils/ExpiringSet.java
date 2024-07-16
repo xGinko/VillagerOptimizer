@@ -63,7 +63,7 @@ public final class ExpiringSet<E> extends AbstractSet<E> implements Set<E> {
      */
     @Override
     public boolean contains(Object item) {
-        return this.cache.getIfPresent((E) item) != null;
+        return this.cache.getIfPresent(item) != null;
     }
 
     /**
