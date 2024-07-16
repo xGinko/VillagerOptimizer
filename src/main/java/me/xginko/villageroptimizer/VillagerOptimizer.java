@@ -67,6 +67,14 @@ public final class VillagerOptimizer extends JavaPlugin {
         logger = ComponentLogger.logger(getLogger().getName());
         bStats = new Metrics(this, 19954);
 
+        if (getServer().getPluginManager().getPlugin("AntiVillagerLag") != null) {
+            logger.warn("While VillagerOptimizer can read data previously created by AVL, running");
+            logger.warn("both plugins at the same time is unsafe and definitely will cause issues.");
+            logger.warn("To protect your game from corruption, VillagerOptimizer will now disable!");
+            logger.warn("Please decide for one of the plugins!");
+            getServer().getPluginManager().disablePlugin(this);
+        }
+
         try {
             getDataFolder().mkdirs();
         } catch (Exception e) {

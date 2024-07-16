@@ -5,6 +5,8 @@ authors: [ xGinko ]
 description: ${project.description}
 website: ${project.url}
 api-version: '1.16'
+softdepend:
+  - AntiVillagerLag
 folia-supported: true
 
 commands:
