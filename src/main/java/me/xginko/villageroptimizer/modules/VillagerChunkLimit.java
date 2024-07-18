@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 public class VillagerChunkLimit extends VillagerOptimizerModule implements Runnable, Listener {
 
     private ScheduledTask periodic_chunk_check;
-    private final List<Villager.Profession> non_optimized_removal_priority, optimized_removal_priority;
+    private final List<Villager.Profession> non_optimized_removal_priority, optimized_removal_priority, profession_whitelist;
     private final ExpiringSet<Chunk> checked_chunks;
     private final long check_period;
     private final int non_optimized_max_per_chunk, optimized_max_per_chunk;
@@ -45,15 +45,9 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
         this.skip_unloaded_chunks = config.getBoolean(configPath + ".skip-not-fully-loaded-chunks", true,
                 "Does not check chunks that don't have their entities loaded.");
         this.log_enabled = config.getBoolean(configPath + ".log-removals", true);
-        this.non_optimized_max_per_chunk = config.getInt(configPath + ".unoptimized.max-per-chunk", 20,
-                "The maximum amount of unoptimized villagers per chunk.");
-        this.checked_chunks = new ExpiringSet<>(Duration.ofSeconds(
-                Math.max(1, config.getInt(configPath + ".chunk-check-cooldown-seconds", 5,
-                        "The delay in seconds a chunk will not be checked again after the first time.\n" +
-                                "Reduces chances to lag the server due to overchecking."))));
         final List<String> defaults = Stream.of(
-                "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
-                "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN")
+                        "NONE", "NITWIT", "SHEPHERD", "FISHERMAN", "BUTCHER", "CARTOGRAPHER", "LEATHERWORKER",
+                        "FLETCHER", "MASON", "FARMER", "ARMORER", "TOOLSMITH", "WEAPONSMITH", "CLERIC", "LIBRARIAN")
                 .filter(profession -> {
                     try {
                         // Make sure no scary warnings appear when creating config defaults
@@ -63,6 +57,27 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
                         return false;
                     }
                 }).collect(Collectors.toList());
+        this.profession_whitelist = config.getList(configPath + ".removal-whitelist", defaults,
+                        "Only professions in this list will count for the cap.")
+                .stream()
+                .map(configuredProfession -> {
+                    try {
+                        return Villager.Profession.valueOf(configuredProfession);
+                    } catch (IllegalArgumentException e) {
+                        warn("(unoptimized) Villager profession '" + configuredProfession +
+                                "' not recognized. Make sure you're using the correct profession enums from " +
+                                "https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        this.non_optimized_max_per_chunk = config.getInt(configPath + ".unoptimized.max-per-chunk", 20,
+                "The maximum amount of unoptimized villagers per chunk.");
+        this.checked_chunks = new ExpiringSet<>(Duration.ofSeconds(
+                Math.max(1, config.getInt(configPath + ".chunk-check-cooldown-seconds", 5,
+                        "The delay in seconds a chunk will not be checked again after the first time.\n" +
+                                "Reduces chances to lag the server due to overchecking."))));
         this.non_optimized_removal_priority = config.getList(configPath + ".unoptimized.removal-priority", defaults,
                         "Professions that are in the top of the list are going to be scheduled for removal first.\n" +
                         "Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html")
@@ -158,6 +173,9 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
             if (entity.getType() != XEntityType.VILLAGER.get()) continue;
 
             Villager villager = (Villager) entity;
+
+            // Ignore villager if profession is not in the whitelist
+            if (!profession_whitelist.contains(villager.getProfession())) continue;
 
             if (wrapperCache.get(villager).isOptimized()) {
                 optimized_villagers.add(villager);
