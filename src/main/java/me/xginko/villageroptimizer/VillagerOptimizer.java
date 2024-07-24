@@ -192,6 +192,7 @@ public final class VillagerOptimizer extends JavaPlugin {
             config = new Config();
             if (wrapperCache != null) wrapperCache.disable();
             wrapperCache = new WrapperCache(config.cache_keep_time);
+            wrapperCache.enable();
             VillagerOptimizerCommand.reloadCommands();
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();
