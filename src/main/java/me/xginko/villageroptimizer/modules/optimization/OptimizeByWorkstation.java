@@ -127,18 +127,18 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
                 if (notify_player) {
                     final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                             .matchLiteral("%vil_profession%")
-                            .replacement(Util.formatEnum(wrapped.villager().getProfession()))
+                            .replacement(Util.toNiceString(wrapped.villager().getProfession()))
                             .build();
                     final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
                             .matchLiteral("%blocktype%")
-                            .replacement(Util.formatEnum(placed.getType()))
+                            .replacement(Util.toNiceString(placed.getType()))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).workstation_optimize_success
                             .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedWorkstation)));
                 }
 
                 if (log_enabled) {
-                    info(player.getName() + " optimized villager using workstation " + Util.formatEnum(placed.getType()) + " at " +
+                    info(player.getName() + " optimized villager using workstation " + Util.toNiceString(placed.getType()) + " at " +
                          LocationUtil.toString(wrapped.villager().getLocation()));
                 }
 
@@ -191,18 +191,18 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
         if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(Util.formatEnum(closestOptimized.villager().getProfession()))
+                    .replacement(Util.toNiceString(closestOptimized.villager().getProfession()))
                     .build();
             final TextReplacementConfig brokenWorkstation = TextReplacementConfig.builder()
                     .matchLiteral("%blocktype%")
-                    .replacement(Util.formatEnum(broken.getType()))
+                    .replacement(Util.toNiceString(broken.getType()))
                     .build();
             VillagerOptimizer.getLang(player.locale()).workstation_unoptimize_success
                     .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(brokenWorkstation)));
         }
 
         if (log_enabled) {
-            info(player.getName() + " unoptimized villager using workstation " + Util.formatEnum(broken.getType()) + " at " +
+            info(player.getName() + " unoptimized villager using workstation " + Util.toNiceString(broken.getType()) + " at " +
                  LocationUtil.toString(closestOptimized.villager().getLocation()));
         }
     }

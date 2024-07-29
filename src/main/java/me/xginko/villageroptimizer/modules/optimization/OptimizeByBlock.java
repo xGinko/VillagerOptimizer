@@ -135,11 +135,11 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
             if (notify_player) {
                 final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                         .matchLiteral("%vil_profession%")
-                        .replacement(Util.formatEnum(closestOptimizableVillager.villager().getProfession()))
+                        .replacement(Util.toNiceString(closestOptimizableVillager.villager().getProfession()))
                         .build();
                 final TextReplacementConfig placedMaterial = TextReplacementConfig.builder()
                         .matchLiteral("%blocktype%")
-                        .replacement(Util.formatEnum(placed.getType()))
+                        .replacement(Util.toNiceString(placed.getType()))
                         .build();
                 VillagerOptimizer.getLang(player.locale()).block_optimize_success
                         .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedMaterial)));
@@ -200,18 +200,18 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
         if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(Util.formatEnum(closestOptimizedVillager.villager().getProfession()))
+                    .replacement(Util.toNiceString(closestOptimizedVillager.villager().getProfession()))
                     .build();
             final TextReplacementConfig brokenMaterial = TextReplacementConfig.builder()
                     .matchLiteral("%blocktype%")
-                    .replacement(Util.formatEnum(broken.getType()))
+                    .replacement(Util.toNiceString(broken.getType()))
                     .build();
             VillagerOptimizer.getLang(player.locale()).block_unoptimize_success
                     .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(brokenMaterial)));
         }
 
         if (log_enabled) {
-            info(player.getName() + " unoptimized villager using " + Util.formatEnum(broken.getType()) +
+            info(player.getName() + " unoptimized villager using " + Util.toNiceString(broken.getType()) +
                     LocationUtil.toString(closestOptimizedVillager.villager().getLocation()));
         }
     }

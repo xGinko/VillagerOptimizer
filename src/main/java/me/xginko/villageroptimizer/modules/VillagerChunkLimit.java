@@ -20,20 +20,24 @@ import space.arim.morepaperlib.scheduling.ScheduledTask;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class VillagerChunkLimit extends VillagerOptimizerModule implements Runnable, Listener {
 
     private ScheduledTask periodic_chunk_check;
-    private final List<Villager.Profession> non_optimized_removal_priority, optimized_removal_priority, profession_whitelist;
+    private final List<Villager.Profession> non_optimized_removal_priority, optimized_removal_priority;
+    private final Set<Villager.Profession> profession_whitelist;
     private final ExpiringSet<Chunk> checked_chunks;
     private final long check_period;
     private final int non_optimized_max_per_chunk, optimized_max_per_chunk;
-    private final boolean log_enabled, skip_unloaded_chunks;
+    private final boolean log_enabled, skip_unloaded_chunks, use_whitelist;
 
+    @SuppressWarnings("deprecation")
     protected VillagerChunkLimit() {
         super("villager-chunk-limit");
         config.master().addComment(configPath + ".enable",
@@ -57,6 +61,8 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
                         return false;
                     }
                 }).collect(Collectors.toList());
+        this.use_whitelist = config.getBoolean(configPath + ".whitelist-certain-professions", false,
+                "Enable if you only want to manage villager counts for certain profession types.");
         this.profession_whitelist = config.getList(configPath + ".removal-whitelist", defaults,
                         "Only professions in this list will count for the cap.")
                 .stream()
@@ -64,14 +70,14 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
                     try {
                         return Villager.Profession.valueOf(configuredProfession);
                     } catch (IllegalArgumentException e) {
-                        warn("(unoptimized) Villager profession '" + configuredProfession +
+                        warn("(whitelist) Villager profession '" + configuredProfession +
                                 "' not recognized. Make sure you're using the correct profession enums from " +
                                 "https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html.");
                         return null;
                     }
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(HashSet::new));
         this.non_optimized_max_per_chunk = config.getInt(configPath + ".unoptimized.max-per-chunk", 20,
                 "The maximum amount of unoptimized villagers per chunk.");
         this.checked_chunks = new ExpiringSet<>(Duration.ofSeconds(
@@ -175,7 +181,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
             Villager villager = (Villager) entity;
 
             // Ignore villager if profession is not in the whitelist
-            if (!profession_whitelist.contains(villager.getProfession())) continue;
+            if (use_whitelist && !profession_whitelist.contains(villager.getProfession())) continue;
 
             if (wrapperCache.get(villager).isOptimized()) {
                 optimized_villagers.add(villager);
@@ -198,7 +204,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
                 scheduling.entitySpecificScheduler(villager).run(kill -> {
                     villager.remove();
                     if (log_enabled) info("Removed unoptimized villager with profession '" +
-                            Util.formatEnum(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
+                            Util.toNiceString(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
                 }, null);
             }
         }
@@ -217,7 +223,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
                 scheduling.entitySpecificScheduler(villager).run(kill -> {
                     villager.remove();
                     if (log_enabled) info("Removed unoptimized villager with profession '" +
-                            Util.formatEnum(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
+                            Util.toNiceString(villager.getProfession()) + "' at " + LocationUtil.toString(villager.getLocation()));
                 }, null);
             }
         }

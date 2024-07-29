@@ -7,11 +7,12 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
+import org.bukkit.util.OldEnum;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class Util {
     static {
         PL_COLOR = TextColor.color(102,255,230);
         PL_STYLE = Style.style(PL_COLOR, TextDecoration.BOLD);
-        PROFESSION_MAP = new EnumMap<>(Material.class);
+        PROFESSION_MAP = new HashMap<>();
         PROFESSION_MAP.put(XMaterial.LOOM.parseMaterial(),               Villager.Profession.SHEPHERD);
         PROFESSION_MAP.put(XMaterial.BARREL.parseMaterial(),             Villager.Profession.FISHERMAN);
         PROFESSION_MAP.put(XMaterial.SMOKER.parseMaterial(),             Villager.Profession.BUTCHER);
@@ -71,14 +72,27 @@ public class Util {
         }
     }
 
-    public static @NotNull String formatEnum(@NotNull Enum<?> input) {
+    @SuppressWarnings({"deprecation", "UnstableApiUsage"})
+    public static @NotNull String toNiceString(@NotNull Object input) {
+        // Get name
+        String name;
+        if (input instanceof Enum<?>) {
+            name = ((Enum<?>) input).name();
+        } else if (input instanceof OldEnum<?>) {
+            name = ((OldEnum<?>) input).name();
+        } else {
+            name = input.toString();
+        }
+
         // Turn something like "REDSTONE_TORCH" into "redstone torch"
-        String[] lowercaseWords = input.name().toLowerCase(Locale.ROOT).split("_");
+        String[] lowercaseWords = name.toLowerCase(Locale.ROOT).split("_");
+
+        // Capitalize first letter for each word
         for (int i = 0; i < lowercaseWords.length; i++) {
             String word = lowercaseWords[i];
-            // Capitalize first letter for each word
             lowercaseWords[i] = word.substring(0, 1).toUpperCase() + word.substring(1);
         }
+
         // return as nice string
         return String.join(" ", lowercaseWords);
     }
