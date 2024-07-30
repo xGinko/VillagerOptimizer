@@ -11,11 +11,11 @@ import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 public abstract class VillagerOptimizerCommand implements Enableable, Disableable, CommandExecutor, TabCompleter  {
@@ -36,19 +36,15 @@ public abstract class VillagerOptimizerCommand implements Enableable, Disableabl
         COMMANDS.forEach(VillagerOptimizerCommand::disable);
         COMMANDS.clear();
 
-        COMMANDS_PACKAGE.get(Scanners.SubTypes.of(VillagerOptimizerCommand.class).asClass())
-                .stream()
-                .filter(clazz -> !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers()))
-                .map(clazz -> {
-                    try {
-                        return (VillagerOptimizerCommand) clazz.getDeclaredConstructor().newInstance();
-                    } catch (Throwable t) {
-                        VillagerOptimizer.logger().error("Failed initialising command '{}'.", clazz.getSimpleName(), t);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .forEach(COMMANDS::add);
+        for (Class<?> clazz : COMMANDS_PACKAGE.get(Scanners.SubTypes.of(VillagerOptimizerCommand.class).asClass())) {
+            if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
+
+            try {
+                COMMANDS.add((VillagerOptimizerCommand) clazz.getDeclaredConstructor().newInstance());
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                VillagerOptimizer.logger().error("Failed initialising command class '{}'.", clazz.getSimpleName(), e);
+            }
+        }
 
         COMMANDS.forEach(VillagerOptimizerCommand::enable);
     }
