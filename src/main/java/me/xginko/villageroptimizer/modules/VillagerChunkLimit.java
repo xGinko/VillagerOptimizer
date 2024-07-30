@@ -86,7 +86,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
                 .collect(Collectors.toCollection(HashSet::new));
         this.non_optimized_max_per_chunk = config.getInt(configPath + ".unoptimized.max-per-chunk", 20,
                 "The maximum amount of unoptimized villagers per chunk.");
-        this.non_optimized_removal_priority = config.getList(configPath + ".unoptimized.removal-priority", defaults,
+        this.non_optimized_removal_priority = config.getList(configPath + ".unoptimized.removal-priority", new ArrayList<>(defaults),
                         "Professions that are in the top of the list are going to be scheduled for removal first.\n" +
                         "Use enums from https://jd.papermc.io/paper/1.20/org/bukkit/entity/Villager.Profession.html")
                 .stream()
@@ -104,7 +104,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
                 .collect(Collectors.toList());
         this.optimized_max_per_chunk = config.getInt(configPath + ".optimized.max-per-chunk", 60,
                 "The maximum amount of optimized villagers per chunk.");
-        this.optimized_removal_priority = config.getList(configPath + ".optimized.removal-priority", defaults)
+        this.optimized_removal_priority = config.getList(configPath + ".optimized.removal-priority", new ArrayList<>(defaults))
                 .stream()
                 .map(configuredProfession -> {
                     try {
