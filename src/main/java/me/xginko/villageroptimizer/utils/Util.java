@@ -7,7 +7,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
-import org.bukkit.util.OldEnum;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +25,7 @@ public class Util {
     static {
         PL_COLOR = TextColor.color(102,255,230);
         PL_STYLE = Style.style(PL_COLOR, TextDecoration.BOLD);
+
         PROFESSION_MAP = new HashMap<>();
         PROFESSION_MAP.put(XMaterial.LOOM.parseMaterial(),               Villager.Profession.SHEPHERD);
         PROFESSION_MAP.put(XMaterial.BARREL.parseMaterial(),             Villager.Profession.FISHERMAN);
@@ -40,6 +40,7 @@ public class Util {
         PROFESSION_MAP.put(XMaterial.SMITHING_TABLE.parseMaterial(),     Villager.Profession.TOOLSMITH);
         PROFESSION_MAP.put(XMaterial.FLETCHING_TABLE.parseMaterial(),    Villager.Profession.FLETCHER);
         PROFESSION_MAP.put(XMaterial.CARTOGRAPHY_TABLE.parseMaterial(),  Villager.Profession.CARTOGRAPHER);
+
         try {
             Chunk.class.getMethod("isEntitiesLoaded");
             canUseIsEntitiesLoaded = true;
@@ -72,14 +73,11 @@ public class Util {
         }
     }
 
-    @SuppressWarnings({"deprecation", "UnstableApiUsage"})
     public static @NotNull String toNiceString(@NotNull Object input) {
         // Get name
         String name;
         if (input instanceof Enum<?>) {
             name = ((Enum<?>) input).name();
-        } else if (input instanceof OldEnum<?>) {
-            name = ((OldEnum<?>) input).name();
         } else {
             name = input.toString();
         }

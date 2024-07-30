@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.modules;
 
-import me.xginko.villageroptimizer.WrapperCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.WrapperCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.utils.Disableable;
 import me.xginko.villageroptimizer.utils.Enableable;
@@ -9,9 +9,9 @@ import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import space.arim.morepaperlib.scheduling.GracefulScheduling;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public abstract class VillagerOptimizerModule implements Enableable, Disableable {
@@ -47,20 +47,18 @@ public abstract class VillagerOptimizerModule implements Enableable, Disableable
         ENABLED_MODULES.forEach(VillagerOptimizerModule::disable);
         ENABLED_MODULES.clear();
 
-        MODULES_PACKAGE.get(Scanners.SubTypes.of(VillagerOptimizerModule.class).asClass())
-                .stream()
-                .filter(clazz -> !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers()))
-                .map(clazz -> {
-                    try {
-                        return (VillagerOptimizerModule) clazz.getDeclaredConstructor().newInstance();
-                    } catch (Throwable t) {
-                        VillagerOptimizer.logger().error("Failed initialising module '{}'.", clazz.getSimpleName(), t);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .filter(VillagerOptimizerModule::shouldEnable)
-                .forEach(ENABLED_MODULES::add);
+        for (Class<?> clazz : MODULES_PACKAGE.get(Scanners.SubTypes.of(VillagerOptimizerModule.class).asClass())) {
+            if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) continue;
+
+            try {
+                VillagerOptimizerModule module = (VillagerOptimizerModule) clazz.getDeclaredConstructor().newInstance();
+                if (module.shouldEnable()) {
+                    ENABLED_MODULES.add(module);
+                }
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                VillagerOptimizer.logger().error("Failed initialising module class '{}'.", clazz.getSimpleName(), e);
+            }
+        }
 
         ENABLED_MODULES.forEach(VillagerOptimizerModule::enable);
     }
