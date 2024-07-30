@@ -37,7 +37,6 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
     private final int non_optimized_max_per_chunk, optimized_max_per_chunk;
     private final boolean log_enabled, skip_unloaded_chunks, use_whitelist;
 
-    @SuppressWarnings("deprecation")
     protected VillagerChunkLimit() {
         super("villager-chunk-limit");
         config.master().addComment(configPath + ".enable",
