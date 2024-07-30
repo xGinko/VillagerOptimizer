@@ -19,6 +19,7 @@ import space.arim.morepaperlib.scheduling.ScheduledTask;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -66,10 +67,8 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
                 }).collect(Collectors.toList());
         this.use_whitelist = config.getBoolean(configPath + ".whitelist.enable", false,
                 "Enable if you only want to manage villager counts for certain profession types.");
-        this.profession_whitelist = config.getList(configPath + ".whitelist.professions", defaults.stream()
-                                .filter(prof -> !prof.equalsIgnoreCase("NONE") && !prof.equalsIgnoreCase("NITWIT"))
-                                .collect(Collectors.toList()),
-                        "Only professions in this list will count for the cap.")
+        this.profession_whitelist = config.getList(configPath + ".whitelist.professions", Arrays.asList("NONE", "NITWIT"),
+                        "Professions in this list will not be touched by the chunk limit.")
                 .stream()
                 .map(configuredProfession -> {
                     try {
@@ -182,7 +181,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
             Villager villager = (Villager) entity;
 
             // Ignore villager if profession is not in the whitelist
-            if (use_whitelist && !profession_whitelist.contains(villager.getProfession())) continue;
+            if (use_whitelist && profession_whitelist.contains(villager.getProfession())) continue;
 
             if (wrapperCache.get(villager).isOptimized()) {
                 optimized_villagers.add(villager);
