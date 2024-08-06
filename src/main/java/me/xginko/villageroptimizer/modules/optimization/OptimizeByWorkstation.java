@@ -92,7 +92,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
             }
 
             for (Villager villager : workstationLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
-                villager.getScheduler().execute(plugin, () -> {
+                scheduling.entitySpecificScheduler(villager).run(() -> {
                     if (villager.getProfession() != workstationProfession) return;
                     WrappedVillager wrapped = wrapperCache.get(villager);
 
@@ -147,7 +147,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
                     }
 
                     taskComplete.set(true);
-                }, null, 1L);
+                }, null);
             }
         }, 1L, 10L);
     }
