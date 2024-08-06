@@ -92,58 +92,62 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
             }
 
             for (Villager villager : workstationLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
-                if (villager.getProfession() != workstationProfession) continue;
-                WrappedVillager wrapped = wrapperCache.get(villager);
-                if (wrapped.getJobSite() == null) continue;
-                if (wrapped.getJobSite().getWorld().getUID() != workstationLoc.getWorld().getUID()) continue;
-                if (LocationUtil.relDistance3DSquared(wrapped.getJobSite(), workstationLoc) > 1) continue;
+                villager.getScheduler().execute(plugin, () -> {
+                    if (villager.getProfession() != workstationProfession) return;
+                    WrappedVillager wrapped = wrapperCache.get(villager);
 
-                if (!wrapped.canOptimize(cooldown_millis) && !player.hasPermission(Permissions.Bypass.WORKSTATION_COOLDOWN.get())) {
-                    wrapped.sayNo();
-                    if (notify_player) {
-                        final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
-                                .matchLiteral("%time%")
-                                .replacement(Util.formatDuration(Duration.ofMillis(wrapped.getOptimizeCooldownMillis(cooldown_millis))))
-                                .build();
-                        VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
-                                .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
+                    Location jobSite = wrapped.getJobSite();
+                    if (jobSite == null || jobSite.getWorld().getUID() != workstationLoc.getWorld().getUID()) return;
+                    if (LocationUtil.relDistance3DSquared(jobSite, workstationLoc) > 1) return;
+
+                    if (!wrapped.canOptimize(cooldown_millis) && !player.hasPermission(Permissions.Bypass.WORKSTATION_COOLDOWN.get())) {
+                        wrapped.sayNo();
+
+                        if (notify_player) {
+                            final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
+                                    .matchLiteral("%time%")
+                                    .replacement(Util.formatDuration(Duration.ofMillis(wrapped.getOptimizeCooldownMillis(cooldown_millis))))
+                                    .build();
+                            VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
+                                    .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
+                        }
+
+                        taskComplete.set(true);
+                        return;
                     }
+
+                    VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(
+                            wrapped,
+                            OptimizationType.WORKSTATION,
+                            player,
+                            event.isAsynchronous()
+                    );
+
+                    if (!optimizeEvent.callEvent()) return;
+
+                    wrapped.setOptimizationType(optimizeEvent.getOptimizationType());
+                    wrapped.saveOptimizeTime();
+
+                    if (notify_player) {
+                        final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
+                                .matchLiteral("%vil_profession%")
+                                .replacement(Util.toNiceString(wrapped.villager().getProfession()))
+                                .build();
+                        final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
+                                .matchLiteral("%blocktype%")
+                                .replacement(Util.toNiceString(placed.getType()))
+                                .build();
+                        VillagerOptimizer.getLang(player.locale()).workstation_optimize_success
+                                .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedWorkstation)));
+                    }
+
+                    if (log_enabled) {
+                        info(player.getName() + " optimized villager using workstation " + Util.toNiceString(placed.getType()) + " at " +
+                                LocationUtil.toString(wrapped.villager().getLocation()));
+                    }
+
                     taskComplete.set(true);
-                    return;
-                }
-
-                VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(
-                        wrapped,
-                        OptimizationType.WORKSTATION,
-                        player,
-                        event.isAsynchronous()
-                );
-
-                if (!optimizeEvent.callEvent()) return;
-
-                wrapped.setOptimizationType(optimizeEvent.getOptimizationType());
-                wrapped.saveOptimizeTime();
-
-                if (notify_player) {
-                    final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
-                            .matchLiteral("%vil_profession%")
-                            .replacement(Util.toNiceString(wrapped.villager().getProfession()))
-                            .build();
-                    final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
-                            .matchLiteral("%blocktype%")
-                            .replacement(Util.toNiceString(placed.getType()))
-                            .build();
-                    VillagerOptimizer.getLang(player.locale()).workstation_optimize_success
-                            .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(vilProfession).replaceText(placedWorkstation)));
-                }
-
-                if (log_enabled) {
-                    info(player.getName() + " optimized villager using workstation " + Util.toNiceString(placed.getType()) + " at " +
-                         LocationUtil.toString(wrapped.villager().getLocation()));
-                }
-
-                taskComplete.set(true);
-                return;
+                }, null, 1L);
             }
         }, 1L, 10L);
     }
