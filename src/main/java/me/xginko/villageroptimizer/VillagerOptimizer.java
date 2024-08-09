@@ -85,6 +85,7 @@ public final class VillagerOptimizer extends JavaPlugin {
         } catch (Exception e) {
             logger.error("Failed to create plugin directory! Cannot enable!", e);
             getServer().getPluginManager().disablePlugin(this);
+            return;
         }
 
         logger.info(Component.text("╭────────────────────────────────────────────────────────────╮").style(Util.PL_STYLE));
