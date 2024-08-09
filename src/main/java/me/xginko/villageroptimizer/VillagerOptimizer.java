@@ -77,6 +77,7 @@ public final class VillagerOptimizer extends JavaPlugin {
             logger.warn("To protect your game from corruption, VillagerOptimizer will now disable!");
             logger.warn("Please decide for one of the plugins!");
             getServer().getPluginManager().disablePlugin(this);
+            return;
         }
 
         try {
