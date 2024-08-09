@@ -4,18 +4,13 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.enums.Keyring;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Villager;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-public class MainVillagerDataHandlerImpl implements VillagerDataHandler {
+public final class PDCWrapperVO extends PDCWrapper {
 
-    private final @NotNull Villager villager;
-    private final @NotNull PersistentDataContainer dataContainer;
-
-    MainVillagerDataHandlerImpl(@NotNull Villager villager) {
-        this.villager = villager;
-        this.dataContainer = villager.getPersistentDataContainer();
+    PDCWrapperVO(@NotNull Villager villager) {
+        super(villager);
     }
 
     @Override

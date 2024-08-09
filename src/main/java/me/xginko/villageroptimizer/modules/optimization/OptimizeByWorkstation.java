@@ -94,7 +94,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
             for (Villager villager : workstationLoc.getNearbyEntitiesByType(Villager.class, search_radius)) {
                 scheduling.entitySpecificScheduler(villager).run(() -> {
                     if (villager.getProfession() != workstationProfession) return;
-                    WrappedVillager wrapped = wrapperCache.get(villager);
+                    WrappedVillager wrapped = wrapperCache.get(villager, WrappedVillager::new);
 
                     Location jobSite = wrapped.getJobSite();
                     if (jobSite == null || jobSite.getWorld().getUID() != workstationLoc.getWorld().getUID()) return;
@@ -131,7 +131,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
                     if (notify_player) {
                         final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                                 .matchLiteral("%vil_profession%")
-                                .replacement(Util.toNiceString(wrapped.villager().getProfession()))
+                                .replacement(Util.toNiceString(wrapped.villager.getProfession()))
                                 .build();
                         final TextReplacementConfig placedWorkstation = TextReplacementConfig.builder()
                                 .matchLiteral("%blocktype%")
@@ -143,7 +143,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
 
                     if (log_enabled) {
                         info(player.getName() + " optimized villager using workstation " + Util.toNiceString(placed.getType()) + " at " +
-                                LocationUtil.toString(wrapped.villager().getLocation()));
+                                LocationUtil.toString(wrapped.villager.getLocation()));
                     }
 
                     taskComplete.set(true);
@@ -171,7 +171,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
             final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), workstationLoc);
             if (distance >= closestDistance) continue;
 
-            WrappedVillager wrapped = wrapperCache.get(villager);
+            WrappedVillager wrapped = wrapperCache.get(villager, WrappedVillager::new);
 
             if (wrapped.isOptimized()) {
                 closestOptimized = wrapped;
@@ -195,7 +195,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
         if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(Util.toNiceString(closestOptimized.villager().getProfession()))
+                    .replacement(Util.toNiceString(closestOptimized.villager.getProfession()))
                     .build();
             final TextReplacementConfig brokenWorkstation = TextReplacementConfig.builder()
                     .matchLiteral("%blocktype%")
@@ -207,7 +207,7 @@ public class OptimizeByWorkstation extends VillagerOptimizerModule implements Li
 
         if (log_enabled) {
             info(player.getName() + " unoptimized villager using workstation " + Util.toNiceString(broken.getType()) + " at " +
-                 LocationUtil.toString(closestOptimized.villager().getLocation()));
+                 LocationUtil.toString(closestOptimized.villager.getLocation()));
         }
     }
 }

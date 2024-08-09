@@ -1,11 +1,14 @@
 package me.xginko.villageroptimizer;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
 import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.Util;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -16,6 +19,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import space.arim.morepaperlib.MorePaperLib;
@@ -41,9 +45,9 @@ import java.util.zip.ZipEntry;
 public final class VillagerOptimizer extends JavaPlugin {
 
     private static VillagerOptimizer instance;
-    private static WrapperCache wrapperCache;
     private static CommandRegistration commandRegistration;
     private static GracefulScheduling scheduling;
+    private static Cache<Villager, WrappedVillager> wrapperCache;
     private static Map<String, LanguageCache> languageCacheMap;
     private static Config config;
     private static BukkitAudiences audiences;
@@ -128,7 +132,7 @@ public final class VillagerOptimizer extends JavaPlugin {
         VillagerOptimizerCommand.COMMANDS.forEach(VillagerOptimizerCommand::disable);
         VillagerOptimizerCommand.COMMANDS.clear();
         if (wrapperCache != null) {
-            wrapperCache.disable();
+            wrapperCache.cleanUp();
             wrapperCache = null;
         }
         if (scheduling != null) {
@@ -156,7 +160,7 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static @NotNull Config config() {
         return config;
     }
-    public static @NotNull WrapperCache getCache() {
+    public static @NotNull Cache<Villager, WrappedVillager> getCache() {
         return wrapperCache;
     }
     public static @NotNull CommandRegistration commandRegistration() {
@@ -190,9 +194,8 @@ public final class VillagerOptimizer extends JavaPlugin {
     private void reloadConfiguration() {
         try {
             config = new Config();
-            if (wrapperCache != null) wrapperCache.disable();
-            wrapperCache = new WrapperCache(config.cache_keep_time);
-            wrapperCache.enable();
+            if (wrapperCache != null) wrapperCache.cleanUp();
+            wrapperCache = Caffeine.newBuilder().expireAfterWrite(config.cache_keep_time).build();
             VillagerOptimizerCommand.reloadCommands();
             VillagerOptimizerModule.reloadModules();
             config.saveConfig();

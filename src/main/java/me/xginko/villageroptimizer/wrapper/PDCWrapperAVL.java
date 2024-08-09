@@ -4,20 +4,15 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.enums.Keyring;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Villager;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class AVLVillagerDataHandlerImpl implements VillagerDataHandler {
+public final class PDCWrapperAVL extends PDCWrapper {
 
-    private final @NotNull Villager villager;
-    private final @NotNull PersistentDataContainer dataContainer;
-
-    AVLVillagerDataHandlerImpl(@NotNull Villager villager) {
-        this.villager = villager;
-        this.dataContainer = villager.getPersistentDataContainer();
+    PDCWrapperAVL(@NotNull Villager villager) {
+        super(villager);
     }
 
     @Override

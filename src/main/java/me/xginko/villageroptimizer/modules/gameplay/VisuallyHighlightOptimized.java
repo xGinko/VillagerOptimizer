@@ -34,7 +34,7 @@ public class VisuallyHighlightOptimized extends VillagerOptimizerModule implemen
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onOptimize(VillagerOptimizeEvent event) {
-        Villager villager = event.getWrappedVillager().villager();
+        Villager villager = event.getWrappedVillager().villager;
         scheduling.entitySpecificScheduler(villager).run(glow -> {
             if (!villager.isGlowing()) villager.setGlowing(true);
         }, null);
@@ -42,7 +42,7 @@ public class VisuallyHighlightOptimized extends VillagerOptimizerModule implemen
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void onUnOptimize(VillagerUnoptimizeEvent event) {
-        Villager villager = event.getWrappedVillager().villager();
+        Villager villager = event.getWrappedVillager().villager;
         scheduling.entitySpecificScheduler(villager).run(unGlow -> {
             if (villager.isGlowing()) villager.setGlowing(false);
         }, null);

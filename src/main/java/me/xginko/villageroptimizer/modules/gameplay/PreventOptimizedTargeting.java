@@ -2,6 +2,7 @@ package me.xginko.villageroptimizer.modules.gameplay;
 
 import com.cryptomorin.xseries.XEntityType;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
@@ -41,7 +42,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
         if (
                 target != null
                 && target.getType() == XEntityType.VILLAGER.get()
-                && wrapperCache.get((Villager) target).isOptimized()
+                && wrapperCache.get((Villager) target, WrappedVillager::new).isOptimized()
         ) {
             event.setTarget(null);
             event.setCancelled(true);
@@ -54,7 +55,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
         if (
                 target != null
                 && target.getType() == XEntityType.VILLAGER.get()
-                && wrapperCache.get((Villager) target).isOptimized()
+                && wrapperCache.get((Villager) target, WrappedVillager::new).isOptimized()
         ) {
             event.setCancelled(true);
         }
@@ -65,7 +66,7 @@ public class PreventOptimizedTargeting extends VillagerOptimizerModule implement
         if (
                 event.getEntityType() == XEntityType.VILLAGER.get()
                 && event.getDamager() instanceof Mob
-                && wrapperCache.get((Villager) event.getEntity()).isOptimized()
+                && wrapperCache.get((Villager) event.getEntity(), WrappedVillager::new).isOptimized()
         ) {
             ((Mob) event.getDamager()).setTarget(null);
         }

@@ -55,27 +55,27 @@ public class RestockOptimizedTrades extends VillagerOptimizerModule implements L
     private void onInteract(PlayerInteractEntityEvent event) {
         if (event.getRightClicked().getType() != XEntityType.VILLAGER.get()) return;
 
-        final WrappedVillager wVillager = wrapperCache.get((Villager) event.getRightClicked());
-        if (!wVillager.isOptimized()) return;
+        final WrappedVillager wrapped = wrapperCache.get((Villager) event.getRightClicked(), WrappedVillager::new);
+        if (!wrapped.isOptimized()) return;
 
         final Player player = event.getPlayer();
         final boolean player_bypassing = player.hasPermission(Permissions.Bypass.RESTOCK_COOLDOWN.get());
-        if (!wVillager.canRestock(restock_delay_millis) && !player_bypassing) return;
+        if (!wrapped.canRestock(restock_delay_millis) && !player_bypassing) return;
 
-        wVillager.restock();
-        wVillager.saveRestockTime();
+        wrapped.restock();
+        wrapped.saveRestockTime();
 
         if (notify_player && !player_bypassing) {
             final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                     .matchLiteral("%time%")
-                    .replacement(Util.formatDuration(Duration.ofMillis(wVillager.getRestockCooldownMillis(restock_delay_millis))))
+                    .replacement(Util.formatDuration(Duration.ofMillis(wrapped.getRestockCooldownMillis(restock_delay_millis))))
                     .build();
             VillagerOptimizer.getLang(player.locale()).trades_restocked
                     .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
         }
 
         if (log_enabled) {
-            info("Restocked optimized villager at " + LocationUtil.toString(wVillager.villager().getLocation()));
+            info("Restocked optimized villager at " + LocationUtil.toString(wrapped.villager.getLocation()));
         }
     }
 }

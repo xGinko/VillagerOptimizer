@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XEntityType;
 import com.cryptomorin.xseries.XMaterial;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.LocationUtil;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -53,7 +54,7 @@ public class EnableLeashingVillagers extends VillagerOptimizerModule implements 
 
         final Villager villager = (Villager) event.getRightClicked();
         if (villager.isLeashed()) return;
-        if (only_optimized && !wrapperCache.get(villager).isOptimized()) return;
+        if (only_optimized && !wrapperCache.get(villager, WrappedVillager::new).isOptimized()) return;
 
         event.setCancelled(true); // Cancel the event, so we don't interact with the villager
 

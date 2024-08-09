@@ -4,51 +4,58 @@ import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.enums.Keyring;
 import me.xginko.villageroptimizer.enums.OptimizationType;
 import org.bukkit.entity.Villager;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 
-public interface VillagerDataHandler {
+public abstract class PDCWrapper {
 
-    static VillagerDataHandler[] forVillager(Villager villager) {
+    public final Villager villager;
+    public final PersistentDataContainer dataContainer;
+
+    public PDCWrapper(Villager villager) {
+        this.villager = villager;
+        this.dataContainer = villager.getPersistentDataContainer();
+    }
+
+    public static PDCWrapper[] forVillager(Villager villager) {
         if (VillagerOptimizer.config().support_other_plugins) {
-            return new VillagerDataHandler[]{
-                    new MainVillagerDataHandlerImpl(villager),
-                    new AVLVillagerDataHandlerImpl(villager)
-            };
+            return new PDCWrapper[]{new PDCWrapperVO(villager), new PDCWrapperAVL(villager)};
         } else {
-            return new VillagerDataHandler[]{ new MainVillagerDataHandlerImpl(villager) };
+            return new PDCWrapper[]{new PDCWrapperVO(villager)};
         }
     }
 
     /**
      * @return The namespace of the handler
      */
-    Keyring.Space getSpace();
+    public abstract Keyring.Space getSpace();
 
     /**
      * @return True if the villager is optimized by plugin, otherwise false.
      */
-    boolean isOptimized();
+    public abstract boolean isOptimized();
 
     /**
      * @param cooldown_millis The configured cooldown in millis until the next optimization is allowed to occur.
      * @return True if villager can be optimized again, otherwise false.
      */
-    boolean canOptimize(long cooldown_millis);
+    public abstract boolean canOptimize(long cooldown_millis);
 
     /**
      * @param type OptimizationType the villager should be set to.
      */
-    void setOptimizationType(OptimizationType type);
+    public abstract void setOptimizationType(OptimizationType type);
 
     /**
      * @return The current OptimizationType of the villager.
      */
-    @NotNull OptimizationType getOptimizationType();
+    @NotNull
+    public abstract OptimizationType getOptimizationType();
 
     /**
      * Saves the system time when the villager was last optimized.
      */
-    void saveOptimizeTime();
+    public abstract void saveOptimizeTime();
 
     /**
      * For convenience so the remaining millis since the last stored optimize time
@@ -58,7 +65,7 @@ public interface VillagerDataHandler {
      * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
      * @return The time left in millis until the villager can be optimized again.
      */
-    long getOptimizeCooldownMillis(long cooldown_millis);
+    public abstract long getOptimizeCooldownMillis(long cooldown_millis);
 
     /**
      * For convenience so the remaining millis since the last stored restock time
@@ -67,12 +74,12 @@ public interface VillagerDataHandler {
      * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
      * @return True if the villager has been loaded long enough.
      */
-    boolean canRestock(long cooldown_millis);
+    public abstract boolean canRestock(long cooldown_millis);
 
     /**
      * Saves the time of when the entity was last restocked.
      */
-    void saveRestockTime();
+    public abstract void saveRestockTime();
 
     /**
      * For convenience so the remaining millis since the last stored restock time
@@ -82,18 +89,18 @@ public interface VillagerDataHandler {
      * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
      * @return The time left in millis until the villager can be restocked again.
      */
-    long getRestockCooldownMillis(long cooldown_millis);
+    public abstract long getRestockCooldownMillis(long cooldown_millis);
 
     /**
      * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
      * @return Whether the villager can be leveled up or not with the checked milliseconds
      */
-    boolean canLevelUp(long cooldown_millis);
+    public abstract boolean canLevelUp(long cooldown_millis);
 
     /**
      * Saves the time of the in-game world when the entity was last leveled up.
      */
-    void saveLastLevelUp();
+    public abstract void saveLastLevelUp();
 
     /**
      * Here for convenience so the remaining millis since the last stored level-up time
@@ -101,5 +108,5 @@ public interface VillagerDataHandler {
      *
      * @return The time of the in-game world when the entity was last leveled up.
      */
-    long getLevelCooldownMillis(long cooldown_millis);
+    public abstract long getLevelCooldownMillis(long cooldown_millis);
 }

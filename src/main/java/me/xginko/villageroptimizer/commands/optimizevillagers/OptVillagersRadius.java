@@ -1,6 +1,5 @@
 package me.xginko.villageroptimizer.commands.optimizevillagers;
 
-import me.xginko.villageroptimizer.WrapperCache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
@@ -90,7 +89,6 @@ public class OptVillagersRadius extends VillagerOptimizerCommand {
                 return true;
             }
 
-            WrapperCache wrapperCache = VillagerOptimizer.getCache();
             int successCount = 0;
             int failCount = 0;
             final boolean player_has_cooldown_bypass = player.hasPermission(Permissions.Bypass.COMMAND_COOLDOWN.get());
@@ -101,7 +99,7 @@ public class OptVillagersRadius extends VillagerOptimizerCommand {
                 Villager.Profession profession = villager.getProfession();
                 if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
 
-                WrappedVillager wVillager = wrapperCache.get(villager);
+                WrappedVillager wVillager = VillagerOptimizer.getCache().get(villager, WrappedVillager::new);
 
                 if (player_has_cooldown_bypass || wVillager.canOptimize(cooldown)) {
                     VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.COMMAND, player);

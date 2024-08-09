@@ -2,6 +2,7 @@ package me.xginko.villageroptimizer.modules.gameplay;
 
 import com.cryptomorin.xseries.XEntityType;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -65,7 +66,7 @@ public class PreventOptimizedDamage extends VillagerOptimizerModule implements L
         if (
                 event.getEntityType() == XEntityType.VILLAGER.get()
                 && damage_causes_to_cancel.contains(event.getCause())
-                && wrapperCache.get((Villager) event.getEntity()).isOptimized()
+                && wrapperCache.get((Villager) event.getEntity(), WrappedVillager::new).isOptimized()
         ) {
             event.setCancelled(true);
         }
@@ -76,7 +77,7 @@ public class PreventOptimizedDamage extends VillagerOptimizerModule implements L
         if (
                 cancel_knockback
                 && event.getEntityType() == XEntityType.VILLAGER.get()
-                && wrapperCache.get((Villager) event.getEntity()).isOptimized()
+                && wrapperCache.get((Villager) event.getEntity(), WrappedVillager::new).isOptimized()
         ) {
             event.setCancelled(true);
         }

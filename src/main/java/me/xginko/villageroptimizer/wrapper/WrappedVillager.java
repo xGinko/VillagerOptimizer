@@ -10,21 +10,13 @@ import org.bukkit.inventory.MerchantRecipe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class WrappedVillager implements VillagerDataHandler {
+public class WrappedVillager extends PDCWrapper {
 
-    private final @NotNull Villager villager;
-    private final @NotNull VillagerDataHandler[] dataHandlers;
+    private final @NotNull PDCWrapper[] pdcWrappers;
 
     public WrappedVillager(@NotNull Villager villager) {
-        this.villager = villager;
-        this.dataHandlers = VillagerDataHandler.forVillager(villager);
-    }
-
-    /**
-     * @return The villager inside the wrapper.
-     */
-    public @NotNull Villager villager() {
-        return villager;
+        super(villager);
+        this.pdcWrappers = PDCWrapper.forVillager(villager);
     }
 
     /**
@@ -50,7 +42,7 @@ public class WrappedVillager implements VillagerDataHandler {
     }
 
     /**
-     * @return true if the villager can loose his acquired profession by having their workstation destroyed.
+     * @return true if the villager can lose its acquired profession by having its workstation destroyed.
      */
     public boolean canLooseProfession() {
         // A villager with a level of 1 and no trading experience is liable to lose its profession.
@@ -76,8 +68,8 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public boolean isOptimized() {
-        for (VillagerDataHandler handler : dataHandlers) {
-            if (handler.isOptimized()) {
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            if (pdcWrapper.isOptimized()) {
                 return true;
             }
         }
@@ -86,8 +78,8 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public boolean canOptimize(long cooldown_millis) {
-        for (VillagerDataHandler handler : dataHandlers) {
-            if (!handler.canOptimize(cooldown_millis)) {
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            if (!pdcWrapper.canOptimize(cooldown_millis)) {
                 return false;
             }
         }
@@ -96,18 +88,18 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public void setOptimizationType(OptimizationType type) {
-        for (VillagerDataHandler handler : dataHandlers) {
-            handler.setOptimizationType(type);
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            pdcWrapper.setOptimizationType(type);
         }
     }
 
     @Override
     public @NotNull OptimizationType getOptimizationType() {
         OptimizationType result = OptimizationType.NONE;
-        for (VillagerDataHandler handler : dataHandlers) {
-            OptimizationType type = handler.getOptimizationType();
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            OptimizationType type = pdcWrapper.getOptimizationType();
             if (type != OptimizationType.NONE) {
-                if (handler.getSpace() == Keyring.Space.VillagerOptimizer) {
+                if (pdcWrapper.getSpace() == Keyring.Space.VillagerOptimizer) {
                     return type;
                 } else {
                     result = type;
@@ -119,24 +111,24 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public void saveOptimizeTime() {
-        for (VillagerDataHandler handler : dataHandlers) {
-            handler.saveOptimizeTime();
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            pdcWrapper.saveOptimizeTime();
         }
     }
 
     @Override
     public long getOptimizeCooldownMillis(long cooldown_millis) {
         long cooldown = 0L;
-        for (VillagerDataHandler handler : dataHandlers) {
-            cooldown = Math.max(cooldown, handler.getOptimizeCooldownMillis(cooldown_millis));
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            cooldown = Math.max(cooldown, pdcWrapper.getOptimizeCooldownMillis(cooldown_millis));
         }
         return cooldown;
     }
 
     @Override
     public boolean canRestock(long cooldown_millis) {
-        for (VillagerDataHandler handler : dataHandlers) {
-            if (!handler.canRestock(cooldown_millis)) {
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            if (!pdcWrapper.canRestock(cooldown_millis)) {
                 return false;
             }
         }
@@ -145,24 +137,24 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public void saveRestockTime() {
-        for (VillagerDataHandler handler : dataHandlers) {
-            handler.saveRestockTime();
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            pdcWrapper.saveRestockTime();
         }
     }
 
     @Override
     public long getRestockCooldownMillis(long cooldown_millis) {
         long cooldown = cooldown_millis;
-        for (VillagerDataHandler handler : dataHandlers) {
-            cooldown = Math.max(cooldown, handler.getRestockCooldownMillis(cooldown_millis));
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            cooldown = Math.max(cooldown, pdcWrapper.getRestockCooldownMillis(cooldown_millis));
         }
         return cooldown;
     }
 
     @Override
     public boolean canLevelUp(long cooldown_millis) {
-        for (VillagerDataHandler handler : dataHandlers) {
-            if (!handler.canLevelUp(cooldown_millis)) {
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            if (!pdcWrapper.canLevelUp(cooldown_millis)) {
                 return false;
             }
         }
@@ -171,16 +163,16 @@ public class WrappedVillager implements VillagerDataHandler {
 
     @Override
     public void saveLastLevelUp() {
-        for (VillagerDataHandler handler : dataHandlers) {
-            handler.saveLastLevelUp();
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            pdcWrapper.saveLastLevelUp();
         }
     }
 
     @Override
     public long getLevelCooldownMillis(long cooldown_millis) {
         long cooldown = cooldown_millis;
-        for (VillagerDataHandler handler : dataHandlers) {
-            cooldown = Math.max(cooldown, handler.getLevelCooldownMillis(cooldown_millis));
+        for (PDCWrapper pdcWrapper : pdcWrappers) {
+            cooldown = Math.max(cooldown, pdcWrapper.getLevelCooldownMillis(cooldown_millis));
         }
         return cooldown;
     }

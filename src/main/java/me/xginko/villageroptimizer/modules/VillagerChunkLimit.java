@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XEntityType;
 import me.xginko.villageroptimizer.utils.ExpiringSet;
 import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.utils.Util;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -183,7 +184,7 @@ public class VillagerChunkLimit extends VillagerOptimizerModule implements Runna
             // Ignore villager if profession is not in the whitelist
             if (use_whitelist && profession_whitelist.contains(villager.getProfession())) continue;
 
-            if (wrapperCache.get(villager).isOptimized()) {
+            if (wrapperCache.get(villager, WrappedVillager::new).isOptimized()) {
                 optimized_villagers.add(villager);
             } else {
                 not_optimized_villagers.add(villager);

@@ -85,13 +85,12 @@ public class OptimizeByNametag extends VillagerOptimizerModule implements Listen
         if (!meta.hasDisplayName()) return;
 
         final String nameTagPlainText = ChatColor.stripColor(meta.getDisplayName());
-        final Villager villager = (Villager) event.getRightClicked();
-        final WrappedVillager wVillager = wrapperCache.get(villager);
+        final WrappedVillager wrapped = wrapperCache.get((Villager) event.getRightClicked(), WrappedVillager::new);
 
         if (nametags.contains(nameTagPlainText.toLowerCase())) {
-            if (wVillager.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
+            if (wrapped.canOptimize(cooldown) || player.hasPermission(Permissions.Bypass.NAMETAG_COOLDOWN.get())) {
                 VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(
-                        wVillager,
+                        wrapped,
                         OptimizationType.NAMETAG,
                         player,
                         event.isAsynchronous()
@@ -104,8 +103,8 @@ public class OptimizeByNametag extends VillagerOptimizerModule implements Listen
                     player.updateInventory();
                 }
 
-                wVillager.setOptimizationType(optimizeEvent.getOptimizationType());
-                wVillager.saveOptimizeTime();
+                wrapped.setOptimizationType(optimizeEvent.getOptimizationType());
+                wrapped.saveOptimizeTime();
 
                 if (notify_player) {
                     VillagerOptimizer.getLang(player.locale()).nametag_optimize_success
@@ -114,31 +113,31 @@ public class OptimizeByNametag extends VillagerOptimizerModule implements Listen
 
                 if (log_enabled) {
                     info(player.getName() + " optimized villager using nametag '" + nameTagPlainText + "' at " +
-                         LocationUtil.toString(wVillager.villager().getLocation()));
+                         LocationUtil.toString(wrapped.villager.getLocation()));
                 }
             } else {
                 event.setCancelled(true);
-                wVillager.sayNo();
+                wrapped.sayNo();
                 if (notify_player) {
                     final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                             .matchLiteral("%time%")
-                            .replacement(Util.formatDuration(Duration.ofMillis(wVillager.getOptimizeCooldownMillis(cooldown))))
+                            .replacement(Util.formatDuration(Duration.ofMillis(wrapped.getOptimizeCooldownMillis(cooldown))))
                             .build();
                     VillagerOptimizer.getLang(player.locale()).nametag_on_optimize_cooldown
                             .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
                 }
             }
         } else {
-            if (wVillager.isOptimized()) {
+            if (wrapped.isOptimized()) {
                 VillagerUnoptimizeEvent unOptimizeEvent = new VillagerUnoptimizeEvent(
-                        wVillager,
+                        wrapped,
                         player,
                         OptimizationType.NAMETAG,
                         event.isAsynchronous()
                 );
 
                 if (!unOptimizeEvent.callEvent()) return;
-                wVillager.setOptimizationType(OptimizationType.NONE);
+                wrapped.setOptimizationType(OptimizationType.NONE);
 
                 if (notify_player) {
                     VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success
@@ -147,7 +146,7 @@ public class OptimizeByNametag extends VillagerOptimizerModule implements Listen
 
                 if (log_enabled) {
                     info(player.getName() + " unoptimized villager using nametag '" + nameTagPlainText + "' at " +
-                         LocationUtil.toString(wVillager.villager().getLocation()));
+                         LocationUtil.toString(wrapped.villager.getLocation()));
                 }
             }
         }

@@ -111,7 +111,7 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
             final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
-            final WrappedVillager wVillager = wrapperCache.get(villager);
+            final WrappedVillager wVillager = wrapperCache.get(villager, WrappedVillager::new);
             if (wVillager.canOptimize(cooldown_millis)) {
                 closestOptimizableVillager = wVillager;
                 closestDistance = distance;
@@ -135,7 +135,7 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
             if (notify_player) {
                 final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                         .matchLiteral("%vil_profession%")
-                        .replacement(Util.toNiceString(closestOptimizableVillager.villager().getProfession()))
+                        .replacement(Util.toNiceString(closestOptimizableVillager.villager.getProfession()))
                         .build();
                 final TextReplacementConfig placedMaterial = TextReplacementConfig.builder()
                         .matchLiteral("%blocktype%")
@@ -147,7 +147,7 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
 
             if (log_enabled) {
                 info(player.getName() + " optimized villager at " +
-                        LocationUtil.toString(closestOptimizableVillager.villager().getLocation()));
+                        LocationUtil.toString(closestOptimizableVillager.villager.getLocation()));
             }
         } else {
             closestOptimizableVillager.sayNo();
@@ -178,7 +178,7 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
             final double distance = LocationUtil.relDistance3DSquared(villager.getLocation(), blockLoc);
             if (distance >= closestDistance) continue;
 
-            final WrappedVillager wVillager = wrapperCache.get(villager);
+            final WrappedVillager wVillager = wrapperCache.get(villager, WrappedVillager::new);
             if (wVillager.isOptimized()) {
                 closestOptimizedVillager = wVillager;
                 closestDistance = distance;
@@ -200,7 +200,7 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
         if (notify_player) {
             final TextReplacementConfig vilProfession = TextReplacementConfig.builder()
                     .matchLiteral("%vil_profession%")
-                    .replacement(Util.toNiceString(closestOptimizedVillager.villager().getProfession()))
+                    .replacement(Util.toNiceString(closestOptimizedVillager.villager.getProfession()))
                     .build();
             final TextReplacementConfig brokenMaterial = TextReplacementConfig.builder()
                     .matchLiteral("%blocktype%")
@@ -212,7 +212,7 @@ public class OptimizeByBlock extends VillagerOptimizerModule implements Listener
 
         if (log_enabled) {
             info(player.getName() + " unoptimized villager using " + Util.toNiceString(broken.getType()) +
-                    LocationUtil.toString(closestOptimizedVillager.villager().getLocation()));
+                    LocationUtil.toString(closestOptimizedVillager.villager.getLocation()));
         }
     }
 }

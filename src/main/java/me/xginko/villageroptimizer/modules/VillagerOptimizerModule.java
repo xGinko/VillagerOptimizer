@@ -1,10 +1,12 @@
 package me.xginko.villageroptimizer.modules;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.WrapperCache;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.utils.Disableable;
 import me.xginko.villageroptimizer.utils.Enableable;
+import me.xginko.villageroptimizer.wrapper.WrappedVillager;
+import org.bukkit.entity.Villager;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import space.arim.morepaperlib.scheduling.GracefulScheduling;
@@ -23,7 +25,7 @@ public abstract class VillagerOptimizerModule implements Enableable, Disableable
 
     protected final VillagerOptimizer plugin;
     protected final Config config;
-    protected final WrapperCache wrapperCache;
+    protected final Cache<Villager, WrappedVillager> wrapperCache;
     protected final GracefulScheduling scheduling;
     public final String configPath;
     private final String logFormat;
