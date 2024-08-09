@@ -11,11 +11,11 @@ import java.util.Locale;
 public class KyoriUtil {
 
     public static void sendMessage(@NotNull CommandSender sender, @NotNull Component message) {
-        VillagerOptimizer.getAudiences().sender(sender).sendMessage(message);
+        VillagerOptimizer.audiences().sender(sender).sendMessage(message);
     }
 
     public static void sendActionBar(@NotNull CommandSender sender, @NotNull Component message) {
-        VillagerOptimizer.getAudiences().sender(sender).sendActionBar(message);
+        VillagerOptimizer.audiences().sender(sender).sendActionBar(message);
     }
 
     public static @NotNull Component toUpperCase(@NotNull Component input, @NotNull Locale locale) {

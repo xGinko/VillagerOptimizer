@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -159,30 +160,39 @@ public final class VillagerOptimizer extends JavaPlugin {
     public static @NotNull VillagerOptimizer getInstance()  {
         return instance;
     }
-    public static @NotNull Config config() {
-        return config;
-    }
-    public static @NotNull Cache<Villager, WrappedVillager> getCache() {
-        return wrapperCache;
-    }
-    public static @NotNull CommandRegistration commandRegistration() {
-        return commandRegistration;
-    }
+
     public static @NotNull GracefulScheduling scheduling() {
         return scheduling;
     }
+
+    public static @NotNull CommandRegistration commandRegistration() {
+        return commandRegistration;
+    }
+
+    public static @NotNull Cache<Villager, WrappedVillager> wrappers() {
+        return wrapperCache;
+    }
+
+    public static @NotNull Config config() {
+        return config;
+    }
+
     public static @NotNull ComponentLogger logger() {
         return logger;
     }
-    public static @NotNull BukkitAudiences getAudiences() {
+
+    public static @NotNull BukkitAudiences audiences() {
         return audiences;
     }
+
     public static @NotNull LanguageCache getLang(Locale locale) {
         return getLang(locale.toString().toLowerCase());
     }
+
     public static @NotNull LanguageCache getLang(CommandSender commandSender) {
         return commandSender instanceof Player ? getLang(((Player) commandSender).locale()) : getLang(config.default_lang);
     }
+
     public static @NotNull LanguageCache getLang(String lang) {
         if (!config.auto_lang) return languageCacheMap.get(config.default_lang.toString().toLowerCase());
         return languageCacheMap.getOrDefault(lang.replace("-", "_"), languageCacheMap.get(config.default_lang.toString().toLowerCase()));
@@ -243,7 +253,7 @@ public final class VillagerOptimizer extends JavaPlugin {
                     .collect(Collectors.toCollection(TreeSet::new));
         } catch (Throwable t) {
             logger.error("Failed while searching for available translations!", t);
-            return new TreeSet<>();
+            return Collections.emptySortedSet();
         }
     }
 }

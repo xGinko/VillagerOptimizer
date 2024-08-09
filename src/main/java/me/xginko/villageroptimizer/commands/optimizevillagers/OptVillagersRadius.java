@@ -99,7 +99,7 @@ public class OptVillagersRadius extends VillagerOptimizerCommand {
                 Villager.Profession profession = villager.getProfession();
                 if (profession.equals(Villager.Profession.NITWIT) || profession.equals(Villager.Profession.NONE)) continue;
 
-                WrappedVillager wVillager = VillagerOptimizer.getCache().get(villager, WrappedVillager::new);
+                WrappedVillager wVillager = VillagerOptimizer.wrappers().get(villager, WrappedVillager::new);
 
                 if (player_has_cooldown_bypass || wVillager.canOptimize(cooldown)) {
                     VillagerOptimizeEvent optimizeEvent = new VillagerOptimizeEvent(wVillager, OptimizationType.COMMAND, player);

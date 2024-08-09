@@ -33,7 +33,7 @@ public abstract class VillagerOptimizerModule implements Enableable, Disableable
     public VillagerOptimizerModule(String configPath) {
         this.plugin = VillagerOptimizer.getInstance();
         this.config = VillagerOptimizer.config();
-        this.wrapperCache = VillagerOptimizer.getCache();
+        this.wrapperCache = VillagerOptimizer.wrappers();
         this.scheduling = VillagerOptimizer.scheduling();
         this.configPath = configPath;
         shouldEnable(); // Ensure enable option is always first
