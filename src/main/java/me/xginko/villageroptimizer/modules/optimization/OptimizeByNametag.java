@@ -139,6 +139,11 @@ public class OptimizeByNametag extends VillagerOptimizerModule implements Listen
                 if (!unOptimizeEvent.callEvent()) return;
                 wrapped.setOptimizationType(OptimizationType.NONE);
 
+                if (!consume_nametag) {
+                    player.getInventory().addItem(usedItem.asOne());
+                    player.updateInventory();
+                }
+
                 if (notify_player) {
                     VillagerOptimizer.getLang(player.locale()).nametag_unoptimize_success
                             .forEach(line -> KyoriUtil.sendMessage(player, line));
