@@ -52,7 +52,7 @@ public final class Keyring {
         OPTIMIZATION_TYPE("optimization-type"),
         LAST_OPTIMIZE_SYSTIME_MILLIS("last-optimize"),
         LAST_LEVELUP_SYSTIME_MILLIS("last-levelup"),
-        LAST_RESTOCK_SYSTIME_MILLIS("last-restock");
+        LAST_RESTOCK_SYSTIME_MILLIS("last-restock-systime");
 
         private final @NotNull NamespacedKey key;
 
