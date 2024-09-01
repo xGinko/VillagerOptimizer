@@ -1,8 +1,8 @@
 package me.xginko.villageroptimizer.wrapper;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.enums.Keyring;
-import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.struct.enums.Keyring;
+import me.xginko.villageroptimizer.struct.enums.OptimizationType;
 import org.bukkit.entity.Villager;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
@@ -68,28 +68,16 @@ public abstract class PDCWrapper {
     public abstract long getOptimizeCooldownMillis(long cooldown_millis);
 
     /**
-     * For convenience so the remaining millis since the last stored restock time
-     * can be easily calculated.
-     *
-     * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
-     * @return True if the villager has been loaded long enough.
+     * Gets the time of the day in ticks when the entity was last restocked.
+     * This value is affected by /time set
+     * @return The time of the minecraft day (in ticks) when the villager was last restocked
      */
-    public abstract boolean canRestock(long cooldown_millis);
+    public abstract long getLastRestockFullTime();
 
     /**
      * Saves the time of when the entity was last restocked.
      */
     public abstract void saveRestockTime();
-
-    /**
-     * For convenience so the remaining millis since the last stored restock time
-     * can be easily calculated.
-     * This enables new configured cooldowns to instantly apply instead of them being persistent.
-     *
-     * @param cooldown_millis The configured cooldown in milliseconds you want to check against.
-     * @return The time left in millis until the villager can be restocked again.
-     */
-    public abstract long getRestockCooldownMillis(long cooldown_millis);
 
     /**
      * @param cooldown_millis The configured cooldown in milliseconds you want to check against.

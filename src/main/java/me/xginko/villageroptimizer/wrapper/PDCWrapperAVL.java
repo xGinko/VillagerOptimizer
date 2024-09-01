@@ -1,8 +1,8 @@
 package me.xginko.villageroptimizer.wrapper;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.enums.Keyring;
-import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.struct.enums.Keyring;
+import me.xginko.villageroptimizer.struct.enums.OptimizationType;
 import org.bukkit.entity.Villager;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -99,21 +99,16 @@ public final class PDCWrapperAVL extends PDCWrapper {
     }
 
     @Override
-    public boolean canRestock(long cooldown_millis) {
-        return !dataContainer.has(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG)
-                || villager.getWorld().getFullTime() > dataContainer.get(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG);
+    public long getLastRestockFullTime() {
+        if (dataContainer.has(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLD_FULLTIME.getKey(), PersistentDataType.LONG)) {
+            return dataContainer.get(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLD_FULLTIME.getKey(), PersistentDataType.LONG);
+        }
+        return 0L;
     }
 
     @Override
     public void saveRestockTime() {
-        dataContainer.set(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG, villager.getWorld().getFullTime());
-    }
-
-    @Override
-    public long getRestockCooldownMillis(long cooldown_millis) {
-        if (dataContainer.has(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG))
-            return (villager.getWorld().getFullTime() - dataContainer.get(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLDFULLTIME.getKey(), PersistentDataType.LONG)) * 50L;
-        return cooldown_millis;
+        dataContainer.set(Keyring.AntiVillagerLag.LAST_RESTOCK_WORLD_FULLTIME.getKey(), PersistentDataType.LONG, villager.getWorld().getFullTime());
     }
 
     @Override

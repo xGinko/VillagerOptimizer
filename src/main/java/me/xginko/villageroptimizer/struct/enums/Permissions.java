@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.enums;
+package me.xginko.villageroptimizer.struct.enums;
 
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;

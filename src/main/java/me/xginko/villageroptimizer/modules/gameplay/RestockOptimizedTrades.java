@@ -2,14 +2,13 @@ package me.xginko.villageroptimizer.modules.gameplay;
 
 import com.cryptomorin.xseries.XEntityType;
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
+import me.xginko.villageroptimizer.struct.enums.Permissions;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import net.kyori.adventure.text.TextReplacementConfig;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,10 +17,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class RestockOptimizedTrades extends VillagerOptimizerModule implements Listener {
 
-    private final long restock_delay_millis;
+    private final SortedSet<Long> restockDayTimes;
     private final boolean log_enabled, notify_player;
 
     public RestockOptimizedTrades() {
@@ -29,8 +32,10 @@ public class RestockOptimizedTrades extends VillagerOptimizerModule implements L
         config.master().addComment(configPath,
                 "This is for automatic restocking of trades for optimized villagers. Optimized Villagers\n" +
                 "don't have enough AI to restock their trades naturally, so this is here as a workaround.");
-        this.restock_delay_millis = config.getInt(configPath + ".delay-in-ticks", 1000,
-                "1 second = 20 ticks. There are 24.000 ticks in a single minecraft day.") * 50L;
+        this.restockDayTimes = new TreeSet<>(Comparator.reverseOrder());
+        this.restockDayTimes.addAll(config.getList(configPath + ".restock-times", Arrays.asList(1000L, 13000L),
+                "At which (tick-)times during the day villagers will restock.\n" +
+                        "There are 24.000 ticks in a single minecraft day."));
         this.notify_player = config.getBoolean(configPath + ".notify-player", true,
                 "Sends the player a message when the trades were restocked on a clicked villager.");
         this.log_enabled = config.getBoolean(configPath + ".log", false);
@@ -52,26 +57,50 @@ public class RestockOptimizedTrades extends VillagerOptimizerModule implements L
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onInteract(PlayerInteractEntityEvent event) {
+    private void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.getRightClicked().getType() != XEntityType.VILLAGER.get()) return;
 
-        final WrappedVillager wrapped = wrapperCache.get((Villager) event.getRightClicked(), WrappedVillager::new);
+        WrappedVillager wrapped = wrapperCache.get((Villager) event.getRightClicked(), WrappedVillager::new);
         if (!wrapped.isOptimized()) return;
 
-        final Player player = event.getPlayer();
-        final boolean player_bypassing = player.hasPermission(Permissions.Bypass.RESTOCK_COOLDOWN.get());
-        if (!wrapped.canRestock(restock_delay_millis) && !player_bypassing) return;
+        if (event.getPlayer().hasPermission(Permissions.Bypass.RESTOCK_COOLDOWN.get())) {
+            wrapped.restock();
+            return;
+        }
 
-        wrapped.restock();
-        wrapped.saveRestockTime();
+        long lastRestockFullTimeTicks = wrapped.getLastRestockFullTime();
+        long currentFullTimeTicks = wrapped.currentFullTimeTicks();
+        long currentDayTimeTicks = wrapped.currentDayTimeTicks();
 
-        if (notify_player && !player_bypassing) {
+        long currentDay = currentFullTimeTicks - currentDayTimeTicks;
+        long ticksTillRestock = (24000 + currentDay + restockDayTimes.first()) - currentFullTimeTicks;
+
+        boolean restocked = false;
+
+        for (Long restockDayTime : restockDayTimes) {
+            long restockTimeToday = currentDay + restockDayTime;
+
+            if (currentFullTimeTicks < restockTimeToday || lastRestockFullTimeTicks >= restockTimeToday) {
+                ticksTillRestock = Math.min(ticksTillRestock, restockTimeToday - currentFullTimeTicks);
+                continue;
+            }
+
+            wrapped.restock();
+            wrapped.saveRestockTime();
+            restocked = true;
+
+            break;
+        }
+
+        if (!restocked) return;
+
+        if (notify_player) {
             final TextReplacementConfig timeLeft = TextReplacementConfig.builder()
                     .matchLiteral("%time%")
-                    .replacement(Util.formatDuration(Duration.ofMillis(wrapped.getRestockCooldownMillis(restock_delay_millis))))
+                    .replacement(Util.formatDuration(Duration.ofMillis(ticksTillRestock * 50L)))
                     .build();
-            VillagerOptimizer.getLang(player.locale()).trades_restocked
-                    .forEach(line -> KyoriUtil.sendMessage(player, line.replaceText(timeLeft)));
+            VillagerOptimizer.getLang(event.getPlayer().locale()).trades_restocked
+                    .forEach(line -> KyoriUtil.sendMessage(event.getPlayer(), line.replaceText(timeLeft)));
         }
 
         if (log_enabled) {

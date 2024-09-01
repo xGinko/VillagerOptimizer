@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.struct.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;

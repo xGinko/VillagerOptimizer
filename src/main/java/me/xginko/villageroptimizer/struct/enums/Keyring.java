@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.enums;
+package me.xginko.villageroptimizer.struct.enums;
 
 import net.kyori.adventure.key.Namespaced;
 import org.bukkit.Keyed;
@@ -52,7 +52,7 @@ public final class Keyring {
         OPTIMIZATION_TYPE("optimization-type"),
         LAST_OPTIMIZE_SYSTIME_MILLIS("last-optimize"),
         LAST_LEVELUP_SYSTIME_MILLIS("last-levelup"),
-        LAST_RESTOCK_SYSTIME_MILLIS("last-restock-systime");
+        LAST_RESTOCK_WORLD_FULLTIME("last-restock-full-time");
 
         private final @NotNull NamespacedKey key;
 
@@ -69,7 +69,7 @@ public final class Keyring {
     public enum AntiVillagerLag implements Keyed {
 
         NEXT_OPTIMIZATION_SYSTIME_SECONDS("cooldown"), // Returns LONG -> (System.currentTimeMillis() / 1000) + cooldown seconds
-        LAST_RESTOCK_WORLDFULLTIME("time"), // Returns LONG -> villager.getWorld().getFullTime()
+        LAST_RESTOCK_WORLD_FULLTIME("time"), // Returns LONG -> villager.getWorld().getFullTime()
         NEXT_LEVELUP_SYSTIME_SECONDS("levelCooldown"), // Returns LONG -> (System.currentTimeMillis() / 1000) + cooldown seconds
         OPTIMIZED_ANY("Marker"), // Returns STRING -> "AVL"
         OPTIMIZED_BLOCK("disabledByBlock"), // Returns STRING -> key().toString()

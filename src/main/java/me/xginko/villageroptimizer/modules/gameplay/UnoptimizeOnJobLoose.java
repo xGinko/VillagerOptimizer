@@ -1,6 +1,6 @@
 package me.xginko.villageroptimizer.modules.gameplay;
 
-import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.struct.enums.OptimizationType;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import org.bukkit.event.EventHandler;

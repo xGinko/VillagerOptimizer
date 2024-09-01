@@ -1,8 +1,8 @@
 package me.xginko.villageroptimizer.modules.optimization;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.struct.enums.OptimizationType;
+import me.xginko.villageroptimizer.struct.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerOptimizeEvent;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;

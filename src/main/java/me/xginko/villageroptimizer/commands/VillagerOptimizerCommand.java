@@ -1,8 +1,8 @@
 package me.xginko.villageroptimizer.commands;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.utils.Disableable;
-import me.xginko.villageroptimizer.utils.Enableable;
+import me.xginko.villageroptimizer.struct.Disableable;
+import me.xginko.villageroptimizer.struct.Enableable;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;

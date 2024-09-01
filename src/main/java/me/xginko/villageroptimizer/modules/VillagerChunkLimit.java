@@ -1,7 +1,7 @@
 package me.xginko.villageroptimizer.modules;
 
 import com.cryptomorin.xseries.XEntityType;
-import me.xginko.villageroptimizer.utils.ExpiringSet;
+import me.xginko.villageroptimizer.struct.models.ExpiringSet;
 import me.xginko.villageroptimizer.utils.LocationUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;

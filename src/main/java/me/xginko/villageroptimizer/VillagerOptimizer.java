@@ -5,7 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.config.Config;
 import me.xginko.villageroptimizer.config.LanguageCache;
-import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.struct.enums.Permissions;
 import me.xginko.villageroptimizer.modules.VillagerOptimizerModule;
 import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;

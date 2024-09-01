@@ -2,8 +2,8 @@ package me.xginko.villageroptimizer.commands.unoptimizevillagers;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
-import me.xginko.villageroptimizer.enums.OptimizationType;
-import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.struct.enums.OptimizationType;
+import me.xginko.villageroptimizer.struct.enums.Permissions;
 import me.xginko.villageroptimizer.events.VillagerUnoptimizeEvent;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;

@@ -5,7 +5,7 @@ import me.xginko.villageroptimizer.commands.VillagerOptimizerCommand;
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.DisableSubCmd;
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.ReloadSubCmd;
 import me.xginko.villageroptimizer.commands.villageroptimizer.subcommands.VersionSubCmd;
-import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.struct.enums.Permissions;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import net.kyori.adventure.text.Component;

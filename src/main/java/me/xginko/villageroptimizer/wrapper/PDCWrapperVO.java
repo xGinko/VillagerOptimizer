@@ -1,8 +1,8 @@
 package me.xginko.villageroptimizer.wrapper;
 
 import me.xginko.villageroptimizer.VillagerOptimizer;
-import me.xginko.villageroptimizer.enums.Keyring;
-import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.struct.enums.Keyring;
+import me.xginko.villageroptimizer.struct.enums.OptimizationType;
 import org.bukkit.entity.Villager;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -82,30 +82,16 @@ public final class PDCWrapperVO extends PDCWrapper {
     }
 
     @Override
-    public boolean canRestock(long cooldown_millis) {
-        return getLastRestock() + cooldown_millis <= System.currentTimeMillis();
-    }
-
-    @Override
-    public void saveRestockTime() {
-        dataContainer.set(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG, System.currentTimeMillis());
-    }
-
-    /**
-     * @return The time when the entity was last restocked.
-     */
-    private long getLastRestock() {
-        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG)) {
-            return dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG);
+    public long getLastRestockFullTime() {
+        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK_WORLD_FULLTIME.getKey(), PersistentDataType.LONG)) {
+            return dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK_WORLD_FULLTIME.getKey(), PersistentDataType.LONG);
         }
         return 0L;
     }
 
     @Override
-    public long getRestockCooldownMillis(long cooldown_millis) {
-        if (dataContainer.has(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG))
-            return System.currentTimeMillis() - (dataContainer.get(Keyring.VillagerOptimizer.LAST_RESTOCK_SYSTIME_MILLIS.getKey(), PersistentDataType.LONG) + cooldown_millis);
-        return cooldown_millis;
+    public void saveRestockTime() {
+        dataContainer.set(Keyring.VillagerOptimizer.LAST_RESTOCK_WORLD_FULLTIME.getKey(), PersistentDataType.LONG, villager.getWorld().getFullTime());
     }
 
     @Override

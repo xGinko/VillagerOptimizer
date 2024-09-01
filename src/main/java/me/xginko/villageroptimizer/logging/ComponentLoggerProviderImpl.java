@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.utils;
+package me.xginko.villageroptimizer.logging;
 
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.logger.slf4j.ComponentLoggerProvider;

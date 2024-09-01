@@ -1,7 +1,8 @@
 package me.xginko.villageroptimizer.wrapper;
 
-import me.xginko.villageroptimizer.enums.Keyring;
-import me.xginko.villageroptimizer.enums.OptimizationType;
+import me.xginko.villageroptimizer.VillagerOptimizer;
+import me.xginko.villageroptimizer.struct.enums.Keyring;
+import me.xginko.villageroptimizer.struct.enums.OptimizationType;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Villager;
@@ -20,12 +21,30 @@ public class WrappedVillager extends PDCWrapper {
     }
 
     /**
+     * Returns a number between 0 and 24000
+     * is affected by /time set
+     */
+    public long currentDayTimeTicks() {
+        return villager.getWorld().getTime();
+    }
+
+    /**
+     * Returns the tick time of the world
+     * is affected by /time set
+     */
+    public long currentFullTimeTicks() {
+        return villager.getWorld().getFullTime();
+    }
+
+    /**
      * Restock all trading recipes.
      */
     public void restock() {
-        for (MerchantRecipe recipe : villager.getRecipes()) {
-            recipe.setUses(0);
-        }
+        VillagerOptimizer.scheduling().entitySpecificScheduler(villager).run(() -> {
+            for (MerchantRecipe recipe : villager.getRecipes()) {
+                recipe.setUses(0);
+            }
+        }, null);
     }
 
     /**
@@ -126,13 +145,12 @@ public class WrappedVillager extends PDCWrapper {
     }
 
     @Override
-    public boolean canRestock(long cooldown_millis) {
+    public long getLastRestockFullTime() {
+        long cooldown = 0L;
         for (PDCWrapper pdcWrapper : pdcWrappers) {
-            if (!pdcWrapper.canRestock(cooldown_millis)) {
-                return false;
-            }
+            cooldown = Math.max(cooldown, pdcWrapper.getLastRestockFullTime());
         }
-        return true;
+        return cooldown;
     }
 
     @Override
@@ -140,15 +158,6 @@ public class WrappedVillager extends PDCWrapper {
         for (PDCWrapper pdcWrapper : pdcWrappers) {
             pdcWrapper.saveRestockTime();
         }
-    }
-
-    @Override
-    public long getRestockCooldownMillis(long cooldown_millis) {
-        long cooldown = cooldown_millis;
-        for (PDCWrapper pdcWrapper : pdcWrappers) {
-            cooldown = Math.max(cooldown, pdcWrapper.getRestockCooldownMillis(cooldown_millis));
-        }
-        return cooldown;
     }
 
     @Override

@@ -118,13 +118,13 @@ public class Config {
         return this.config.getInteger(path, def);
     }
 
-    public @NotNull List<String> getList(@NotNull String path, @NotNull List<String> def, @NotNull String comment) {
+    public @NotNull <T> List<T> getList(@NotNull String path, @NotNull List<T> def, @NotNull String comment) {
         this.config.addDefault(path, def, comment);
-        return this.config.getStringList(path);
+        return this.config.getList(path);
     }
 
-    public @NotNull List<String> getList(@NotNull String path, @NotNull List<String> def) {
+    public @NotNull <T> List<T> getList(@NotNull String path, @NotNull List<T> def) {
         this.config.addDefault(path, def);
-        return this.config.getStringList(path);
+        return this.config.getList(path);
     }
 }

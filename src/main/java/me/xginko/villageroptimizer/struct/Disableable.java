@@ -1,4 +1,4 @@
-package me.xginko.villageroptimizer.utils;
+package me.xginko.villageroptimizer.struct;
 
 public interface Disableable {
     void disable();

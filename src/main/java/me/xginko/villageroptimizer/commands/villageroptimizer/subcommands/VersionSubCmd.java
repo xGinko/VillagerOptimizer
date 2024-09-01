@@ -3,7 +3,7 @@ package me.xginko.villageroptimizer.commands.villageroptimizer.subcommands;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import me.xginko.villageroptimizer.VillagerOptimizer;
 import me.xginko.villageroptimizer.commands.SubCommand;
-import me.xginko.villageroptimizer.enums.Permissions;
+import me.xginko.villageroptimizer.struct.enums.Permissions;
 import me.xginko.villageroptimizer.utils.KyoriUtil;
 import me.xginko.villageroptimizer.utils.Util;
 import net.kyori.adventure.text.Component;
