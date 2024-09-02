@@ -85,11 +85,11 @@ public class RestockOptimizedTrades extends VillagerOptimizerModule implements L
                 continue;
             }
 
-            wrapped.restock();
-            wrapped.saveRestockTime();
-            restocked = true;
-
-            break;
+            if (!restocked) {
+                wrapped.restock();
+                wrapped.saveRestockTime();
+                restocked = true;
+            }
         }
 
         if (!restocked) return;
