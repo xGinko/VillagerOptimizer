@@ -14,6 +14,7 @@ import me.xginko.villageroptimizer.utils.Util;
 import me.xginko.villageroptimizer.wrapper.WrappedVillager;
 import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -98,9 +99,8 @@ public class OptimizeByNametag extends VillagerOptimizerModule implements Listen
 
                 if (!optimizeEvent.callEvent()) return;
 
-                if (!consume_nametag) {
+                if (!consume_nametag && player.getGameMode() == GameMode.SURVIVAL) {
                     player.getInventory().addItem(usedItem.asOne());
-                    player.updateInventory();
                 }
 
                 wrapped.setOptimizationType(optimizeEvent.getOptimizationType());
@@ -139,9 +139,8 @@ public class OptimizeByNametag extends VillagerOptimizerModule implements Listen
                 if (!unOptimizeEvent.callEvent()) return;
                 wrapped.setOptimizationType(OptimizationType.NONE);
 
-                if (!consume_nametag) {
+                if (!consume_nametag && player.getGameMode() == GameMode.SURVIVAL) {
                     player.getInventory().addItem(usedItem.asOne());
-                    player.updateInventory();
                 }
 
                 if (notify_player) {
