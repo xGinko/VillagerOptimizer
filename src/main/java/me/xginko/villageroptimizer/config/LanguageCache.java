@@ -20,6 +20,7 @@ public class LanguageCache {
     public final @NotNull List<Component> nametag_optimize_success, nametag_on_optimize_cooldown, nametag_unoptimize_success,
             block_optimize_success, block_on_optimize_cooldown, block_unoptimize_success,
             workstation_optimize_success, workstation_on_optimize_cooldown, workstation_unoptimize_success,
+            activity_optimize_success,
             command_optimize_success, command_radius_limit_exceed, command_optimize_fail, command_unoptimize_success,
             command_specify_radius, command_radius_invalid, command_no_villagers_nearby,
             trades_restocked, optimize_for_trading, villager_leveling_up;
@@ -67,6 +68,10 @@ public class LanguageCache {
                 "<gray>You need to wait %time% until you can optimize this villager again.");
         this.workstation_unoptimize_success = getListTranslation("messages.workstation.unoptimize-success",
                 "<green>Successfully unoptimized %villagertype% villager by removing workstation block %blocktype%.");
+        // Activity
+        this.activity_optimize_success = getListTranslation("messages.activity.optimized-near-you",
+                "<gray>%amount% villagers close to you were automatically optimized due to high activity.");
+
         // Command
         this.command_optimize_success = getListTranslation("messages.command.optimize-success",
                 "<green>Successfully optimized %amount% villager(s) in a radius of %radius% blocks.");

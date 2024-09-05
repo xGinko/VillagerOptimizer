@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.memory.MemoryKey;
+import org.bukkit.event.entity.VillagerReplenishTradeEvent;
 import org.bukkit.inventory.MerchantRecipe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,8 +42,11 @@ public class WrappedVillager extends PDCWrapper {
      */
     public void restock() {
         VillagerOptimizer.scheduling().entitySpecificScheduler(villager).run(() -> {
-            for (MerchantRecipe recipe : villager.getRecipes()) {
-                recipe.setUses(0);
+            for (MerchantRecipe merchantRecipe : villager.getRecipes()) {
+                VillagerReplenishTradeEvent restockRecipeEvent = new VillagerReplenishTradeEvent(villager, merchantRecipe);
+                if (restockRecipeEvent.callEvent()) {
+                    restockRecipeEvent.getRecipe().setUses(0);
+                }
             }
         }, null);
     }

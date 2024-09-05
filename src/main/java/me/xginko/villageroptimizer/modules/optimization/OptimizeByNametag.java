@@ -99,12 +99,12 @@ public class OptimizeByNametag extends VillagerOptimizerModule implements Listen
 
                 if (!optimizeEvent.callEvent()) return;
 
+                wrapped.setOptimizationType(optimizeEvent.getOptimizationType());
+                wrapped.saveOptimizeTime();
+
                 if (!consume_nametag && player.getGameMode() == GameMode.SURVIVAL) {
                     player.getInventory().addItem(usedItem.asOne());
                 }
-
-                wrapped.setOptimizationType(optimizeEvent.getOptimizationType());
-                wrapped.saveOptimizeTime();
 
                 if (notify_player) {
                     VillagerOptimizer.getLang(player.locale()).nametag_optimize_success
